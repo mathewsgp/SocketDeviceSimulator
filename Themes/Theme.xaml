@@ -13,6 +13,7 @@
     <Color x:Key="SuccessColor">#4CAF50</Color>
     <Color x:Key="WarningColor">#FF9800</Color>
     <Color x:Key="ErrorColor">#F44336</Color>
+    <Color x:Key="InfoColor">#00BCD4</Color>
 
     <!-- Brushes -->
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}"/>
@@ -26,6 +27,73 @@
     <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource SuccessColor}"/>
     <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource WarningColor}"/>
     <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource ErrorColor}"/>
+    <SolidColorBrush x:Key="InfoBrush" Color="{StaticResource InfoColor}"/>
+
+    <!-- Step Button Base Style -->
+    <Style x:Key="StepButtonBase" TargetType="Button">
+        <Setter Property="Padding" Value="10,6"/>
+        <Setter Property="Margin" Value="2"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="border" 
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="6"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="Opacity" Value="0.9"/>
+                            <Setter TargetName="border" Property="RenderTransform">
+                                <Setter.Value>
+                                    <ScaleTransform ScaleX="1.02" ScaleY="1.02"/>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="border" Property="Opacity" Value="0.8"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Step Button Styles -->
+    <Style x:Key="WaitButton" TargetType="Button" BasedOn="{StaticResource StepButtonBase}">
+        <Setter Property="Background" Value="#E3F2FD"/>
+        <Setter Property="Foreground" Value="#1565C0"/>
+    </Style>
+
+    <Style x:Key="SendButton" TargetType="Button" BasedOn="{StaticResource StepButtonBase}">
+        <Setter Property="Background" Value="#E8F5E9"/>
+        <Setter Property="Foreground" Value="#2E7D32"/>
+    </Style>
+
+    <Style x:Key="ControlButton" TargetType="Button" BasedOn="{StaticResource StepButtonBase}">
+        <Setter Property="Background" Value="#FFF3E0"/>
+        <Setter Property="Foreground" Value="#E65100"/>
+    </Style>
+
+    <Style x:Key="FlowButton" TargetType="Button" BasedOn="{StaticResource StepButtonBase}">
+        <Setter Property="Background" Value="#F3E5F5"/>
+        <Setter Property="Foreground" Value="#7B1FA2"/>
+    </Style>
+
+    <Style x:Key="ActionButton" TargetType="Button" BasedOn="{StaticResource StepButtonBase}">
+        <Setter Property="Background" Value="#ECEFF1"/>
+        <Setter Property="Foreground" Value="#455A64"/>
+    </Style>
+
+    <Style x:Key="AutoReplyButton" TargetType="Button" BasedOn="{StaticResource StepButtonBase}">
+        <Setter Property="Background" Value="#E0F7FA"/>
+        <Setter Property="Foreground" Value="#00838F"/>
+    </Style>
 
     <!-- Button Style -->
     <Style x:Key="PrimaryButton" TargetType="Button">
@@ -128,17 +196,17 @@
         <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="CornerRadius" Value="4"/>
-        <Setter Property="Padding" Value="12"/>
-        <Setter Property="Margin" Value="4"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="16"/>
+        <Setter Property="Margin" Value="8"/>
     </Style>
 
     <!-- Panel Header Style -->
     <Style x:Key="PanelHeader" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontSize" Value="16"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
-        <Setter Property="Margin" Value="0,0,0,8"/>
+        <Setter Property="Margin" Value="0,0,0,12"/>
     </Style>
 
     <!-- Status Indicator -->

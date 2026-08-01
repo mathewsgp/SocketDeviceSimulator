@@ -230,54 +230,165 @@
                             </StackPanel>
                         </Grid>
 
-                        <!-- Step Toolbar -->
-                        <ToolBarTray DockPanel.Dock="Top" Margin="0,8">
-                            <ToolBar Band="0" BandIndex="0">
-                                <Button Content="Wait Command" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="WaitCommand" ToolTip="Wait for a command"/>
-                                <Button Content="Wait Response" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="WaitResponse" ToolTip="Wait for a response pattern"/>
-                                <Button Content="Send Response" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="SendResponse" ToolTip="Send a response"/>
-                                <Button Content="Send Command" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="SendCommand" ToolTip="Send a command"/>
-                                <Separator/>
-                                <Button Content="Delay" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="Delay" ToolTip="Wait for specified time"/>
-                                <Button Content="Set Variable" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="SetVariable" ToolTip="Set a variable value"/>
-                                <Separator/>
-                                <Button Content="If/Else" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="IfElse" ToolTip="Conditional execution"/>
-                                <Button Content="Label" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="Label" ToolTip="Mark a position for Goto"/>
-                                <Button Content="Goto" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="Goto" ToolTip="Jump to a Label"/>
-                                <Separator/>
-                                <Button Content="Auto Reply" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="AutoReply" ToolTip="Auto-reply to matching commands"/>
-                                <Separator/>
-                                <Button Content="Remove" Command="{Binding ScenarioVM.RemoveStepCommand}" ToolTip="Remove selected step"/>
-                                <Button Content="↑" Command="{Binding ScenarioVM.MoveUpCommand}" Width="30" ToolTip="Move up"/>
-                                <Button Content="↓" Command="{Binding ScenarioVM.MoveDownCommand}" Width="30" ToolTip="Move down"/>
-                            </ToolBar>
-                        </ToolBarTray>
+                        <!-- Step Toolbar - Redesigned -->
+                        <Border DockPanel.Dock="Top" Background="{StaticResource SurfaceBrush}" 
+                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                                CornerRadius="8" Margin="0,8,0,8" Padding="8">
+                            <StackPanel>
+                                <!-- Step Groups Header -->
+                                <TextBlock Text="Add Steps" Style="{StaticResource PanelHeader}" Margin="0,0,0,8"/>
+                                
+                                <!-- Main Step Buttons Grid -->
+                                <WrapPanel Margin="0,4">
+                                    <!-- Wait Group -->
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,16,4">
+                                        <TextBlock Text="Wait:" Foreground="{StaticResource TextSecondaryBrush}" 
+                                                   VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"/>
+                                        <Button Content="Command" Command="{Binding ScenarioVM.AddStepCommand}" 
+                                               CommandParameter="WaitCommand" Style="{StaticResource WaitButton}"
+                                               ToolTip="Wait for a command"/>
+                                        <Button Content="Response" Command="{Binding ScenarioVM.AddStepCommand}" 
+                                               CommandParameter="WaitResponse" Style="{StaticResource WaitButton}"
+                                               ToolTip="Wait for a response pattern"/>
+                                    </StackPanel>
+                                    
+                                    <!-- Send Group -->
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,16,4">
+                                        <TextBlock Text="Send:" Foreground="{StaticResource TextSecondaryBrush}" 
+                                                   VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"/>
+                                        <Button Content="Response" Command="{Binding ScenarioVM.AddStepCommand}" 
+                                               CommandParameter="SendResponse" Style="{StaticResource SendButton}"
+                                               ToolTip="Send a response"/>
+                                        <Button Content="Command" Command="{Binding ScenarioVM.AddStepCommand}" 
+                                               CommandParameter="SendCommand" Style="{StaticResource SendButton}"
+                                               ToolTip="Send a command"/>
+                                    </StackPanel>
+                                    
+                                    <!-- Control Group -->
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,16,4">
+                                        <TextBlock Text="Control:" Foreground="{StaticResource TextSecondaryBrush}" 
+                                                   VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"/>
+                                        <Button Content="Delay" Command="{Binding ScenarioVM.AddStepCommand}" 
+                                               CommandParameter="Delay" Style="{StaticResource ControlButton}"
+                                               ToolTip="Wait for specified time"/>
+                                        <Button Content="Variable" Command="{Binding ScenarioVM.AddStepCommand}" 
+                                               CommandParameter="SetVariable" Style="{StaticResource ControlButton}"
+                                               ToolTip="Set a variable value"/>
+                                    </StackPanel>
+                                    
+                                    <!-- Flow Group -->
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,16,4">
+                                        <TextBlock Text="Flow:" Foreground="{StaticResource TextSecondaryBrush}" 
+                                                   VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"/>
+                                        <Button Content="If/Else" Command="{Binding ScenarioVM.AddStepCommand}" 
+                                               CommandParameter="IfElse" Style="{StaticResource FlowButton}"
+                                               ToolTip="Conditional execution"/>
+                                        <Button Content="Label" Command="{Binding ScenarioVM.AddStepCommand}" 
+                                               CommandParameter="Label" Style="{StaticResource FlowButton}"
+                                               ToolTip="Mark a position for Goto"/>
+                                        <Button Content="Goto" Command="{Binding ScenarioVM.AddStepCommand}" 
+                                               CommandParameter="Goto" Style="{StaticResource FlowButton}"
+                                               ToolTip="Jump to a Label"/>
+                                    </StackPanel>
+                                    
+                                    <!-- Auto Group -->
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,16,4">
+                                        <TextBlock Text="Auto:" Foreground="{StaticResource TextSecondaryBrush}" 
+                                                   VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"/>
+                                        <Button Content="Reply" Command="{Binding ScenarioVM.AddStepCommand}" 
+                                               CommandParameter="AutoReply" Style="{StaticResource AutoReplyButton}"
+                                               ToolTip="Auto-reply to matching commands"/>
+                                    </StackPanel>
+                                </WrapPanel>
+                                
+                                <!-- Separator -->
+                                <Border Height="1" Background="{StaticResource BorderBrush}" Margin="0,8"/>
+                                
+                                <!-- Actions Row -->
+                                <DockPanel Margin="0,8,0,0">
+                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                        <Button Content="Remove" Command="{Binding ScenarioVM.RemoveStepCommand}" 
+                                               Style="{StaticResource ActionButton}" Padding="12,6"
+                                               ToolTip="Remove selected step"/>
+                                        <Button Content="↑" Command="{Binding ScenarioVM.MoveUpCommand}" 
+                                               Style="{StaticResource ActionButton}" Width="36"
+                                               ToolTip="Move step up"/>
+                                        <Button Content="↓" Command="{Binding ScenarioVM.MoveDownCommand}" 
+                                               Style="{StaticResource ActionButton}" Width="36"
+                                               ToolTip="Move step down"/>
+                                    </StackPanel>
+                                    <TextBlock Text="Select a step to edit its properties" 
+                                              Foreground="{StaticResource TextSecondaryBrush}" 
+                                              VerticalAlignment="Center" FontStyle="Italic"/>
+                                </DockPanel>
+                            </StackPanel>
+                        </Border>
 
-                        <ListBox ItemsSource="{Binding ScenarioVM.Steps}"
-                                SelectedItem="{Binding ScenarioVM.SelectedStep}"
-                                Style="{StaticResource ModernListBox}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid Margin="4">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="30"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="{Binding Order}" 
-                                                  Foreground="{StaticResource TextSecondaryBrush}"
-                                                  VerticalAlignment="Center"/>
-                                        <StackPanel Grid.Column="1">
-                                            <TextBlock Text="{Binding Converter={StaticResource StepTypeToString}}" 
-                                                      FontWeight="SemiBold"/>
-                                            <TextBlock Text="{Binding Description}" 
-                                                      Foreground="{StaticResource TextSecondaryBrush}"
-                                                      FontSize="11"
-                                                      TextTrimming="CharacterEllipsis"/>
-                                        </StackPanel>
-                                    </Grid>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                        <!-- Step List -->
+                        <Border Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" 
+                                BorderThickness="1" CornerRadius="8" Margin="0,0,0,8">
+                            <ListBox ItemsSource="{Binding ScenarioVM.Steps}"
+                                    SelectedItem="{Binding ScenarioVM.SelectedStep}"
+                                    Background="Transparent" BorderThickness="0"
+                                    Padding="4">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#FAFAFA" CornerRadius="6" Padding="12,8" Margin="2">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="28"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                
+                                                <!-- Step Number -->
+                                                <Border Grid.Column="0" Background="{StaticResource PrimaryBrush}" 
+                                                        CornerRadius="4" Width="24" Height="24" Margin="0,0,8,0">
+                                                    <TextBlock Text="{Binding Order}" Foreground="White" 
+                                                              FontWeight="Bold" FontSize="11"
+                                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                
+                                                <!-- Step Type Icon -->
+                                                <Border Grid.Column="1" Width="8" CornerRadius="2" Margin="0,0,12,0">
+                                                    <Border.Style>
+                                                        <Style TargetType="Border">
+                                                            <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                                                        </Style>
+                                                    </Border.Style>
+                                                </Border>
+                                                
+                                                <!-- Step Info -->
+                                                <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Converter={StaticResource StepTypeToString}}" 
+                                                              FontWeight="SemiBold" FontSize="12"
+                                                              Foreground="{StaticResource TextBrush}"/>
+                                                    <TextBlock Text="{Binding Description}" 
+                                                              Foreground="{StaticResource TextSecondaryBrush}"
+                                                              FontSize="10"
+                                                              TextTrimming="CharacterEllipsis"
+                                                              MaxWidth="200"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                        <Setter Property="Padding" Value="0"/>
+                                        <Setter Property="Margin" Value="0"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ListBoxItem">
+                                                    <ContentPresenter/>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                            </ListBox>
+                        </Border>
                     </DockPanel>
                 </Border>
 
@@ -351,21 +462,38 @@
                 </Border>
 
                 <!-- Step Details -->
-                <Border Grid.Row="1" Style="{StaticResource PanelBorder}">
+                <Border Grid.Row="1" Background="{StaticResource SurfaceBrush}" 
+                        BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                        CornerRadius="8" Margin="8" Padding="16">
                     <DockPanel>
-                        <TextBlock DockPanel.Dock="Top" Text="Step Details" Style="{StaticResource PanelHeader}"/>
+                        <Grid DockPanel.Dock="Top" Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Step Details" Style="{StaticResource PanelHeader}"/>
+                        </Grid>
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <StackPanel>
                                 <!-- No step selected message -->
-                                <TextBlock Text="Select a step to edit" 
-                                          Foreground="{StaticResource TextSecondaryBrush}"
-                                          Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}"/>
+                                <Border Background="#F5F5F5" CornerRadius="8" Padding="24" Margin="0,8"
+                                        Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}">
+                                    <StackPanel HorizontalAlignment="Center">
+                                        <TextBlock Text="📋" FontSize="32" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                                        <TextBlock Text="Select a step to edit" 
+                                                  Foreground="{StaticResource TextSecondaryBrush}"
+                                                  HorizontalAlignment="Center" FontSize="14"/>
+                                    </StackPanel>
+                                </Border>
                                 
                                 <!-- Common Properties (shown when step is selected) -->
                                 <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource BoolToVisibility}}">
-                                    <TextBlock Text="Step Type:" Margin="0,4,0,2"/>
-                                    <TextBlock Text="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}}"
-                                              FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                                    <!-- Step Type Badge -->
+                                    <Border Background="{StaticResource PrimaryBrush}" CornerRadius="6" 
+                                            Padding="12,6" HorizontalAlignment="Left" Margin="0,0,0,16">
+                                        <TextBlock Text="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}}"
+                                                  FontWeight="Bold" Foreground="White" FontSize="13"/>
+                                    </Border>
                                     
                                     <TextBlock Text="Description:" Margin="0,12,0,2"/>
                                     <TextBox Text="{Binding ScenarioVM.SelectedStep.Description, UpdateSourceTrigger=PropertyChanged}"
