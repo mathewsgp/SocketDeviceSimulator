@@ -372,36 +372,59 @@
 
                                 <!-- WaitCommand: Wait for a command from client -->
                                 <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=WaitCommand}">
-                                    <Border BorderBrush="{StaticResource AccentBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
+                                    <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
                                         <StackPanel>
-                                            <TextBlock Text="Select Command from Protocol:" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
-                                            <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}"
-                                                     SelectedItem="{Binding ScenarioVM.SelectedWaitCommandStep.CommandName, UpdateSourceTrigger=PropertyChanged}"
-                                                     Style="{StaticResource ModernComboBox}"/>
-                                            <TextBlock Text="Wait for this command from the client" 
-                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,4,0,0"/>
+                                            <TextBlock Text="Wait for Command" FontWeight="SemiBold" FontSize="14" Foreground="{StaticResource PrimaryBrush}"/>
+                                            <TextBlock Text="Wait for a specific command from the client" 
+                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" Margin="0,4,0,0"/>
                                         </StackPanel>
                                     </Border>
                                     
-                                    <TextBlock Text="Timeout (ms):" Margin="0,4,0,2"/>
+                                    <TextBlock Text="Select Command from Protocol:" Margin="0,4,0,2"/>
+                                    <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}"
+                                             SelectedItem="{Binding ScenarioVM.SelectedWaitCommandStep.CommandName, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource ModernComboBox}"/>
+                                    
+                                    <TextBlock Text="Timeout (ms):" Margin="0,12,0,2"/>
                                     <TextBox Text="{Binding ScenarioVM.SelectedWaitCommandStep.TimeoutMs, UpdateSourceTrigger=PropertyChanged}"
                                             Style="{StaticResource ModernTextBox}"/>
+                                    
+                                    <!-- Flow Control: Goto on Success/Timeout -->
+                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,16,0,0" Padding="8" CornerRadius="4">
+                                        <StackPanel>
+                                            <TextBlock Text="Flow Control (Goto on Success/Timeout):" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                            
+                                            <TextBlock Text="On Success (command received) - Goto:" Margin="0,4,0,2"/>
+                                            <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}"
+                                                     Text="{Binding ScenarioVM.SelectedWaitCommandStep.GotoLabelOnSuccess, UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource ModernComboBox}"
+                                                     IsEditable="True"/>
+                                            
+                                            <TextBlock Text="On Timeout - Goto:" Margin="0,12,0,2"/>
+                                            <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}"
+                                                     Text="{Binding ScenarioVM.SelectedWaitCommandStep.GotoLabelOnTimeout, UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource ModernComboBox}"
+                                                     IsEditable="True"/>
+                                        </StackPanel>
+                                    </Border>
                                 </StackPanel>
 
                                 <!-- WaitResponse: Wait for a response pattern from client -->
                                 <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=WaitResponse}">
-                                    <Border BorderBrush="{StaticResource AccentBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
+                                    <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
                                         <StackPanel>
-                                            <TextBlock Text="Select Response from Protocol:" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
-                                            <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolResponseTemplates}"
-                                                     SelectedItem="{Binding ScenarioVM.SelectedWaitResponseStep.ExpectedResponseContains, UpdateSourceTrigger=PropertyChanged}"
-                                                     Style="{StaticResource ModernComboBox}"/>
-                                            <TextBlock Text="Or enter custom pattern below" 
-                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,4,0,0"/>
+                                            <TextBlock Text="Wait for Response Pattern" FontWeight="SemiBold" FontSize="14" Foreground="{StaticResource PrimaryBrush}"/>
+                                            <TextBlock Text="Wait until response contains specified pattern" 
+                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" Margin="0,4,0,0"/>
                                         </StackPanel>
                                     </Border>
                                     
-                                    <TextBlock Text="Expected Response Pattern:" Margin="0,4,0,2"/>
+                                    <TextBlock Text="Select Response from Protocol:" Margin="0,4,0,2"/>
+                                    <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolResponseTemplates}"
+                                             SelectedItem="{Binding ScenarioVM.SelectedWaitResponseStep.ExpectedResponseContains, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource ModernComboBox}"/>
+                                    
+                                    <TextBlock Text="Expected Response Pattern:" Margin="0,8,0,2"/>
                                     <TextBox Text="{Binding ScenarioVM.SelectedWaitResponseStep.ExpectedResponseContains, UpdateSourceTrigger=PropertyChanged}"
                                             Style="{StaticResource ModernTextBox}"/>
                                     <TextBlock Text="Wait until response contains this text" 
@@ -416,6 +439,25 @@
                                     <TextBlock Text="Timeout (ms):" Margin="0,12,0,2"/>
                                     <TextBox Text="{Binding ScenarioVM.SelectedWaitResponseStep.TimeoutMs, UpdateSourceTrigger=PropertyChanged}"
                                             Style="{StaticResource ModernTextBox}"/>
+                                    
+                                    <!-- Flow Control: Goto on Success/Timeout -->
+                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,16,0,0" Padding="8" CornerRadius="4">
+                                        <StackPanel>
+                                            <TextBlock Text="Flow Control (Goto on Success/Timeout):" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                            
+                                            <TextBlock Text="On Success (pattern found) - Goto:" Margin="0,4,0,2"/>
+                                            <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}"
+                                                     Text="{Binding ScenarioVM.SelectedWaitResponseStep.GotoLabelOnSuccess, UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource ModernComboBox}"
+                                                     IsEditable="True"/>
+                                            
+                                            <TextBlock Text="On Timeout - Goto:" Margin="0,12,0,2"/>
+                                            <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}"
+                                                     Text="{Binding ScenarioVM.SelectedWaitResponseStep.GotoLabelOnTimeout, UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource ModernComboBox}"
+                                                     IsEditable="True"/>
+                                        </StackPanel>
+                                    </Border>
                                 </StackPanel>
 
                                 <!-- SendResponse: Send a response to client -->
@@ -503,7 +545,7 @@
                                     <Border BorderBrush="{StaticResource SuccessBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
                                         <StackPanel>
                                             <TextBlock Text="Label" FontWeight="SemiBold" FontSize="16" Foreground="{StaticResource SuccessBrush}"/>
-                                            <TextBlock Text="Marks a position in the scenario for Goto to jump to" 
+                                            <TextBlock Text="Marks a position in the scenario for other steps to jump to" 
                                                       Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" Margin="0,4,0,0"/>
                                         </StackPanel>
                                     </Border>
@@ -511,8 +553,19 @@
                                     <TextBlock Text="Label Name:" Margin="0,4,0,2"/>
                                     <TextBox Text="{Binding ScenarioVM.SelectedLabelStep.LabelName, UpdateSourceTrigger=PropertyChanged}"
                                             Style="{StaticResource ModernTextBox}"/>
-                                    <TextBlock Text="Use this name in Goto step to jump here" 
+                                    <TextBlock Text="Use this name in Goto, IfElse, Wait steps" 
                                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
+                                    
+                                    <Border Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" 
+                                           BorderThickness="1" Margin="0,16,0,0" Padding="12" CornerRadius="4">
+                                        <StackPanel>
+                                            <TextBlock Text="Usage:" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                            <TextBlock Text="• Wait → On Success Goto: [this label]" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10"/>
+                                            <TextBlock Text="• Wait → On Timeout Goto: [this label]" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10"/>
+                                            <TextBlock Text="• IfElse → If True Goto: [this label]" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10"/>
+                                            <TextBlock Text="• Goto → Target: [this label]" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10"/>
+                                        </StackPanel>
+                                    </Border>
                                 </StackPanel>
 
                                 <!-- Goto: Jumps to a labeled position -->
@@ -520,7 +573,7 @@
                                     <Border BorderBrush="{StaticResource WarningBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
                                         <StackPanel>
                                             <TextBlock Text="Goto" FontWeight="SemiBold" FontSize="16" Foreground="{StaticResource WarningBrush}"/>
-                                            <TextBlock Text="Jumps to a Label position in the scenario" 
+                                            <TextBlock Text="Unconditionally jumps to a Label position" 
                                                       Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" Margin="0,4,0,0"/>
                                         </StackPanel>
                                     </Border>
@@ -539,7 +592,7 @@
                                     <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
                                         <StackPanel>
                                             <TextBlock Text="If / Else" FontWeight="SemiBold" FontSize="14" Foreground="{StaticResource PrimaryBrush}"/>
-                                            <TextBlock Text="Conditional execution. Can execute steps or goto a label." 
+                                            <TextBlock Text="Conditional jump based on condition result" 
                                                       Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" Margin="0,4,0,0"/>
                                         </StackPanel>
                                     </Border>
@@ -547,25 +600,31 @@
                                     <TextBlock Text="Condition:" Margin="0,4,0,2"/>
                                     <TextBox Text="{Binding ScenarioVM.SelectedIfElseStep.Condition, UpdateSourceTrigger=PropertyChanged}"
                                             Style="{StaticResource ModernTextBox}"/>
-                                    <TextBlock Text="Example: ${Counter} &lt; 10" 
+                                    <TextBlock Text="Example: ${Counter} &lt; 10, ${Status} == READY" 
                                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
                                     
-                                    <!-- If True: Goto or Steps -->
-                                    <TextBlock Text="If True - Goto Label:" Margin="0,12,0,2"/>
-                                    <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}"
-                                             Text="{Binding ScenarioVM.SelectedIfElseStep.GotoLabelIfTrue, UpdateSourceTrigger=PropertyChanged}"
-                                             Style="{StaticResource ModernComboBox}"
-                                             IsEditable="True"/>
-                                    <TextBlock Text="Leave empty to continue to next step" 
-                                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
-                                    
-                                    <TextBlock Text="If False - Goto Label:" Margin="0,12,0,2"/>
-                                    <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}"
-                                             Text="{Binding ScenarioVM.SelectedIfElseStep.GotoLabelIfFalse, UpdateSourceTrigger=PropertyChanged}"
-                                             Style="{StaticResource ModernComboBox}"
-                                             IsEditable="True"/>
-                                    <TextBlock Text="Leave empty to continue to next step" 
-                                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
+                                    <!-- Goto Labels for If/Else -->
+                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,12,0,0" Padding="8" CornerRadius="4">
+                                        <StackPanel>
+                                            <TextBlock Text="Jump Targets:" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                            
+                                            <TextBlock Text="If True - Goto Label:" Margin="0,4,0,2"/>
+                                            <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}"
+                                                     Text="{Binding ScenarioVM.SelectedIfElseStep.GotoLabelIfTrue, UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource ModernComboBox}"
+                                                     IsEditable="True"/>
+                                            <TextBlock Text="Leave empty to continue to next step" 
+                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="9" Margin="0,2,0,8"/>
+                                            
+                                            <TextBlock Text="If False - Goto Label:" Margin="0,4,0,2"/>
+                                            <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}"
+                                                     Text="{Binding ScenarioVM.SelectedIfElseStep.GotoLabelIfFalse, UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource ModernComboBox}"
+                                                     IsEditable="True"/>
+                                            <TextBlock Text="Leave empty to continue to next step" 
+                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="9" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </Border>
                                 </StackPanel>
                             </StackPanel>
                         </ScrollViewer>

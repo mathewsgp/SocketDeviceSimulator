@@ -19,6 +19,10 @@ namespace SocketSimulator.Models
     {
         public string CommandName { get; set; } = string.Empty;
         public int TimeoutMs { get; set; } = 5000;
+        // Goto on success (command received)
+        public string? GotoLabelOnSuccess { get; set; }
+        // Goto on timeout
+        public string? GotoLabelOnTimeout { get; set; }
     }
 
     // Wait for a response pattern from client
@@ -31,6 +35,10 @@ namespace SocketSimulator.Models
         // Optional parameter values to match in response
         public string ExpectedParameters { get; set; } = string.Empty;
         public int TimeoutMs { get; set; } = 5000;
+        // Goto on success (pattern found)
+        public string? GotoLabelOnSuccess { get; set; }
+        // Goto on timeout
+        public string? GotoLabelOnTimeout { get; set; }
     }
 
     public class SendResponseStep : ScenarioStep

@@ -88,7 +88,6 @@ namespace SocketSimulator.Services
         {
             var orderedSteps = allSteps.OrderBy(s => s.Order).ToList();
             var labelIndexMap = BuildLabelIndexMap(allSteps);
-            var visitedLabels = new HashSet<string>();
             int currentIndex = 0;
 
             while (currentIndex < orderedSteps.Count)
@@ -117,6 +116,32 @@ namespace SocketSimulator.Services
                 if (step is LabelStep labelStep)
                 {
                     _logger.Debug("Scenario", $"Label: {labelStep.LabelName}");
+                    currentIndex++;
+                    continue;
+                }
+
+                // Handle WaitCommand with goto labels
+                if (step is WaitCommandStep waitCmdStep)
+                {
+                    var success = await ExecuteWaitCommandWithGotoAsync(waitCmdStep, labelIndexMap, ref currentIndex, cancellationToken);
+                    if (success.HasValue)
+                    {
+                        // Goto was executed, don't increment index
+                        continue;
+                    }
+                    currentIndex++;
+                    continue;
+                }
+
+                // Handle WaitResponse with goto labels
+                if (step is WaitResponseStep waitRespStep)
+                {
+                    var success = await ExecuteWaitResponseWithGotoAsync(waitRespStep, labelIndexMap, ref currentIndex, cancellationToken);
+                    if (success.HasValue)
+                    {
+                        // Goto was executed, don't increment index
+                        continue;
+                    }
                     currentIndex++;
                     continue;
                 }
@@ -166,6 +191,89 @@ namespace SocketSimulator.Services
                 await ExecuteStepAsync(step, cancellationToken);
                 currentIndex++;
             }
+        }
+
+        private async Task<bool?> ExecuteWaitCommandWithGotoAsync(WaitCommandStep step, Dictionary<string, int> labelMap, ref int currentIndex, CancellationToken cancellationToken)
+        {
+            var startTime = DateTime.Now;
+            var timeout = TimeSpan.FromMilliseconds(step.TimeoutMs);
+            bool? success = null;
+
+            while (DateTime.Now - startTime < timeout)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (!string.IsNullOrEmpty(_lastReceivedCommand))
+                {
+                    var receivedCommand = ParseCommandName(_lastReceivedCommand);
+                    if (receivedCommand.Equals(step.CommandName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        _logger.Info("Scenario", $"WaitCommand: Received '{step.CommandName}'");
+                        success = true;
+                        _lastReceivedCommand = string.Empty;
+                        break;
+                    }
+                }
+
+                await Task.Delay(50, cancellationToken);
+            }
+
+            if (success == null)
+            {
+                _logger.Warning("Scenario", $"WaitCommand: Timeout waiting for '{step.CommandName}'");
+                success = false;
+            }
+
+            // Handle goto based on result
+            var targetLabel = success == true ? step.GotoLabelOnSuccess : step.GotoLabelOnTimeout;
+            if (!string.IsNullOrEmpty(targetLabel) && labelMap.TryGetValue(targetLabel, out var targetIndex))
+            {
+                _logger.Debug("Scenario", $"WaitCommand: {(success == true ? "Success" : "Timeout")}, goto '{targetLabel}'");
+                currentIndex = targetIndex;
+                return true; // Indicate goto was executed
+            }
+
+            return false; // No goto, continue to next step
+        }
+
+        private async Task<bool?> ExecuteWaitResponseWithGotoAsync(WaitResponseStep step, Dictionary<string, int> labelMap, ref int currentIndex, CancellationToken cancellationToken)
+        {
+            var startTime = DateTime.Now;
+            var timeout = TimeSpan.FromMilliseconds(step.TimeoutMs);
+            bool? success = null;
+
+            while (DateTime.Now - startTime < timeout)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (!string.IsNullOrEmpty(_lastReceivedCommand) &&
+                    _lastReceivedCommand.Contains(step.ExpectedResponseContains, StringComparison.OrdinalIgnoreCase))
+                {
+                    _logger.Info("Scenario", $"WaitResponse: Found '{step.ExpectedResponseContains}'");
+                    success = true;
+                    _lastReceivedCommand = string.Empty;
+                    break;
+                }
+
+                await Task.Delay(50, cancellationToken);
+            }
+
+            if (success == null)
+            {
+                _logger.Warning("Scenario", $"WaitResponse: Timeout waiting for '{step.ExpectedResponseContains}'");
+                success = false;
+            }
+
+            // Handle goto based on result
+            var targetLabel = success == true ? step.GotoLabelOnSuccess : step.GotoLabelOnTimeout;
+            if (!string.IsNullOrEmpty(targetLabel) && labelMap.TryGetValue(targetLabel, out var targetIndex))
+            {
+                _logger.Debug("Scenario", $"WaitResponse: {(success == true ? "Success" : "Timeout")}, goto '{targetLabel}'");
+                currentIndex = targetIndex;
+                return true; // Indicate goto was executed
+            }
+
+            return false; // No goto, continue to next step
         }
 
         private Dictionary<string, int> BuildLabelIndexMap(List<ScenarioStep> steps)
