@@ -368,43 +368,47 @@
                                             Style="{StaticResource ModernTextBox}"/>
                                 </StackPanel>
 
-                                <!-- WaitCommand -->
+                                <!-- WaitCommand: Wait for a command from client -->
                                 <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=WaitCommand}">
-                                    <!-- Protocol Command Selection -->
-                                    <Border BorderBrush="{StaticResource AccentBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,8" Margin="0,8,0,8">
+                                    <Border BorderBrush="{StaticResource AccentBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
                                         <StackPanel>
                                             <TextBlock Text="Select Command from Protocol:" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <ComboBox Grid.Column="0"
-                                                         ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}"
-                                                         SelectedItem="{Binding ScenarioVM.SelectedWaitCommandStep.CommandName}"
-                                                         Style="{StaticResource ModernComboBox}"/>
-                                                <Button Grid.Column="1" Content="Apply" 
-                                                       Command="{Binding ScenarioVM.ApplyProtocolTemplateCommand}"
-                                                       CommandParameter="WaitCommand"
-                                                       Style="{StaticResource PrimaryButton}" 
-                                                       Margin="8,0,0,0" Padding="12,4"/>
-                                            </Grid>
-                                            <TextBlock Text="Select a command to wait for from loaded Protocol" 
-                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
+                                            <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}"
+                                                     SelectedItem="{Binding ScenarioVM.SelectedWaitCommandStep.CommandName, UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource ModernComboBox}"/>
+                                            <TextBlock Text="Wait for this command from the client" 
+                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,4,0,0"/>
                                         </StackPanel>
                                     </Border>
                                     
-                                    <TextBlock Text="Timeout (ms):" Margin="0,8,0,2"/>
+                                    <TextBlock Text="Timeout (ms):" Margin="0,4,0,2"/>
                                     <TextBox Text="{Binding ScenarioVM.SelectedWaitCommandStep.TimeoutMs, UpdateSourceTrigger=PropertyChanged}"
                                             Style="{StaticResource ModernTextBox}"/>
                                 </StackPanel>
 
-                                <!-- WaitResponse -->
+                                <!-- WaitResponse: Wait for a response pattern from client -->
                                 <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=WaitResponse}">
-                                    <TextBlock Text="Expected Response Contains:" Margin="0,12,0,2"/>
+                                    <Border BorderBrush="{StaticResource AccentBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
+                                        <StackPanel>
+                                            <TextBlock Text="Select Response from Protocol:" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                                            <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolResponseTemplates}"
+                                                     SelectedItem="{Binding ScenarioVM.SelectedWaitResponseStep.ExpectedResponseContains, UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource ModernComboBox}"/>
+                                            <TextBlock Text="Or enter custom pattern below" 
+                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                    
+                                    <TextBlock Text="Expected Response Pattern:" Margin="0,4,0,2"/>
                                     <TextBox Text="{Binding ScenarioVM.SelectedWaitResponseStep.ExpectedResponseContains, UpdateSourceTrigger=PropertyChanged}"
                                             Style="{StaticResource ModernTextBox}"/>
-                                    <TextBlock Text="Wait until response contains this text (case-insensitive)" 
+                                    <TextBlock Text="Wait until response contains this text" 
+                                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
+                                    
+                                    <TextBlock Text="Expected Parameters:" Margin="0,12,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedWaitResponseStep.ExpectedParameters, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource ModernTextBox}" AcceptsReturn="True" Height="40"/>
+                                    <TextBlock Text="Optional: param1=value1,param2=value2" 
                                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
                                     
                                     <TextBlock Text="Timeout (ms):" Margin="0,12,0,2"/>
@@ -412,43 +416,47 @@
                                             Style="{StaticResource ModernTextBox}"/>
                                 </StackPanel>
 
-                                <!-- SendResponse -->
+                                <!-- SendResponse: Send a response to client -->
                                 <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=SendResponse}">
-                                    <!-- Protocol Command Selection -->
-                                    <Border BorderBrush="{StaticResource AccentBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,8" Margin="0,8,0,8">
+                                    <Border BorderBrush="{StaticResource AccentBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
                                         <StackPanel>
-                                            <TextBlock Text="Select Command from Protocol:" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
-                                            <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}"
-                                                     SelectedItem="{Binding ScenarioVM.SelectedSendResponseStep.CommandName, UpdateSourceTrigger=PropertyChanged}"
+                                            <TextBlock Text="Select Response from Protocol:" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                                            <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolResponseTemplates}"
+                                                     SelectedItem="{Binding ScenarioVM.SelectedSendResponseStep.Response, UpdateSourceTrigger=PropertyChanged}"
                                                      Style="{StaticResource ModernComboBox}"/>
-                                            <TextBlock Text="Select command - Response template will auto-fill" 
-                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
+                                            <TextBlock Text="Select response template or enter custom below" 
+                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,4,0,0"/>
                                         </StackPanel>
                                     </Border>
                                     
-                                    <TextBlock Text="Response:" Margin="0,8,0,2"/>
+                                    <TextBlock Text="Response Template:" Margin="0,4,0,2"/>
                                     <TextBox Text="{Binding ScenarioVM.SelectedSendResponseStep.Response, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}" AcceptsReturn="True" Height="80" TextWrapping="Wrap"/>
-                                    <TextBlock Text="Variables: ${VariableName}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
+                                            Style="{StaticResource ModernTextBox}" AcceptsReturn="True" Height="60" TextWrapping="Wrap"/>
+                                    
+                                    <TextBlock Text="Payload Template (use ${ReceivedPayload} for last received):" Margin="0,12,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedSendResponseStep.PayloadTemplate, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource ModernTextBox}" AcceptsReturn="True" Height="60" TextWrapping="Wrap"/>
+                                    <TextBlock Text="Variables: ${VariableName}, ${ReceivedPayload}, ${Param.Name}" 
+                                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
                                 </StackPanel>
 
-                                <!-- SendCommand -->
+                                <!-- SendCommand: Send a command to client -->
                                 <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=SendCommand}">
-                                    <!-- Protocol Command Selection -->
-                                    <Border BorderBrush="{StaticResource AccentBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,8" Margin="0,8,0,8">
+                                    <Border BorderBrush="{StaticResource AccentBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
                                         <StackPanel>
                                             <TextBlock Text="Select Command from Protocol:" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
                                             <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}"
                                                      SelectedItem="{Binding ScenarioVM.SelectedSendCommandStep.CommandName, UpdateSourceTrigger=PropertyChanged}"
                                                      Style="{StaticResource ModernComboBox}"/>
-                                            <TextBlock Text="Select command - Payload template will auto-fill" 
-                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
+                                            <TextBlock Text="Select command - Payload will auto-fill from Protocol" 
+                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,4,0,0"/>
                                         </StackPanel>
                                     </Border>
                                     
-                                    <TextBlock Text="Payload:" Margin="0,8,0,2"/>
+                                    <TextBlock Text="Payload:" Margin="0,4,0,2"/>
                                     <TextBox Text="{Binding ScenarioVM.SelectedSendCommandStep.Payload, UpdateSourceTrigger=PropertyChanged}"
                                             Style="{StaticResource ModernTextBox}" AcceptsReturn="True" Height="60" TextWrapping="Wrap"/>
+                                    <TextBlock Text="Variables: ${VariableName}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
                                 </StackPanel>
 
                                 <!-- Delay -->

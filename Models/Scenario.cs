@@ -24,14 +24,24 @@ namespace SocketSimulator.Models
     // Wait for a response pattern from client
     public class WaitResponseStep : ScenarioStep
     {
+        // Command from Protocol to get response template
+        public string CommandName { get; set; } = string.Empty;
+        // Custom pattern to wait for (overrides protocol template if empty)
         public string ExpectedResponseContains { get; set; } = string.Empty;
+        // Optional parameter values to match in response
+        public string ExpectedParameters { get; set; } = string.Empty;
         public int TimeoutMs { get; set; } = 5000;
     }
 
     public class SendResponseStep : ScenarioStep
     {
+        // Command from Protocol to use as response
         public string CommandName { get; set; } = string.Empty;
+        // Response template from Protocol or custom
         public string Response { get; set; } = string.Empty;
+        // Reference to last received command payload: ${ReceivedPayload}
+        // Reference to parsed parameters: ${Param.ParameterName}
+        public string PayloadTemplate { get; set; } = string.Empty;
     }
 
     public class SendCommandStep : ScenarioStep

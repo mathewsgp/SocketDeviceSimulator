@@ -113,5 +113,21 @@ namespace SocketSimulator.Services
             }
             return names;
         }
+
+        public List<string> GetResponseTemplates()
+        {
+            var templates = new List<string>();
+            if (_currentProtocol != null)
+            {
+                foreach (var cmd in _currentProtocol.Commands)
+                {
+                    if (!string.IsNullOrEmpty(cmd.ResponseTemplate))
+                    {
+                        templates.Add(cmd.ResponseTemplate);
+                    }
+                }
+            }
+            return templates;
+        }
     }
 }

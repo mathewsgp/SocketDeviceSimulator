@@ -32,6 +32,9 @@ namespace SocketSimulator.ViewModels
 
         // Protocol command names for dropdowns
         public ObservableCollection<string> ProtocolCommandNames { get; } = new();
+        
+        // Protocol response templates for dropdowns
+        public ObservableCollection<string> ProtocolResponseTemplates { get; } = new();
 
         public string? SelectedProtocolCommandName
         {
@@ -157,9 +160,16 @@ namespace SocketSimulator.ViewModels
         private void RefreshProtocolCommands()
         {
             ProtocolCommandNames.Clear();
+            ProtocolResponseTemplates.Clear();
+            
             foreach (var name in _protocolService.GetCommandNames())
             {
                 ProtocolCommandNames.Add(name);
+            }
+            
+            foreach (var template in _protocolService.GetResponseTemplates())
+            {
+                ProtocolResponseTemplates.Add(template);
             }
         }
 
