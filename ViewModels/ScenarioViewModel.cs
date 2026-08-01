@@ -28,7 +28,11 @@ namespace SocketSimulator.ViewModels
         public DelayStep? SelectedDelayStep => SelectedStep as DelayStep;
         public SetVariableStep? SelectedSetVariableStep => SelectedStep as SetVariableStep;
         public IfElseStep? SelectedIfElseStep => SelectedStep as IfElseStep;
-        public LoopUntilStep? SelectedLoopUntilStep => SelectedStep as LoopUntilStep;
+        public LabelStep? SelectedLabelStep => SelectedStep as LabelStep;
+        public GotoStep? SelectedGotoStep => SelectedStep as GotoStep;
+
+        // All label names for goto dropdown
+        public ObservableCollection<string> AvailableLabels { get; } = new();
 
         // Protocol command names for dropdowns
         public ObservableCollection<string> ProtocolCommandNames { get; } = new();
@@ -104,7 +108,9 @@ namespace SocketSimulator.ViewModels
                     OnPropertyChanged(nameof(SelectedDelayStep));
                     OnPropertyChanged(nameof(SelectedSetVariableStep));
                     OnPropertyChanged(nameof(SelectedIfElseStep));
-                    OnPropertyChanged(nameof(SelectedLoopUntilStep));
+                    OnPropertyChanged(nameof(SelectedLabelStep));
+                    OnPropertyChanged(nameof(SelectedGotoStep));
+                    RefreshAvailableLabels();
                 }
             }
         }
@@ -170,6 +176,18 @@ namespace SocketSimulator.ViewModels
             foreach (var template in _protocolService.GetResponseTemplates())
             {
                 ProtocolResponseTemplates.Add(template);
+            }
+        }
+
+        private void RefreshAvailableLabels()
+        {
+            AvailableLabels.Clear();
+            foreach (var step in Steps)
+            {
+                if (step is LabelStep label)
+                {
+                    AvailableLabels.Add(label.LabelName);
+                }
             }
         }
 
@@ -340,14 +358,15 @@ namespace SocketSimulator.ViewModels
                         Order = _nextStepOrder++,
                         Condition = "${State} == ACTIVE"
                     },
-                    "LoopUntil" => new LoopUntilStep
+                    "Label" => new LabelStep
                     {
                         Order = _nextStepOrder++,
-                        CommandToSend = "GET_STATUS",
-                        Payload = "GET_STATUS",
-                        ExpectedResponseContains = "completed",
-                        IntervalMs = 1000,
-                        MaxIterations = 60
+                        LabelName = $"Label_{_nextStepOrder}"
+                    },
+                    "Goto" => new GotoStep
+                    {
+                        Order = _nextStepOrder++,
+                        TargetLabel = ""
                     },
                     _ => null
                 };
@@ -356,6 +375,7 @@ namespace SocketSimulator.ViewModels
                 {
                     Steps.Add(step);
                     SelectedStep = step;
+                    RefreshAvailableLabels();
                     _logger.Info("Scenario", $"Added step: {step.GetType().Name}");
                 }
             }
@@ -368,6 +388,7 @@ namespace SocketSimulator.ViewModels
             Steps.Remove(SelectedStep);
             ReorderSteps();
             SelectedStep = Steps.LastOrDefault();
+            RefreshAvailableLabels();
             _logger.Info("Scenario", "Removed step");
         }
 

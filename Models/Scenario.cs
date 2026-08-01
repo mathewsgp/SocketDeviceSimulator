@@ -73,30 +73,24 @@ namespace SocketSimulator.Models
     public class IfElseStep : ScenarioStep
     {
         public string Condition { get; set; } = string.Empty;
+        // Actions to execute if condition is true
         public List<ScenarioStep> IfTrue { get; set; } = new();
+        // Actions to execute if condition is false
         public List<ScenarioStep> IfFalse { get; set; } = new();
+        // OR: Goto a label instead of executing actions
+        public string? GotoLabelIfTrue { get; set; }
+        public string? GotoLabelIfFalse { get; set; }
     }
 
-    public class LoopUntilStep : ScenarioStep
+    // Label - marks a position in the scenario for Goto
+    public class LabelStep : ScenarioStep
     {
-        // What to send in each iteration
-        public string CommandToSend { get; set; } = string.Empty;
-        public string Payload { get; set; } = string.Empty;
-        
-        // What to check in the response
-        public string ExpectedResponseContains { get; set; } = string.Empty;
-        
-        // Loop control
-        public int IntervalMs { get; set; } = 1000;
-        public int MaxIterations { get; set; } = 60;
-        
-        // Actions to perform before sending command (e.g., increment counter)
-        public List<ScenarioStep> PreActions { get; set; } = new();
-        
-        // What to do after condition is met
-        public List<ScenarioStep> OnSuccess { get; set; } = new();
-        
-        // What to do on timeout
-        public List<ScenarioStep> OnTimeout { get; set; } = new();
+        public string LabelName { get; set; } = string.Empty;
+    }
+
+    // Goto - jumps to a labeled position
+    public class GotoStep : ScenarioStep
+    {
+        public string TargetLabel { get; set; } = string.Empty;
     }
 }

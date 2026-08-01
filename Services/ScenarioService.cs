@@ -84,13 +84,102 @@ namespace SocketSimulator.Services
             _logger.Info("Scenario", "Stopping scenario...");
         }
 
-        private async Task ExecuteStepsAsync(List<ScenarioStep> steps, CancellationToken cancellationToken)
+        private async Task ExecuteStepsAsync(List<ScenarioStep> allSteps, CancellationToken cancellationToken)
         {
-            foreach (var step in steps.OrderBy(s => s.Order))
+            var orderedSteps = allSteps.OrderBy(s => s.Order).ToList();
+            var labelIndexMap = BuildLabelIndexMap(allSteps);
+            var visitedLabels = new HashSet<string>();
+            int currentIndex = 0;
+
+            while (currentIndex < orderedSteps.Count)
             {
                 cancellationToken.ThrowIfCancellationRequested();
+                var step = orderedSteps[currentIndex];
+
+                // Handle Goto step
+                if (step is GotoStep gotoStep)
+                {
+                    if (!string.IsNullOrEmpty(gotoStep.TargetLabel) && labelIndexMap.TryGetValue(gotoStep.TargetLabel, out var targetIndex))
+                    {
+                        _logger.Debug("Scenario", $"Goto: Jumping to '{gotoStep.TargetLabel}' (index {targetIndex})");
+                        currentIndex = targetIndex;
+                        continue;
+                    }
+                    else if (!string.IsNullOrEmpty(gotoStep.TargetLabel))
+                    {
+                        _logger.Warning("Scenario", $"Goto: Label '{gotoStep.TargetLabel}' not found");
+                    }
+                    currentIndex++;
+                    continue;
+                }
+
+                // Handle Label step
+                if (step is LabelStep labelStep)
+                {
+                    _logger.Debug("Scenario", $"Label: {labelStep.LabelName}");
+                    currentIndex++;
+                    continue;
+                }
+
+                // Handle IfElse with goto
+                if (step is IfElseStep ifElseStep)
+                {
+                    var conditionMet = EvaluateCondition(ifElseStep.Condition);
+                    
+                    if (conditionMet && !string.IsNullOrEmpty(ifElseStep.GotoLabelIfTrue))
+                    {
+                        _logger.Debug("Scenario", $"IfElse: Condition true, goto '{ifElseStep.GotoLabelIfTrue}'");
+                        if (labelIndexMap.TryGetValue(ifElseStep.GotoLabelIfTrue, out var targetIdx))
+                        {
+                            currentIndex = targetIdx;
+                            continue;
+                        }
+                    }
+                    else if (!conditionMet && !string.IsNullOrEmpty(ifElseStep.GotoLabelIfFalse))
+                    {
+                        _logger.Debug("Scenario", $"IfElse: Condition false, goto '{ifElseStep.GotoLabelIfFalse}'");
+                        if (labelIndexMap.TryGetValue(ifElseStep.GotoLabelIfFalse, out var targetIdx))
+                        {
+                            currentIndex = targetIdx;
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        // Execute inline steps
+                        if (conditionMet)
+                        {
+                            _logger.Debug("Scenario", $"IfElse: Condition true: {ifElseStep.Condition}");
+                            await ExecuteStepsAsync(ifElseStep.IfTrue, cancellationToken);
+                        }
+                        else
+                        {
+                            _logger.Debug("Scenario", $"IfElse: Condition false: {ifElseStep.Condition}");
+                            await ExecuteStepsAsync(ifElseStep.IfFalse, cancellationToken);
+                        }
+                    }
+                    currentIndex++;
+                    continue;
+                }
+
+                // Execute regular step
                 await ExecuteStepAsync(step, cancellationToken);
+                currentIndex++;
             }
+        }
+
+        private Dictionary<string, int> BuildLabelIndexMap(List<ScenarioStep> steps)
+        {
+            var map = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            var ordered = steps.OrderBy(s => s.Order).ToList();
+            for (int i = 0; i < ordered.Count; i++)
+            {
+                if (ordered[i] is LabelStep label)
+                {
+                    map[label.LabelName] = i;
+                }
+            }
+            return map;
         }
 
         private async Task ExecuteStepAsync(ScenarioStep step, CancellationToken cancellationToken)
@@ -116,10 +205,16 @@ namespace SocketSimulator.Services
                     ExecuteSetVariable(setVariableStep);
                     break;
                 case IfElseStep ifElseStep:
-                    await ExecuteIfElseAsync(ifElseStep, cancellationToken);
+                    // IfElse is handled in ExecuteStepsAsync with goto support
+                    // This case handles nested execution via ExecuteStepsAsync
                     break;
-                case LoopUntilStep loopUntilStep:
-                    await ExecuteLoopUntilAsync(loopUntilStep, cancellationToken);
+                case LabelStep labelStep:
+                    // Label is just a marker, nothing to execute
+                    _logger.Debug("Scenario", $"Label: {labelStep.LabelName}");
+                    break;
+                case GotoStep gotoStep:
+                    // Goto is handled in RunScenarioAsync by finding the target label
+                    _logger.Debug("Scenario", $"Goto: {gotoStep.TargetLabel}");
                     break;
             }
         }
@@ -198,22 +293,6 @@ namespace SocketSimulator.Services
             }
         }
 
-        private async Task ExecuteIfElseAsync(IfElseStep step, CancellationToken cancellationToken)
-        {
-            var conditionMet = EvaluateCondition(step.Condition);
-
-            if (conditionMet)
-            {
-                _logger.Debug("Scenario", $"Condition true: {step.Condition}");
-                await ExecuteStepsAsync(step.IfTrue, cancellationToken);
-            }
-            else
-            {
-                _logger.Debug("Scenario", $"Condition false: {step.Condition}");
-                await ExecuteStepsAsync(step.IfFalse, cancellationToken);
-            }
-        }
-
         private bool EvaluateCondition(string condition)
         {
             if (string.IsNullOrWhiteSpace(condition))
@@ -269,78 +348,6 @@ namespace SocketSimulator.Services
             }
 
             return false;
-        }
-
-        private async Task ExecuteLoopUntilAsync(LoopUntilStep step, CancellationToken cancellationToken)
-        {
-            _logger.Info("Scenario", $"Starting LoopUntil: check for '{step.ExpectedResponseContains}', max {step.MaxIterations} iterations, interval {step.IntervalMs}ms");
-
-            for (int iteration = 1; iteration <= step.MaxIterations; iteration++)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                // Execute pre-actions (e.g., increment counter)
-                foreach (var preAction in step.PreActions.OrderBy(s => s.Order))
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    await ExecuteStepAsync(preAction, cancellationToken);
-                }
-
-                // Send command if specified
-                if (!string.IsNullOrEmpty(step.CommandToSend))
-                {
-                    var payload = _protocolService.SubstituteVariables(step.Payload);
-                    await _socketService.SendAsync(payload);
-                    _logger.Info("Scenario", $"Loop[{iteration}]: Sent command: {payload}");
-                }
-
-                // Wait for response
-                if (!string.IsNullOrEmpty(step.ExpectedResponseContains))
-                {
-                    var startTime = DateTime.Now;
-                    var timeout = Math.Max(step.IntervalMs, 5000); // At least 5s timeout per iteration
-
-                    bool found = false;
-                    while (DateTime.Now - startTime < TimeSpan.FromMilliseconds(timeout))
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
-
-                        if (!string.IsNullOrEmpty(_lastReceivedCommand) &&
-                            _lastReceivedCommand.Contains(step.ExpectedResponseContains, StringComparison.OrdinalIgnoreCase))
-                        {
-                            _logger.Info("Scenario", $"LoopUntil: Found expected response '{step.ExpectedResponseContains}' at iteration {iteration}");
-                            found = true;
-                            _lastReceivedCommand = string.Empty;
-                            break;
-                        }
-
-                        await Task.Delay(50, cancellationToken);
-                    }
-
-                    if (found)
-                    {
-                        // Execute success actions
-                        await ExecuteStepsAsync(step.OnSuccess, cancellationToken);
-                        _logger.Info("Scenario", $"LoopUntil completed successfully after {iteration} iterations");
-                        return;
-                    }
-                }
-                else
-                {
-                    // No expected response, just wait interval
-                    await Task.Delay(step.IntervalMs, cancellationToken);
-                }
-
-                // Wait between iterations (except last)
-                if (iteration < step.MaxIterations)
-                {
-                    await Task.Delay(step.IntervalMs, cancellationToken);
-                }
-            }
-
-            _logger.Warning("Scenario", $"LoopUntil: Timeout after {step.MaxIterations} iterations");
-            // Execute timeout actions
-            await ExecuteStepsAsync(step.OnTimeout, cancellationToken);
         }
 
         public class StepExecutedEventArgs : EventArgs

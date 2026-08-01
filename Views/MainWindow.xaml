@@ -240,8 +240,10 @@
                                 <Separator/>
                                 <Button Content="Delay" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="Delay" ToolTip="Wait for specified time"/>
                                 <Button Content="Set Variable" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="SetVariable" ToolTip="Set a variable value"/>
+                                <Separator/>
                                 <Button Content="If/Else" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="IfElse" ToolTip="Conditional execution"/>
-                                <Button Content="Loop Until" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="LoopUntil" ToolTip="Loop until condition is met"/>
+                                <Button Content="Label" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="Label" ToolTip="Mark a position for Goto"/>
+                                <Button Content="Goto" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="Goto" ToolTip="Jump to a Label"/>
                                 <Separator/>
                                 <Button Content="Remove" Command="{Binding ScenarioVM.RemoveStepCommand}" ToolTip="Remove selected step"/>
                                 <Button Content="↑" Command="{Binding ScenarioVM.MoveUpCommand}" Width="30" ToolTip="Move up"/>
@@ -496,72 +498,74 @@
                                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
 
-                                <!-- LoopUntil -->
-                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=LoopUntil}">
-                                    <!-- Protocol Command Selection -->
-                                    <Border BorderBrush="{StaticResource AccentBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,8" Margin="0,8,0,8">
+                                <!-- Label: Marks a position for Goto -->
+                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=Label}">
+                                    <Border BorderBrush="{StaticResource SuccessBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
                                         <StackPanel>
-                                            <TextBlock Text="Select Command from Protocol:" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
-                                            <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}"
-                                                     SelectedItem="{Binding ScenarioVM.SelectedLoopUntilStep.CommandToSend, UpdateSourceTrigger=PropertyChanged}"
-                                                     Style="{StaticResource ModernComboBox}"/>
-                                            <TextBlock Text="Select command to send in each poll iteration" 
-                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
+                                            <TextBlock Text="Label" FontWeight="SemiBold" FontSize="16" Foreground="{StaticResource SuccessBrush}"/>
+                                            <TextBlock Text="Marks a position in the scenario for Goto to jump to" 
+                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" Margin="0,4,0,0"/>
                                         </StackPanel>
                                     </Border>
                                     
-                                    <TextBlock Text="Payload:" Margin="0,8,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedLoopUntilStep.Payload, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}" AcceptsReturn="True" Height="40" TextWrapping="Wrap"/>
-                                    
-                                    <TextBlock Text="Expected Response Contains:" Margin="0,12,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedLoopUntilStep.ExpectedResponseContains, UpdateSourceTrigger=PropertyChanged}"
+                                    <TextBlock Text="Label Name:" Margin="0,4,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedLabelStep.LabelName, UpdateSourceTrigger=PropertyChanged}"
                                             Style="{StaticResource ModernTextBox}"/>
-                                    <TextBlock Text="Loop continues until response contains this text" 
+                                    <TextBlock Text="Use this name in Goto step to jump here" 
+                                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
+                                </StackPanel>
+
+                                <!-- Goto: Jumps to a labeled position -->
+                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=Goto}">
+                                    <Border BorderBrush="{StaticResource WarningBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
+                                        <StackPanel>
+                                            <TextBlock Text="Goto" FontWeight="SemiBold" FontSize="16" Foreground="{StaticResource WarningBrush}"/>
+                                            <TextBlock Text="Jumps to a Label position in the scenario" 
+                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                    
+                                    <TextBlock Text="Target Label:" Margin="0,4,0,2"/>
+                                    <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}"
+                                             SelectedItem="{Binding ScenarioVM.SelectedGotoStep.TargetLabel, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource ModernComboBox}"
+                                             IsEditable="True"/>
+                                    <TextBlock Text="Select or type a label name to jump to" 
+                                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
+                                </StackPanel>
+
+                                <!-- IfElse: With optional Goto -->
+                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=IfElse}">
+                                    <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
+                                        <StackPanel>
+                                            <TextBlock Text="If / Else" FontWeight="SemiBold" FontSize="14" Foreground="{StaticResource PrimaryBrush}"/>
+                                            <TextBlock Text="Conditional execution. Can execute steps or goto a label." 
+                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                    
+                                    <TextBlock Text="Condition:" Margin="0,4,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedIfElseStep.Condition, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource ModernTextBox}"/>
+                                    <TextBlock Text="Example: ${Counter} &lt; 10" 
                                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
                                     
-                                    <TextBlock Text="Interval (ms):" Margin="0,12,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedLoopUntilStep.IntervalMs, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}"/>
-                                    <TextBlock Text="Wait time between each poll" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
+                                    <!-- If True: Goto or Steps -->
+                                    <TextBlock Text="If True - Goto Label:" Margin="0,12,0,2"/>
+                                    <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}"
+                                             Text="{Binding ScenarioVM.SelectedIfElseStep.GotoLabelIfTrue, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource ModernComboBox}"
+                                             IsEditable="True"/>
+                                    <TextBlock Text="Leave empty to continue to next step" 
+                                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
                                     
-                                    <TextBlock Text="Max Iterations:" Margin="0,12,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedLoopUntilStep.MaxIterations, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}"/>
-                                    <TextBlock Text="Maximum number of polls before timeout" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
-                                    
-                                    <!-- Pre-Actions Section -->
-                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,16,0,8" Padding="8" CornerRadius="4">
-                                        <DockPanel>
-                                            <Button DockPanel.Dock="Right" Content="+ Add" 
-                                                   Command="{Binding ScenarioVM.AddPreActionCommand}" 
-                                                   CommandParameter="PreAction"
-                                                   Style="{StaticResource SecondaryButton}" Padding="8,2"/>
-                                            <TextBlock Text="Pre-Actions (run before each poll):" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                        </DockPanel>
-                                    </Border>
-                                    
-                                    <!-- On-Success Actions Section -->
-                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,0,0,8" Padding="8" CornerRadius="4">
-                                        <DockPanel>
-                                            <Button DockPanel.Dock="Right" Content="+ Add" 
-                                                   Command="{Binding ScenarioVM.AddOnSuccessCommand}" 
-                                                   CommandParameter="OnSuccess"
-                                                   Style="{StaticResource SecondaryButton}" Padding="8,2"/>
-                                            <TextBlock Text="On-Success Actions:" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                        </DockPanel>
-                                    </Border>
-                                    
-                                    <!-- On-Timeout Actions Section -->
-                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,0,0,8" Padding="8" CornerRadius="4">
-                                        <DockPanel>
-                                            <Button DockPanel.Dock="Right" Content="+ Add" 
-                                                   Command="{Binding ScenarioVM.AddOnTimeoutCommand}" 
-                                                   CommandParameter="OnTimeout"
-                                                   Style="{StaticResource SecondaryButton}" Padding="8,2"/>
-                                            <TextBlock Text="On-Timeout Actions:" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                        </DockPanel>
-                                    </Border>
+                                    <TextBlock Text="If False - Goto Label:" Margin="0,12,0,2"/>
+                                    <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}"
+                                             Text="{Binding ScenarioVM.SelectedIfElseStep.GotoLabelIfFalse, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource ModernComboBox}"
+                                             IsEditable="True"/>
+                                    <TextBlock Text="Leave empty to continue to next step" 
+                                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
                                 </StackPanel>
                             </StackPanel>
                         </ScrollViewer>
