@@ -115,6 +115,14 @@
         <Setter Property="Padding" Value="4"/>
     </Style>
 
+    <!-- ComboBox Style -->
+    <Style x:Key="ModernComboBox" TargetType="ComboBox">
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="Padding" Value="8,6"/>
+    </Style>
+
     <!-- Panel Style -->
     <Style x:Key="PanelBorder" TargetType="Border">
         <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
