@@ -15,6 +15,7 @@ namespace SocketSimulator.Models
         public string Description { get; set; } = string.Empty;
         public List<ParameterDefinition> Parameters { get; set; } = new();
         public string? ResponseTemplate { get; set; }
+        public string? Payload { get; set; }
     }
 
     public class ParameterDefinition
