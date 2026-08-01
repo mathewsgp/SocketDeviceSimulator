@@ -381,7 +381,30 @@
 
                                 <!-- SendResponse -->
                                 <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=SendResponse}">
-                                    <TextBlock Text="Command Name:" Margin="0,12,0,2"/>
+                                    <!-- Protocol Command Selection -->
+                                    <Border BorderBrush="{StaticResource AccentBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,8" Margin="0,8,0,8">
+                                        <StackPanel>
+                                            <TextBlock Text="From Protocol:" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ComboBox Grid.Column="0"
+                                                         ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}"
+                                                         SelectedItem="{Binding ScenarioVM.SelectedProtocolCommandName}"
+                                                         Style="{StaticResource ModernComboBox}"/>
+                                                <Button Grid.Column="1" Content="Apply" 
+                                                       Command="{Binding ScenarioVM.ApplyProtocolTemplateCommand}"
+                                                       Style="{StaticResource PrimaryButton}" 
+                                                       Margin="8,0,0,0" Padding="12,4"/>
+                                            </Grid>
+                                            <TextBlock Text="Select a command from loaded Protocol to auto-fill" 
+                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                    
+                                    <TextBlock Text="Command Name:" Margin="0,8,0,2"/>
                                     <TextBox Text="{Binding ScenarioVM.SelectedSendResponseStep.CommandName, UpdateSourceTrigger=PropertyChanged}"
                                             Style="{StaticResource ModernTextBox}"/>
                                     
@@ -393,7 +416,28 @@
 
                                 <!-- SendCommand -->
                                 <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=SendCommand}">
-                                    <TextBlock Text="Command Name:" Margin="0,12,0,2"/>
+                                    <!-- Protocol Command Selection -->
+                                    <Border BorderBrush="{StaticResource AccentBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,8" Margin="0,8,0,8">
+                                        <StackPanel>
+                                            <TextBlock Text="From Protocol:" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ComboBox Grid.Column="0"
+                                                         ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}"
+                                                         SelectedItem="{Binding ScenarioVM.SelectedProtocolCommandName}"
+                                                         Style="{StaticResource ModernComboBox}"/>
+                                                <Button Grid.Column="1" Content="Apply" 
+                                                       Command="{Binding ScenarioVM.ApplyProtocolTemplateCommand}"
+                                                       Style="{StaticResource PrimaryButton}" 
+                                                       Margin="8,0,0,0" Padding="12,4"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+                                    
+                                    <TextBlock Text="Command Name:" Margin="0,8,0,2"/>
                                     <TextBox Text="{Binding ScenarioVM.SelectedSendCommandStep.CommandName, UpdateSourceTrigger=PropertyChanged}"
                                             Style="{StaticResource ModernTextBox}"/>
                                     
@@ -441,7 +485,28 @@
 
                                 <!-- LoopUntil -->
                                 <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=LoopUntil}">
-                                    <TextBlock Text="Command to Send:" Margin="0,12,0,2"/>
+                                    <!-- Protocol Command Selection -->
+                                    <Border BorderBrush="{StaticResource AccentBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,8" Margin="0,8,0,8">
+                                        <StackPanel>
+                                            <TextBlock Text="From Protocol:" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ComboBox Grid.Column="0"
+                                                         ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}"
+                                                         SelectedItem="{Binding ScenarioVM.SelectedProtocolCommandName}"
+                                                         Style="{StaticResource ModernComboBox}"/>
+                                                <Button Grid.Column="1" Content="Apply" 
+                                                       Command="{Binding ScenarioVM.ApplyProtocolTemplateCommand}"
+                                                       Style="{StaticResource PrimaryButton}" 
+                                                       Margin="8,0,0,0" Padding="12,4"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+                                    
+                                    <TextBlock Text="Command to Send:" Margin="0,8,0,2"/>
                                     <TextBox Text="{Binding ScenarioVM.SelectedLoopUntilStep.CommandToSend, UpdateSourceTrigger=PropertyChanged}"
                                             Style="{StaticResource ModernTextBox}"/>
                                     
@@ -465,28 +530,37 @@
                                             Style="{StaticResource ModernTextBox}"/>
                                     <TextBlock Text="Maximum number of polls before timeout" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
                                     
+                                    <!-- Pre-Actions Section -->
                                     <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,16,0,8" Padding="8" CornerRadius="4">
-                                        <StackPanel>
-                                            <TextBlock Text="Pre-Actions (run before each poll):" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                                            <TextBlock Text="Add SetVariable steps to increment counter etc." 
-                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" TextWrapping="Wrap"/>
-                                        </StackPanel>
+                                        <DockPanel>
+                                            <Button DockPanel.Dock="Right" Content="+ Add" 
+                                                   Command="{Binding ScenarioVM.AddPreActionCommand}" 
+                                                   CommandParameter="PreAction"
+                                                   Style="{StaticResource SecondaryButton}" Padding="8,2"/>
+                                            <TextBlock Text="Pre-Actions (run before each poll):" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        </DockPanel>
                                     </Border>
                                     
+                                    <!-- On-Success Actions Section -->
                                     <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,0,0,8" Padding="8" CornerRadius="4">
-                                        <StackPanel>
-                                            <TextBlock Text="On-Success Actions:" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                                            <TextBlock Text="Steps to run when condition is met" 
-                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" TextWrapping="Wrap"/>
-                                        </StackPanel>
+                                        <DockPanel>
+                                            <Button DockPanel.Dock="Right" Content="+ Add" 
+                                                   Command="{Binding ScenarioVM.AddOnSuccessCommand}" 
+                                                   CommandParameter="OnSuccess"
+                                                   Style="{StaticResource SecondaryButton}" Padding="8,2"/>
+                                            <TextBlock Text="On-Success Actions:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        </DockPanel>
                                     </Border>
                                     
+                                    <!-- On-Timeout Actions Section -->
                                     <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,0,0,8" Padding="8" CornerRadius="4">
-                                        <StackPanel>
-                                            <TextBlock Text="On-Timeout Actions:" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                                            <TextBlock Text="Steps to run when max iterations reached" 
-                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" TextWrapping="Wrap"/>
-                                        </StackPanel>
+                                        <DockPanel>
+                                            <Button DockPanel.Dock="Right" Content="+ Add" 
+                                                   Command="{Binding ScenarioVM.AddOnTimeoutCommand}" 
+                                                   CommandParameter="OnTimeout"
+                                                   Style="{StaticResource SecondaryButton}" Padding="8,2"/>
+                                            <TextBlock Text="On-Timeout Actions:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                        </DockPanel>
                                     </Border>
                                 </StackPanel>
                             </StackPanel>

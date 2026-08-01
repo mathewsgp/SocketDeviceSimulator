@@ -18,6 +18,7 @@ namespace SocketSimulator.ViewModels
         private ScenarioStep? _selectedStep;
         private bool _isRunning;
         private int _nextStepOrder = 1;
+        private string? _selectedProtocolCommandName;
 
         // Strongly-typed step properties for XAML binding
         public WaitCommandStep? SelectedWaitCommandStep => SelectedStep as WaitCommandStep;
@@ -27,6 +28,26 @@ namespace SocketSimulator.ViewModels
         public SetVariableStep? SelectedSetVariableStep => SelectedStep as SetVariableStep;
         public IfElseStep? SelectedIfElseStep => SelectedStep as IfElseStep;
         public LoopUntilStep? SelectedLoopUntilStep => SelectedStep as LoopUntilStep;
+
+        // Protocol command names for dropdowns
+        public ObservableCollection<string> ProtocolCommandNames { get; } = new();
+
+        public string? SelectedProtocolCommandName
+        {
+            get => _selectedProtocolCommandName;
+            set
+            {
+                if (SetProperty(ref _selectedProtocolCommandName, value) && !string.IsNullOrEmpty(value))
+                {
+                    ApplyProtocolTemplate(value);
+                }
+            }
+        }
+
+        public ICommand ApplyProtocolTemplateCommand { get; }
+        public ICommand AddPreActionCommand { get; }
+        public ICommand AddOnSuccessCommand { get; }
+        public ICommand AddOnTimeoutCommand { get; }
 
         public Scenario Scenario
         {
@@ -78,6 +99,10 @@ namespace SocketSimulator.ViewModels
             _scenarioService.ScenarioStarted += OnScenarioStarted;
             _scenarioService.ScenarioCompleted += OnScenarioCompleted;
             _scenarioService.StepExecuted += OnStepExecuted;
+            _protocolService.ProtocolChanged += OnProtocolChanged;
+
+            // Initialize protocol commands
+            RefreshProtocolCommands();
 
             RunScenarioCommand = new AsyncRelayCommand(RunScenarioAsync, () => !IsRunning && Steps.Count > 0);
             StopScenarioCommand = new RelayCommand(StopScenario, () => IsRunning);
@@ -86,6 +111,112 @@ namespace SocketSimulator.ViewModels
             MoveUpCommand = new RelayCommand(MoveUp, () => CanMoveUp());
             MoveDownCommand = new RelayCommand(MoveDown, () => CanMoveDown());
             NewScenarioCommand = new RelayCommand(NewScenario);
+            ApplyProtocolTemplateCommand = new RelayCommand(ApplyProtocolTemplateManual);
+            AddPreActionCommand = new RelayCommand<string>(AddLoopAction);
+            AddOnSuccessCommand = new RelayCommand<string>(AddLoopAction);
+            AddOnTimeoutCommand = new RelayCommand<string>(AddLoopAction);
+        }
+
+        private void OnProtocolChanged(object? sender, EventArgs e)
+        {
+            RefreshProtocolCommands();
+        }
+
+        private void RefreshProtocolCommands()
+        {
+            ProtocolCommandNames.Clear();
+            foreach (var name in _protocolService.GetCommandNames())
+            {
+                ProtocolCommandNames.Add(name);
+            }
+        }
+
+        private void ApplyProtocolTemplateManual()
+        {
+            if (!string.IsNullOrEmpty(_selectedProtocolCommandName))
+            {
+                ApplyProtocolTemplate(_selectedProtocolCommandName);
+            }
+        }
+
+        private void ApplyProtocolTemplate(string commandName)
+        {
+            var command = _protocolService.GetCommand(commandName);
+            if (command == null) return;
+
+            switch (SelectedStep)
+            {
+                case SendResponseStep sendResponse:
+                    sendResponse.CommandName = command.Name;
+                    if (!string.IsNullOrEmpty(command.ResponseTemplate))
+                    {
+                        sendResponse.Response = command.ResponseTemplate;
+                        _logger.Info("Scenario", $"Applied response template from Protocol for {commandName}");
+                    }
+                    OnPropertyChanged(nameof(SelectedSendResponseStep));
+                    break;
+
+                case SendCommandStep sendCommand:
+                    sendCommand.CommandName = command.Name;
+                    if (!string.IsNullOrEmpty(command.Payload))
+                    {
+                        sendCommand.Payload = command.Payload;
+                        _logger.Info("Scenario", $"Applied payload from Protocol for {commandName}");
+                    }
+                    OnPropertyChanged(nameof(SelectedSendCommandStep));
+                    break;
+
+                case WaitCommandStep waitCommand:
+                    waitCommand.CommandName = command.Name;
+                    OnPropertyChanged(nameof(SelectedWaitCommandStep));
+                    break;
+
+                case LoopUntilStep loopUntil:
+                    loopUntil.CommandToSend = command.Name;
+                    if (!string.IsNullOrEmpty(command.Payload))
+                    {
+                        loopUntil.Payload = command.Payload;
+                    }
+                    OnPropertyChanged(nameof(SelectedLoopUntilStep));
+                    break;
+            }
+        }
+
+        private void AddLoopAction(string? actionType)
+        {
+            if (SelectedLoopUntilStep == null || string.IsNullOrEmpty(actionType)) return;
+
+            var step = new SetVariableStep
+            {
+                Order = 1,
+                VariableName = "Counter",
+                Operation = VariableOperation.Increment,
+                Value = "1"
+            };
+
+            switch (actionType)
+            {
+                case "PreAction":
+                    SelectedLoopUntilStep.PreActions.Add(step);
+                    break;
+                case "OnSuccess":
+                    SelectedLoopUntilStep.OnSuccess.Add(new SendCommandStep
+                    {
+                        Order = SelectedLoopUntilStep.OnSuccess.Count + 1,
+                        CommandName = "OUTPUT",
+                        Payload = "COLLECT_OUTPUT"
+                    });
+                    break;
+                case "OnTimeout":
+                    SelectedLoopUntilStep.OnTimeout.Add(new SendResponseStep
+                    {
+                        Order = SelectedLoopUntilStep.OnTimeout.Count + 1,
+                        CommandName = "ERROR",
+                        Response = "ERROR timeout"
+                    });
+                    break;
+            }
+            OnPropertyChanged(nameof(SelectedLoopUntilStep));
         }
 
         private void OnScenarioStarted(object? sender, EventArgs e)
