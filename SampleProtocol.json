@@ -1,0 +1,81 @@
+{
+  "Name": "Simple Device Protocol",
+  "Version": "1.0",
+  "Commands": [
+    {
+      "Name": "LOGIN",
+      "Description": "User login command",
+      "Parameters": [
+        {
+          "Name": "username",
+          "Type": "string",
+          "PossibleValues": [],
+          "Required": true
+        },
+        {
+          "Name": "password",
+          "Type": "string",
+          "PossibleValues": [],
+          "Required": true
+        }
+      ],
+      "ResponseTemplate": "LOGIN_OK user=${username} session=${SessionId}"
+    },
+    {
+      "Name": "LOGIN_OK",
+      "Description": "Login successful response",
+      "Parameters": [],
+      "ResponseTemplate": null
+    },
+    {
+      "Name": "READY",
+      "Description": "Device ready notification",
+      "Parameters": [],
+      "ResponseTemplate": "READY temperature=${Temperature}"
+    },
+    {
+      "Name": "GET_STATUS",
+      "Description": "Get device status",
+      "Parameters": [],
+      "ResponseTemplate": "STATUS state=${State} temp=${Temperature} pressure=${Pressure}"
+    },
+    {
+      "Name": "SET_STATE",
+      "Description": "Set device state",
+      "Parameters": [
+        {
+          "Name": "state",
+          "Type": "string",
+          "PossibleValues": ["IDLE", "ACTIVE", "STANDBY", "ERROR"],
+          "Required": true
+        }
+      ],
+      "ResponseTemplate": "STATE_SET new_state=${state}"
+    },
+    {
+      "Name": "HEARTBEAT",
+      "Description": "Heartbeat ping",
+      "Parameters": [],
+      "ResponseTemplate": "HEARTBEAT_ACK counter=${Counter}"
+    },
+    {
+      "Name": "ERROR",
+      "Description": "Error response",
+      "Parameters": [
+        {
+          "Name": "code",
+          "Type": "string",
+          "PossibleValues": ["E001", "E002", "E003"],
+          "Required": true
+        },
+        {
+          "Name": "message",
+          "Type": "string",
+          "PossibleValues": [],
+          "Required": true
+        }
+      ],
+      "ResponseTemplate": "ERROR code=${code} msg=\"${message}\""
+    }
+  ]
+}

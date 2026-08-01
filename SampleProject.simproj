@@ -1,0 +1,49 @@
+{
+  "Name": "Sample Device Simulator",
+  "Scenario": {
+    "Name": "Login and Status Check",
+    "Description": "Simulates a device login and status check sequence",
+    "Steps": [
+      {
+        "Order": 1,
+        "Description": "Wait for LOGIN command",
+        "CommandName": "LOGIN",
+        "TimeoutMs": 10000
+      },
+      {
+        "Order": 2,
+        "Description": "Send login success response",
+        "CommandName": "LOGIN_OK",
+        "Response": "LOGIN_OK session=ABC123"
+      },
+      {
+        "Order": 3,
+        "Description": "Wait 2 seconds before ready",
+        "DurationMs": 2000
+      },
+      {
+        "Order": 4,
+        "Description": "Send ready notification",
+        "CommandName": "READY",
+        "Response": "READY temperature=25.5"
+      },
+      {
+        "Order": 5,
+        "Description": "Wait for status request",
+        "CommandName": "GET_STATUS",
+        "TimeoutMs": 5000
+      },
+      {
+        "Order": 6,
+        "Description": "Send status response",
+        "CommandName": "STATUS",
+        "Response": "STATUS state=IDLE temp=${Temperature} pressure=${Pressure}"
+      }
+    ]
+  },
+  "ConnectionSettings": {
+    "Mode": 0,
+    "IpAddress": "127.0.0.1",
+    "Port": 9000
+  }
+}
