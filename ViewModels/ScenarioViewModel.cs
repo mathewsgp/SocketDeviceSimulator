@@ -112,9 +112,9 @@ namespace SocketSimulator.ViewModels
             MoveDownCommand = new RelayCommand(MoveDown, () => CanMoveDown());
             NewScenarioCommand = new RelayCommand(NewScenario);
             ApplyProtocolTemplateCommand = new RelayCommand(ApplyProtocolTemplateManual);
-            AddPreActionCommand = new RelayCommand<string>(AddLoopAction);
-            AddOnSuccessCommand = new RelayCommand<string>(AddLoopAction);
-            AddOnTimeoutCommand = new RelayCommand<string>(AddLoopAction);
+            AddPreActionCommand = new RelayCommand(AddLoopAction);
+            AddOnSuccessCommand = new RelayCommand(AddLoopAction);
+            AddOnTimeoutCommand = new RelayCommand(AddLoopAction);
         }
 
         private void OnProtocolChanged(object? sender, EventArgs e)
@@ -182,9 +182,11 @@ namespace SocketSimulator.ViewModels
             }
         }
 
-        private void AddLoopAction(string? actionType)
+        private void AddLoopAction(object? parameter)
         {
-            if (SelectedLoopUntilStep == null || string.IsNullOrEmpty(actionType)) return;
+            if (SelectedLoopUntilStep == null) return;
+            var actionType = parameter as string;
+            if (string.IsNullOrEmpty(actionType)) return;
 
             var step = new SetVariableStep
             {
