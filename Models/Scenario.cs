@@ -21,6 +21,13 @@ namespace SocketSimulator.Models
         public int TimeoutMs { get; set; } = 5000;
     }
 
+    // Wait for a response pattern from client
+    public class WaitResponseStep : ScenarioStep
+    {
+        public string ExpectedResponseContains { get; set; } = string.Empty;
+        public int TimeoutMs { get; set; } = 5000;
+    }
+
     public class SendResponseStep : ScenarioStep
     {
         public string CommandName { get; set; } = string.Empty;

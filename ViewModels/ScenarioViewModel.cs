@@ -22,6 +22,7 @@ namespace SocketSimulator.ViewModels
 
         // Strongly-typed step properties for XAML binding
         public WaitCommandStep? SelectedWaitCommandStep => SelectedStep as WaitCommandStep;
+        public WaitResponseStep? SelectedWaitResponseStep => SelectedStep as WaitResponseStep;
         public SendResponseStep? SelectedSendResponseStep => SelectedStep as SendResponseStep;
         public SendCommandStep? SelectedSendCommandStep => SelectedStep as SendCommandStep;
         public DelayStep? SelectedDelayStep => SelectedStep as DelayStep;
@@ -41,6 +42,36 @@ namespace SocketSimulator.ViewModels
                 {
                     ApplyProtocolTemplate(value);
                 }
+            }
+        }
+
+        // Called when a command is selected from the protocol dropdown
+        public void OnProtocolCommandSelected(string commandName)
+        {
+            if (string.IsNullOrEmpty(commandName)) return;
+
+            var command = _protocolService.GetCommand(commandName);
+            if (command == null) return;
+
+            switch (SelectedStep)
+            {
+                case SendResponseStep sendResponse:
+                    sendResponse.CommandName = command.Name;
+                    if (!string.IsNullOrEmpty(command.ResponseTemplate))
+                    {
+                        sendResponse.Response = command.ResponseTemplate;
+                    }
+                    OnPropertyChanged(nameof(SelectedSendResponseStep));
+                    break;
+
+                case SendCommandStep sendCommand:
+                    sendCommand.CommandName = command.Name;
+                    if (!string.IsNullOrEmpty(command.Payload))
+                    {
+                        sendCommand.Payload = command.Payload;
+                    }
+                    OnPropertyChanged(nameof(SelectedSendCommandStep));
+                    break;
             }
         }
 
@@ -64,6 +95,7 @@ namespace SocketSimulator.ViewModels
                 {
                     // Notify all strongly-typed step properties
                     OnPropertyChanged(nameof(SelectedWaitCommandStep));
+                    OnPropertyChanged(nameof(SelectedWaitResponseStep));
                     OnPropertyChanged(nameof(SelectedSendResponseStep));
                     OnPropertyChanged(nameof(SelectedSendCommandStep));
                     OnPropertyChanged(nameof(SelectedDelayStep));
@@ -255,12 +287,18 @@ namespace SocketSimulator.ViewModels
             var stepType = parameter as string;
             if (!string.IsNullOrEmpty(stepType))
             {
-                ScenarioStep? step = stepType switch
+                ScenarioStep?                 step = stepType switch
                 {
                     "WaitCommand" => new WaitCommandStep
                     {
                         Order = _nextStepOrder++,
                         CommandName = "EXPECTED_CMD",
+                        TimeoutMs = 5000
+                    },
+                    "WaitResponse" => new WaitResponseStep
+                    {
+                        Order = _nextStepOrder++,
+                        ExpectedResponseContains = "completed",
                         TimeoutMs = 5000
                     },
                     "SendResponse" => new SendResponseStep

@@ -234,6 +234,7 @@
                         <ToolBarTray DockPanel.Dock="Top" Margin="0,8">
                             <ToolBar Band="0" BandIndex="0">
                                 <Button Content="Wait Command" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="WaitCommand" ToolTip="Wait for a command"/>
+                                <Button Content="Wait Response" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="WaitResponse" ToolTip="Wait for a response pattern"/>
                                 <Button Content="Send Response" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="SendResponse" ToolTip="Send a response"/>
                                 <Button Content="Send Command" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="SendCommand" ToolTip="Send a command"/>
                                 <Separator/>
@@ -369,13 +370,45 @@
 
                                 <!-- WaitCommand -->
                                 <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=WaitCommand}">
-                                    <TextBlock Text="Command Name:" Margin="0,12,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedWaitCommandStep.CommandName, UpdateSourceTrigger=PropertyChanged}"
+                                    <!-- Protocol Command Selection -->
+                                    <Border BorderBrush="{StaticResource AccentBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,8" Margin="0,8,0,8">
+                                        <StackPanel>
+                                            <TextBlock Text="Select Command from Protocol:" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ComboBox Grid.Column="0"
+                                                         ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}"
+                                                         SelectedItem="{Binding ScenarioVM.SelectedWaitCommandStep.CommandName}"
+                                                         Style="{StaticResource ModernComboBox}"/>
+                                                <Button Grid.Column="1" Content="Apply" 
+                                                       Command="{Binding ScenarioVM.ApplyProtocolTemplateCommand}"
+                                                       CommandParameter="WaitCommand"
+                                                       Style="{StaticResource PrimaryButton}" 
+                                                       Margin="8,0,0,0" Padding="12,4"/>
+                                            </Grid>
+                                            <TextBlock Text="Select a command to wait for from loaded Protocol" 
+                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                    
+                                    <TextBlock Text="Timeout (ms):" Margin="0,8,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedWaitCommandStep.TimeoutMs, UpdateSourceTrigger=PropertyChanged}"
                                             Style="{StaticResource ModernTextBox}"/>
-                                    <TextBlock Text="Expected command to receive" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
+                                </StackPanel>
+
+                                <!-- WaitResponse -->
+                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=WaitResponse}">
+                                    <TextBlock Text="Expected Response Contains:" Margin="0,12,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedWaitResponseStep.ExpectedResponseContains, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource ModernTextBox}"/>
+                                    <TextBlock Text="Wait until response contains this text (case-insensitive)" 
+                                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
                                     
                                     <TextBlock Text="Timeout (ms):" Margin="0,12,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedWaitCommandStep.TimeoutMs, UpdateSourceTrigger=PropertyChanged}"
+                                    <TextBox Text="{Binding ScenarioVM.SelectedWaitResponseStep.TimeoutMs, UpdateSourceTrigger=PropertyChanged}"
                                             Style="{StaticResource ModernTextBox}"/>
                                 </StackPanel>
 
@@ -384,33 +417,18 @@
                                     <!-- Protocol Command Selection -->
                                     <Border BorderBrush="{StaticResource AccentBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,8" Margin="0,8,0,8">
                                         <StackPanel>
-                                            <TextBlock Text="From Protocol:" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <ComboBox Grid.Column="0"
-                                                         ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}"
-                                                         SelectedItem="{Binding ScenarioVM.SelectedProtocolCommandName}"
-                                                         Style="{StaticResource ModernComboBox}"/>
-                                                <Button Grid.Column="1" Content="Apply" 
-                                                       Command="{Binding ScenarioVM.ApplyProtocolTemplateCommand}"
-                                                       Style="{StaticResource PrimaryButton}" 
-                                                       Margin="8,0,0,0" Padding="12,4"/>
-                                            </Grid>
-                                            <TextBlock Text="Select a command from loaded Protocol to auto-fill" 
+                                            <TextBlock Text="Select Command from Protocol:" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                                            <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}"
+                                                     SelectedItem="{Binding ScenarioVM.SelectedSendResponseStep.CommandName, UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource ModernComboBox}"/>
+                                            <TextBlock Text="Select command - Response template will auto-fill" 
                                                       Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
                                         </StackPanel>
                                     </Border>
                                     
-                                    <TextBlock Text="Command Name:" Margin="0,8,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedSendResponseStep.CommandName, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}"/>
-                                    
-                                    <TextBlock Text="Response:" Margin="0,12,0,2"/>
+                                    <TextBlock Text="Response:" Margin="0,8,0,2"/>
                                     <TextBox Text="{Binding ScenarioVM.SelectedSendResponseStep.Response, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}" AcceptsReturn="True" Height="60" TextWrapping="Wrap"/>
+                                            Style="{StaticResource ModernTextBox}" AcceptsReturn="True" Height="80" TextWrapping="Wrap"/>
                                     <TextBlock Text="Variables: ${VariableName}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
                                 </StackPanel>
 
@@ -419,29 +437,16 @@
                                     <!-- Protocol Command Selection -->
                                     <Border BorderBrush="{StaticResource AccentBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,8" Margin="0,8,0,8">
                                         <StackPanel>
-                                            <TextBlock Text="From Protocol:" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <ComboBox Grid.Column="0"
-                                                         ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}"
-                                                         SelectedItem="{Binding ScenarioVM.SelectedProtocolCommandName}"
-                                                         Style="{StaticResource ModernComboBox}"/>
-                                                <Button Grid.Column="1" Content="Apply" 
-                                                       Command="{Binding ScenarioVM.ApplyProtocolTemplateCommand}"
-                                                       Style="{StaticResource PrimaryButton}" 
-                                                       Margin="8,0,0,0" Padding="12,4"/>
-                                            </Grid>
+                                            <TextBlock Text="Select Command from Protocol:" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                                            <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}"
+                                                     SelectedItem="{Binding ScenarioVM.SelectedSendCommandStep.CommandName, UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource ModernComboBox}"/>
+                                            <TextBlock Text="Select command - Payload template will auto-fill" 
+                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
                                         </StackPanel>
                                     </Border>
                                     
-                                    <TextBlock Text="Command Name:" Margin="0,8,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedSendCommandStep.CommandName, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}"/>
-                                    
-                                    <TextBlock Text="Payload:" Margin="0,12,0,2"/>
+                                    <TextBlock Text="Payload:" Margin="0,8,0,2"/>
                                     <TextBox Text="{Binding ScenarioVM.SelectedSendCommandStep.Payload, UpdateSourceTrigger=PropertyChanged}"
                                             Style="{StaticResource ModernTextBox}" AcceptsReturn="True" Height="60" TextWrapping="Wrap"/>
                                 </StackPanel>
@@ -488,29 +493,16 @@
                                     <!-- Protocol Command Selection -->
                                     <Border BorderBrush="{StaticResource AccentBrush}" BorderThickness="0,0,0,1" Padding="0,0,0,8" Margin="0,8,0,8">
                                         <StackPanel>
-                                            <TextBlock Text="From Protocol:" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <ComboBox Grid.Column="0"
-                                                         ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}"
-                                                         SelectedItem="{Binding ScenarioVM.SelectedProtocolCommandName}"
-                                                         Style="{StaticResource ModernComboBox}"/>
-                                                <Button Grid.Column="1" Content="Apply" 
-                                                       Command="{Binding ScenarioVM.ApplyProtocolTemplateCommand}"
-                                                       Style="{StaticResource PrimaryButton}" 
-                                                       Margin="8,0,0,0" Padding="12,4"/>
-                                            </Grid>
+                                            <TextBlock Text="Select Command from Protocol:" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                                            <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}"
+                                                     SelectedItem="{Binding ScenarioVM.SelectedLoopUntilStep.CommandToSend, UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource ModernComboBox}"/>
+                                            <TextBlock Text="Select command to send in each poll iteration" 
+                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
                                         </StackPanel>
                                     </Border>
                                     
-                                    <TextBlock Text="Command to Send:" Margin="0,8,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedLoopUntilStep.CommandToSend, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}"/>
-                                    
-                                    <TextBlock Text="Payload:" Margin="0,12,0,2"/>
+                                    <TextBlock Text="Payload:" Margin="0,8,0,2"/>
                                     <TextBox Text="{Binding ScenarioVM.SelectedLoopUntilStep.Payload, UpdateSourceTrigger=PropertyChanged}"
                                             Style="{StaticResource ModernTextBox}" AcceptsReturn="True" Height="40" TextWrapping="Wrap"/>
                                     
