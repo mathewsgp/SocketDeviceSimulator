@@ -74,6 +74,14 @@ namespace SocketSimulator.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            // If parameter is provided, we're doing a comparison for visibility
+            if (parameter != null && value != null)
+            {
+                var typeName = value.GetType().Name.Replace("Step", "");
+                return typeName == parameter.ToString() ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+            // Default: return the type name as string
             if (value != null)
             {
                 var typeName = value.GetType().Name;

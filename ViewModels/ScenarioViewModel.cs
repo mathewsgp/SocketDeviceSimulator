@@ -19,6 +19,15 @@ namespace SocketSimulator.ViewModels
         private bool _isRunning;
         private int _nextStepOrder = 1;
 
+        // Strongly-typed step properties for XAML binding
+        public WaitCommandStep? SelectedWaitCommandStep => SelectedStep as WaitCommandStep;
+        public SendResponseStep? SelectedSendResponseStep => SelectedStep as SendResponseStep;
+        public SendCommandStep? SelectedSendCommandStep => SelectedStep as SendCommandStep;
+        public DelayStep? SelectedDelayStep => SelectedStep as DelayStep;
+        public SetVariableStep? SelectedSetVariableStep => SelectedStep as SetVariableStep;
+        public IfElseStep? SelectedIfElseStep => SelectedStep as IfElseStep;
+        public LoopUntilStep? SelectedLoopUntilStep => SelectedStep as LoopUntilStep;
+
         public Scenario Scenario
         {
             get => _scenario;
@@ -28,7 +37,20 @@ namespace SocketSimulator.ViewModels
         public ScenarioStep? SelectedStep
         {
             get => _selectedStep;
-            set => SetProperty(ref _selectedStep, value);
+            set
+            {
+                if (SetProperty(ref _selectedStep, value))
+                {
+                    // Notify all strongly-typed step properties
+                    OnPropertyChanged(nameof(SelectedWaitCommandStep));
+                    OnPropertyChanged(nameof(SelectedSendResponseStep));
+                    OnPropertyChanged(nameof(SelectedSendCommandStep));
+                    OnPropertyChanged(nameof(SelectedDelayStep));
+                    OnPropertyChanged(nameof(SelectedSetVariableStep));
+                    OnPropertyChanged(nameof(SelectedIfElseStep));
+                    OnPropertyChanged(nameof(SelectedLoopUntilStep));
+                }
+            }
         }
 
         public bool IsRunning

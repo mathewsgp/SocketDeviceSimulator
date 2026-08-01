@@ -351,28 +351,143 @@
                         <TextBlock DockPanel.Dock="Top" Text="Step Details" Style="{StaticResource PanelHeader}"/>
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <StackPanel>
-                                <TextBlock Text="Select a step to view details" 
+                                <!-- No step selected message -->
+                                <TextBlock Text="Select a step to edit" 
                                           Foreground="{StaticResource TextSecondaryBrush}"
                                           Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}"/>
                                 
-                                <!-- Wait Command Details -->
+                                <!-- Common Properties (shown when step is selected) -->
                                 <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource BoolToVisibility}}">
                                     <TextBlock Text="Step Type:" Margin="0,4,0,2"/>
                                     <TextBlock Text="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}}"
-                                              FontWeight="SemiBold"/>
+                                              FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
                                     
                                     <TextBlock Text="Description:" Margin="0,12,0,2"/>
                                     <TextBox Text="{Binding ScenarioVM.SelectedStep.Description, UpdateSourceTrigger=PropertyChanged}"
                                             Style="{StaticResource ModernTextBox}"/>
                                 </StackPanel>
 
-                                <!-- WaitCommand specific -->
-                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep.Description, Converter={StaticResource BoolToVisibility}}">
-                                    <TextBlock Text="Command Name:" Margin="0,8,0,2"/>
-                                    <TextBox Style="{StaticResource ModernTextBox}"/>
+                                <!-- WaitCommand -->
+                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=WaitCommand}">
+                                    <TextBlock Text="Command Name:" Margin="0,12,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedWaitCommandStep.CommandName, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource ModernTextBox}"/>
+                                    <TextBlock Text="Expected command to receive" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
                                     
-                                    <TextBlock Text="Timeout (ms):" Margin="0,8,0,2"/>
-                                    <TextBox Style="{StaticResource ModernTextBox}"/>
+                                    <TextBlock Text="Timeout (ms):" Margin="0,12,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedWaitCommandStep.TimeoutMs, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource ModernTextBox}"/>
+                                </StackPanel>
+
+                                <!-- SendResponse -->
+                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=SendResponse}">
+                                    <TextBlock Text="Command Name:" Margin="0,12,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedSendResponseStep.CommandName, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource ModernTextBox}"/>
+                                    
+                                    <TextBlock Text="Response:" Margin="0,12,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedSendResponseStep.Response, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource ModernTextBox}" AcceptsReturn="True" Height="60" TextWrapping="Wrap"/>
+                                    <TextBlock Text="Variables: ${VariableName}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
+                                </StackPanel>
+
+                                <!-- SendCommand -->
+                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=SendCommand}">
+                                    <TextBlock Text="Command Name:" Margin="0,12,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedSendCommandStep.CommandName, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource ModernTextBox}"/>
+                                    
+                                    <TextBlock Text="Payload:" Margin="0,12,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedSendCommandStep.Payload, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource ModernTextBox}" AcceptsReturn="True" Height="60" TextWrapping="Wrap"/>
+                                </StackPanel>
+
+                                <!-- Delay -->
+                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=Delay}">
+                                    <TextBlock Text="Duration (ms):" Margin="0,12,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedDelayStep.DurationMs, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource ModernTextBox}"/>
+                                    <TextBlock Text="1000ms = 1 second" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
+                                </StackPanel>
+
+                                <!-- SetVariable -->
+                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=SetVariable}">
+                                    <TextBlock Text="Variable Name:" Margin="0,12,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedSetVariableStep.VariableName, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource ModernTextBox}"/>
+                                    
+                                    <TextBlock Text="Operation:" Margin="0,12,0,2"/>
+                                    <ComboBox SelectedValue="{Binding ScenarioVM.SelectedSetVariableStep.Operation, UpdateSourceTrigger=PropertyChanged}"
+                                             SelectedValuePath="Tag">
+                                        <ComboBoxItem Content="Set" Tag="Set"/>
+                                        <ComboBoxItem Content="Increment" Tag="Increment"/>
+                                        <ComboBoxItem Content="Decrement" Tag="Decrement"/>
+                                        <ComboBoxItem Content="Toggle" Tag="Toggle"/>
+                                    </ComboBox>
+                                    
+                                    <TextBlock Text="Value:" Margin="0,12,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedSetVariableStep.Value, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource ModernTextBox}"/>
+                                </StackPanel>
+
+                                <!-- IfElse -->
+                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=IfElse}">
+                                    <TextBlock Text="Condition:" Margin="0,12,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedIfElseStep.Condition, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource ModernTextBox}" AcceptsReturn="True" Height="40"/>
+                                    <TextBlock Text="Example: ${State} == ACTIVE or ${Count} &gt; 10" 
+                                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
+
+                                <!-- LoopUntil -->
+                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=LoopUntil}">
+                                    <TextBlock Text="Command to Send:" Margin="0,12,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedLoopUntilStep.CommandToSend, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource ModernTextBox}"/>
+                                    
+                                    <TextBlock Text="Payload:" Margin="0,12,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedLoopUntilStep.Payload, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource ModernTextBox}" AcceptsReturn="True" Height="40" TextWrapping="Wrap"/>
+                                    
+                                    <TextBlock Text="Expected Response Contains:" Margin="0,12,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedLoopUntilStep.ExpectedResponseContains, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource ModernTextBox}"/>
+                                    <TextBlock Text="Loop continues until response contains this text" 
+                                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
+                                    
+                                    <TextBlock Text="Interval (ms):" Margin="0,12,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedLoopUntilStep.IntervalMs, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource ModernTextBox}"/>
+                                    <TextBlock Text="Wait time between each poll" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
+                                    
+                                    <TextBlock Text="Max Iterations:" Margin="0,12,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedLoopUntilStep.MaxIterations, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource ModernTextBox}"/>
+                                    <TextBlock Text="Maximum number of polls before timeout" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
+                                    
+                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,16,0,8" Padding="8" CornerRadius="4">
+                                        <StackPanel>
+                                            <TextBlock Text="Pre-Actions (run before each poll):" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                            <TextBlock Text="Add SetVariable steps to increment counter etc." 
+                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </Border>
+                                    
+                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,0,0,8" Padding="8" CornerRadius="4">
+                                        <StackPanel>
+                                            <TextBlock Text="On-Success Actions:" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                            <TextBlock Text="Steps to run when condition is met" 
+                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </Border>
+                                    
+                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,0,0,8" Padding="8" CornerRadius="4">
+                                        <StackPanel>
+                                            <TextBlock Text="On-Timeout Actions:" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                                            <TextBlock Text="Steps to run when max iterations reached" 
+                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </Border>
                                 </StackPanel>
                             </StackPanel>
                         </ScrollViewer>
