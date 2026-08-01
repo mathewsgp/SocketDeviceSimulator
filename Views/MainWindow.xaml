@@ -172,28 +172,56 @@
                 <!-- Variables Panel -->
                 <Border Grid.Row="2" Style="{StaticResource PanelBorder}">
                     <DockPanel>
-                        <TextBlock DockPanel.Dock="Top" Text="Variables" Style="{StaticResource PanelHeader}"/>
-                        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,8,0,0">
+                        <TextBlock DockPanel.Dock="Top" Text="Variables & Parsed" Style="{StaticResource PanelHeader}"/>
+                        
+                        <!-- Add Variable Row -->
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
+                            <TextBox Text="{Binding VariableVM.NewVariableName, UpdateSourceTrigger=PropertyChanged}"
+                                    Width="80" Style="{StaticResource ModernTextBox}" Margin="0,0,4,0"
+                                    ToolTip="Variable name"/>
+                            <TextBox Text="{Binding VariableVM.NewVariableValue, UpdateSourceTrigger=PropertyChanged}"
+                                    Width="80" Style="{StaticResource ModernTextBox}" Margin="0,0,4,0"
+                                    ToolTip="Variable value"/>
                             <Button Content="Add" Command="{Binding VariableVM.AddVariableCommand}" 
-                                   Style="{StaticResource SecondaryButton}" Margin="0,0,4,0" Padding="8,4"/>
+                                   Style="{StaticResource SecondaryButton}" Padding="8,4" Margin="0,0,4,0"/>
                             <Button Content="Reset" Command="{Binding VariableVM.ResetVariablesCommand}" 
                                    Style="{StaticResource SecondaryButton}" Padding="8,4"/>
                         </StackPanel>
+                        
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
-                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
-                                <TextBox Text="{Binding VariableVM.NewVariableName, UpdateSourceTrigger=PropertyChanged}"
-                                        Width="100" Style="{StaticResource ModernTextBox}" Margin="0,0,4,0"/>
-                                <TextBox Text="{Binding VariableVM.NewVariableValue, UpdateSourceTrigger=PropertyChanged}"
-                                        Width="100" Style="{StaticResource ModernTextBox}"/>
-                            </StackPanel>
+                            
+                            <!-- Variables Section -->
+                            <TextBlock Grid.Row="0" Text="User Variables" FontWeight="SemiBold" FontSize="11" 
+                                      Foreground="{StaticResource PrimaryBrush}" Margin="0,4,0,4"/>
                             <DataGrid Grid.Row="1" ItemsSource="{Binding VariableVM.Variables}"
                                      SelectedItem="{Binding VariableVM.SelectedVariable}"
                                      AutoGenerateColumns="False" IsReadOnly="True"
-                                     HeadersVisibility="Column">
+                                     HeadersVisibility="Column" Background="White"
+                                     BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            
+                            <!-- Parsed Items Section -->
+                            <DockPanel Grid.Row="2" Margin="0,8,0,4">
+                                <Button DockPanel.Dock="Right" Content="Clear" 
+                                       Command="{Binding VariableVM.ClearParsedCommand}"
+                                       Style="{StaticResource SecondaryButton}" Padding="6,2" FontSize="10"/>
+                                <TextBlock Text="Parsed from Commands" FontWeight="SemiBold" FontSize="11" 
+                                          Foreground="{StaticResource InfoBrush}" VerticalAlignment="Center"/>
+                            </DockPanel>
+                            <DataGrid Grid.Row="3" ItemsSource="{Binding VariableVM.ParsedItems}"
+                                     AutoGenerateColumns="False" IsReadOnly="True"
+                                     HeadersVisibility="Column" Background="#F0F9FF"
+                                     BorderBrush="{StaticResource InfoBrush}" BorderThickness="1">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
                                     <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>

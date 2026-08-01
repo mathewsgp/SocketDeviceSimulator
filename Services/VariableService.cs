@@ -113,6 +113,17 @@ namespace SocketSimulator.Services
             SetVariable("Pressure", 101.325);
         }
 
+        public bool RemoveVariable(string name)
+        {
+            if (_variables.Remove(name))
+            {
+                _logger.Info("Variable", $"Removed variable: {name}");
+                OnPropertyChanged(nameof(Variables));
+                return true;
+            }
+            return false;
+        }
+
         protected virtual void OnVariableChanged(string name, object? oldValue, object? newValue)
         {
             VariableChanged?.Invoke(this, new VariableChangedEventArgs(name, oldValue, newValue));
