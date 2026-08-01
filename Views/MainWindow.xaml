@@ -207,167 +207,99 @@
             <!-- Center Panel -->
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- Scenario Editor -->
-                <Border Grid.Row="0" Style="{StaticResource PanelBorder}">
-                    <DockPanel>
-                        <Grid DockPanel.Dock="Top">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Scenario Editor" Style="{StaticResource PanelHeader}"/>
-                            <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                <Button Content="Run" Command="{Binding ScenarioVM.RunScenarioCommand}"
-                                       Style="{StaticResource PrimaryButton}" Margin="0,0,4,0" Padding="12,4"
-                                       Visibility="{Binding ScenarioVM.IsRunning, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}"/>
-                                <Button Content="Stop" Command="{Binding ScenarioVM.StopScenarioCommand}"
-                                       Style="{StaticResource SecondaryButton}" Padding="12,4"
-                                       Visibility="{Binding ScenarioVM.IsRunning, Converter={StaticResource BoolToVisibility}}"/>
-                            </StackPanel>
-                        </Grid>
+                <!-- Header with Run/Stop -->
+                <Grid Grid.Row="0" Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Scenario Editor" Style="{StaticResource PanelHeader}" VerticalAlignment="Center"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <Button Content="Run" Command="{Binding ScenarioVM.RunScenarioCommand}" Style="{StaticResource PrimaryButton}" Margin="0,0,8,0" Padding="16,8" Visibility="{Binding ScenarioVM.IsRunning, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}"/>
+                        <Button Content="Stop" Command="{Binding ScenarioVM.StopScenarioCommand}" Style="{StaticResource SecondaryButton}" Padding="16,8" Visibility="{Binding ScenarioVM.IsRunning, Converter={StaticResource BoolToVisibility}}"/>
+                    </StackPanel>
+                </Grid>
 
-                        <!-- Step Toolbar - Redesigned -->
-                        <Border DockPanel.Dock="Top" Background="{StaticResource SurfaceBrush}" 
-                                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
-                                CornerRadius="8" Margin="0,8,0,8" Padding="8">
-                            <StackPanel>
-                                <!-- Step Groups Header -->
-                                <TextBlock Text="Add Steps" Style="{StaticResource PanelHeader}" Margin="0,0,0,8"/>
-                                
-                                <!-- Main Step Buttons Grid -->
-                                <WrapPanel Margin="0,4">
-                                    <!-- Wait Group -->
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,16,4">
-                                        <TextBlock Text="Wait:" Foreground="{StaticResource TextSecondaryBrush}" 
-                                                   VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"/>
-                                        <Button Content="Command" Command="{Binding ScenarioVM.AddStepCommand}" 
-                                               CommandParameter="WaitCommand" Style="{StaticResource WaitButton}"
-                                               ToolTip="Wait for a command"/>
-                                        <Button Content="Response" Command="{Binding ScenarioVM.AddStepCommand}" 
-                                               CommandParameter="WaitResponse" Style="{StaticResource WaitButton}"
-                                               ToolTip="Wait for a response pattern"/>
-                                    </StackPanel>
-                                    
-                                    <!-- Send Group -->
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,16,4">
-                                        <TextBlock Text="Send:" Foreground="{StaticResource TextSecondaryBrush}" 
-                                                   VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"/>
-                                        <Button Content="Response" Command="{Binding ScenarioVM.AddStepCommand}" 
-                                               CommandParameter="SendResponse" Style="{StaticResource SendButton}"
-                                               ToolTip="Send a response"/>
-                                        <Button Content="Command" Command="{Binding ScenarioVM.AddStepCommand}" 
-                                               CommandParameter="SendCommand" Style="{StaticResource SendButton}"
-                                               ToolTip="Send a command"/>
-                                    </StackPanel>
-                                    
-                                    <!-- Control Group -->
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,16,4">
-                                        <TextBlock Text="Control:" Foreground="{StaticResource TextSecondaryBrush}" 
-                                                   VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"/>
-                                        <Button Content="Delay" Command="{Binding ScenarioVM.AddStepCommand}" 
-                                               CommandParameter="Delay" Style="{StaticResource ControlButton}"
-                                               ToolTip="Wait for specified time"/>
-                                        <Button Content="Variable" Command="{Binding ScenarioVM.AddStepCommand}" 
-                                               CommandParameter="SetVariable" Style="{StaticResource ControlButton}"
-                                               ToolTip="Set a variable value"/>
-                                    </StackPanel>
-                                    
-                                    <!-- Flow Group -->
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,16,4">
-                                        <TextBlock Text="Flow:" Foreground="{StaticResource TextSecondaryBrush}" 
-                                                   VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"/>
-                                        <Button Content="If/Else" Command="{Binding ScenarioVM.AddStepCommand}" 
-                                               CommandParameter="IfElse" Style="{StaticResource FlowButton}"
-                                               ToolTip="Conditional execution"/>
-                                        <Button Content="Label" Command="{Binding ScenarioVM.AddStepCommand}" 
-                                               CommandParameter="Label" Style="{StaticResource FlowButton}"
-                                               ToolTip="Mark a position for Goto"/>
-                                        <Button Content="Goto" Command="{Binding ScenarioVM.AddStepCommand}" 
-                                               CommandParameter="Goto" Style="{StaticResource FlowButton}"
-                                               ToolTip="Jump to a Label"/>
-                                    </StackPanel>
-                                    
-                                    <!-- Auto Group -->
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,16,4">
-                                        <TextBlock Text="Auto:" Foreground="{StaticResource TextSecondaryBrush}" 
-                                                   VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"/>
-                                        <Button Content="Reply" Command="{Binding ScenarioVM.AddStepCommand}" 
-                                               CommandParameter="AutoReply" Style="{StaticResource AutoReplyButton}"
-                                               ToolTip="Auto-reply to matching commands"/>
-                                    </StackPanel>
-                                </WrapPanel>
-                                
-                                <!-- Separator -->
-                                <Border Height="1" Background="{StaticResource BorderBrush}" Margin="0,8"/>
-                                
-                                <!-- Actions Row -->
-                                <DockPanel Margin="0,8,0,0">
-                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                                        <Button Content="Remove" Command="{Binding ScenarioVM.RemoveStepCommand}" 
-                                               Style="{StaticResource ActionButton}" Padding="12,6"
-                                               ToolTip="Remove selected step"/>
-                                        <Button Content="↑" Command="{Binding ScenarioVM.MoveUpCommand}" 
-                                               Style="{StaticResource ActionButton}" Width="36"
-                                               ToolTip="Move step up"/>
-                                        <Button Content="↓" Command="{Binding ScenarioVM.MoveDownCommand}" 
-                                               Style="{StaticResource ActionButton}" Width="36"
-                                               ToolTip="Move step down"/>
-                                    </StackPanel>
-                                    <TextBlock Text="Select a step to edit its properties" 
-                                              Foreground="{StaticResource TextSecondaryBrush}" 
-                                              VerticalAlignment="Center" FontStyle="Italic"/>
-                                </DockPanel>
+                <!-- Step Toolbar -->
+                <Border Grid.Row="0" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Margin="0,40,0,8" Padding="12">
+                    <StackPanel>
+                        <TextBlock Text="Add Steps" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,10"/>
+                        <WrapPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,20,4">
+                                <TextBlock Text="Wait:" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Medium"/>
+                                <Button Content="Command" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="WaitCommand" Style="{StaticResource WaitButton}"/>
+                                <Button Content="Response" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="WaitResponse" Style="{StaticResource WaitButton}"/>
                             </StackPanel>
-                        </Border>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,20,4">
+                                <TextBlock Text="Send:" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Medium"/>
+                                <Button Content="Response" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="SendResponse" Style="{StaticResource SendButton}"/>
+                                <Button Content="Command" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="SendCommand" Style="{StaticResource SendButton}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,20,4">
+                                <TextBlock Text="Control:" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Medium"/>
+                                <Button Content="Delay" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="Delay" Style="{StaticResource ControlButton}"/>
+                                <Button Content="Variable" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="SetVariable" Style="{StaticResource ControlButton}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,20,4">
+                                <TextBlock Text="Flow:" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Medium"/>
+                                <Button Content="If/Else" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="IfElse" Style="{StaticResource FlowButton}"/>
+                                <Button Content="Label" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="Label" Style="{StaticResource FlowButton}"/>
+                                <Button Content="Goto" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="Goto" Style="{StaticResource FlowButton}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,20,4">
+                                <TextBlock Text="Auto:" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Medium"/>
+                                <Button Content="Reply" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="AutoReply" Style="{StaticResource AutoReplyButton}"/>
+                            </StackPanel>
+                        </WrapPanel>
+                        <Border Height="1" Background="{StaticResource BorderBrush}" Margin="0,8"/>
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                <Button Content="Remove" Command="{Binding ScenarioVM.RemoveStepCommand}" Style="{StaticResource ActionButton}" Padding="10,6"/>
+                                <Button Content="↑" Command="{Binding ScenarioVM.MoveUpCommand}" Style="{StaticResource ActionButton}" Width="32" Margin="4,0,0,0"/>
+                                <Button Content="↓" Command="{Binding ScenarioVM.MoveDownCommand}" Style="{StaticResource ActionButton}" Width="32" Margin="4,0,0,0"/>
+                            </StackPanel>
+                            <TextBlock Text="Select a step to edit" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" FontStyle="Italic"/>
+                        </DockPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Main Content: Step List + Step Details side by side -->
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="320"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Left: Step List + Manual Send -->
+                    <Grid Grid.Column="0" Margin="0,0,8,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
 
                         <!-- Step List -->
-                        <Border Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" 
-                                BorderThickness="1" CornerRadius="8" Margin="0,0,0,8">
-                            <ListBox ItemsSource="{Binding ScenarioVM.Steps}"
-                                    SelectedItem="{Binding ScenarioVM.SelectedStep}"
-                                    Background="Transparent" BorderThickness="0"
-                                    Padding="4">
+                        <Border Grid.Row="0" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8">
+                            <ListBox ItemsSource="{Binding ScenarioVM.Steps}" SelectedItem="{Binding ScenarioVM.SelectedStep}" Background="Transparent" BorderThickness="0" Padding="6">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <Border Background="#FAFAFA" CornerRadius="6" Padding="12,8" Margin="2">
+                                        <Border Background="#FAFAFA" CornerRadius="6" Padding="10,8" Margin="2">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="28"/>
-                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="26"/>
+                                                    <ColumnDefinition Width="8"/>
                                                     <ColumnDefinition Width="*"/>
                                                 </Grid.ColumnDefinitions>
-                                                
-                                                <!-- Step Number -->
-                                                <Border Grid.Column="0" Background="{StaticResource PrimaryBrush}" 
-                                                        CornerRadius="4" Width="24" Height="24" Margin="0,0,8,0">
-                                                    <TextBlock Text="{Binding Order}" Foreground="White" 
-                                                              FontWeight="Bold" FontSize="11"
-                                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <Border Grid.Column="0" Background="{StaticResource PrimaryBrush}" CornerRadius="4" Width="22" Height="22">
+                                                    <TextBlock Text="{Binding Order}" Foreground="White" FontWeight="Bold" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                 </Border>
-                                                
-                                                <!-- Step Type Icon -->
-                                                <Border Grid.Column="1" Width="8" CornerRadius="2" Margin="0,0,12,0">
-                                                    <Border.Style>
-                                                        <Style TargetType="Border">
-                                                            <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
-                                                        </Style>
-                                                    </Border.Style>
-                                                </Border>
-                                                
-                                                <!-- Step Info -->
+                                                <Border Grid.Column="1" Width="4" CornerRadius="2" Margin="0,0,10,0" Background="{StaticResource PrimaryBrush}"/>
                                                 <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                                                    <TextBlock Text="{Binding Converter={StaticResource StepTypeToString}}" 
-                                                              FontWeight="SemiBold" FontSize="12"
-                                                              Foreground="{StaticResource TextBrush}"/>
-                                                    <TextBlock Text="{Binding Description}" 
-                                                              Foreground="{StaticResource TextSecondaryBrush}"
-                                                              FontSize="10"
-                                                              TextTrimming="CharacterEllipsis"
-                                                              MaxWidth="200"/>
+                                                    <TextBlock Text="{Binding Converter={StaticResource StepTypeToString}}" FontWeight="SemiBold" FontSize="12"/>
+                                                    <TextBlock Text="{Binding Description}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" TextTrimming="CharacterEllipsis"/>
                                                 </StackPanel>
                                             </Grid>
                                         </Border>
@@ -378,439 +310,77 @@
                                         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                                         <Setter Property="Padding" Value="0"/>
                                         <Setter Property="Margin" Value="0"/>
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="ListBoxItem">
-                                                    <ContentPresenter/>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
                                     </Style>
                                 </ListBox.ItemContainerStyle>
                             </ListBox>
                         </Border>
-                    </DockPanel>
-                </Border>
 
-                <!-- Communication Log -->
-                <Border Grid.Row="1" Style="{StaticResource PanelBorder}">
-                    <DockPanel>
-                        <Grid DockPanel.Dock="Top">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Communication Log" Style="{StaticResource PanelHeader}"/>
-                            <Button Grid.Column="1" Content="Clear" Command="{Binding LogVM.ClearCommand}" 
-                                   Style="{StaticResource SecondaryButton}" Padding="8,4"/>
-                        </Grid>
-                        <ListBox ItemsSource="{Binding LogVM.LogEntries}" 
-                                Style="{StaticResource ModernListBox}"
-                                x:Name="LogListBox">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding}" 
-                                              Foreground="{Binding Level, Converter={StaticResource LogLevelToBrush}}"
-                                              FontFamily="Consolas" FontSize="11"/>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </DockPanel>
-                </Border>
-            </Grid>
-
-            <!-- Right Panel -->
-            <Grid Grid.Column="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <!-- Console -->
-                <Border Grid.Row="0" Style="{StaticResource PanelBorder}">
-                    <DockPanel>
-                        <TextBlock DockPanel.Dock="Top" Text="Manual Console" Style="{StaticResource PanelHeader}"/>
-                        <Grid DockPanel.Dock="Bottom" Margin="0,8,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBox Grid.Column="0" 
-                                    Text="{Binding ConsoleVM.CommandText, UpdateSourceTrigger=PropertyChanged}"
-                                    Style="{StaticResource ModernTextBox}"
-                                    x:Name="ConsoleInput"/>
-                            <Button Grid.Column="1" Content="Send" Command="{Binding ConsoleVM.SendCommandCommand}"
-                                   Style="{StaticResource PrimaryButton}" Margin="4,0,0,0" Padding="8,4"/>
-                            <Button Grid.Column="2" Content="Clear" Command="{Binding ConsoleVM.ClearHistoryCommand}"
-                                   Style="{StaticResource SecondaryButton}" Margin="4,0,0,0" Padding="8,4"/>
-                        </Grid>
-                        <ListBox ItemsSource="{Binding ConsoleVM.History}" 
-                                Style="{StaticResource ModernListBox}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="{Binding TypePrefix}" 
-                                                  Foreground="{Binding Type, Converter={StaticResource ConsoleEntryTypeToBrush}}"
-                                                  FontFamily="Consolas" FontWeight="Bold" Margin="0,0,8,0"/>
-                                        <TextBlock Text="{Binding Message}" FontFamily="Consolas"/>
+                        <!-- Manual Send -->
+                        <Border Grid.Row="1" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Margin="0,8,0,0" Padding="12">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Text="Manual Send" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,8"/>
+                                <Grid Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ComboBox Grid.Column="0" ItemsSource="{Binding ConsoleVM.Suggestions}" Text="{Binding ConsoleVM.CommandText, UpdateSourceTrigger=PropertyChanged}" IsEditable="True" Style="{StaticResource ModernComboBox}"/>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8,0,0,0">
+                                        <Button Content="Send" Command="{Binding ConsoleVM.SendCommandCommand}" Style="{StaticResource PrimaryButton}" Padding="12,6"/>
+                                        <Button Content="Clear" Command="{Binding ConsoleVM.ClearHistoryCommand}" Style="{StaticResource SecondaryButton}" Padding="8,6" Margin="4,0,0,0"/>
                                     </StackPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </DockPanel>
-                </Border>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </Grid>
 
-                <!-- Step Details -->
-                <Border Grid.Row="1" Background="{StaticResource SurfaceBrush}" 
-                        BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
-                        CornerRadius="8" Margin="8" Padding="16">
-                    <DockPanel>
-                        <Grid DockPanel.Dock="Top" Margin="0,0,0,12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Step Details" Style="{StaticResource PanelHeader}"/>
-                        </Grid>
-                        <ScrollViewer VerticalScrollBarVisibility="Auto">
-                            <StackPanel>
-                                <!-- No step selected message -->
-                                <Border Background="#F5F5F5" CornerRadius="8" Padding="24" Margin="0,8"
-                                        Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}">
-                                    <StackPanel HorizontalAlignment="Center">
-                                        <TextBlock Text="📋" FontSize="32" HorizontalAlignment="Center" Margin="0,0,0,8"/>
-                                        <TextBlock Text="Select a step to edit" 
-                                                  Foreground="{StaticResource TextSecondaryBrush}"
-                                                  HorizontalAlignment="Center" FontSize="14"/>
-                                    </StackPanel>
-                                </Border>
-                                
-                                <!-- Common Properties (shown when step is selected) -->
-                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource BoolToVisibility}}">
-                                    <!-- Step Type Badge -->
-                                    <Border Background="{StaticResource PrimaryBrush}" CornerRadius="6" 
-                                            Padding="12,6" HorizontalAlignment="Left" Margin="0,0,0,16">
-                                        <TextBlock Text="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}}"
-                                                  FontWeight="Bold" Foreground="White" FontSize="13"/>
-                                    </Border>
-                                    
-                                    <TextBlock Text="Description:" Margin="0,12,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedStep.Description, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}"/>
+                    <!-- Right: Step Details -->
+                    <Border Grid.Column="1" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="Step Details" Style="{StaticResource PanelHeader}"/>
+                            <Border Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}" Background="#F5F5F5" CornerRadius="8" Padding="20">
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock Text="📋" FontSize="36" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                                    <TextBlock Text="Select a step to edit" Foreground="{StaticResource TextSecondaryBrush}" HorizontalAlignment="Center"/>
                                 </StackPanel>
-
-                                <!-- WaitCommand: Wait for a command from client -->
-                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=WaitCommand}">
-                                    <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
-                                        <StackPanel>
-                                            <TextBlock Text="Wait for Command" FontWeight="SemiBold" FontSize="14" Foreground="{StaticResource PrimaryBrush}"/>
-                                            <TextBlock Text="Wait for a specific command from the client" 
-                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" Margin="0,4,0,0"/>
-                                        </StackPanel>
+                            </Border>
+                            <ScrollViewer Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource BoolToVisibility}}" VerticalScrollBarVisibility="Auto">
+                                <StackPanel>
+                                    <Border Background="{StaticResource PrimaryBrush}" CornerRadius="6" Padding="10,6" HorizontalAlignment="Left" Margin="0,0,0,12">
+                                        <TextBlock Text="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}}" FontWeight="Bold" Foreground="White" FontSize="12"/>
                                     </Border>
-                                    
-                                    <TextBlock Text="Select Command from Protocol:" Margin="0,4,0,2"/>
-                                    <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}"
-                                             SelectedItem="{Binding ScenarioVM.SelectedWaitCommandStep.CommandName, UpdateSourceTrigger=PropertyChanged}"
-                                             Style="{StaticResource ModernComboBox}"/>
-                                    
-                                    <TextBlock Text="Timeout (ms):" Margin="0,12,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedWaitCommandStep.TimeoutMs, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}"/>
-                                    
-                                    <!-- Flow Control: Goto on Success/Timeout -->
-                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,16,0,0" Padding="8" CornerRadius="4">
-                                        <StackPanel>
-                                            <TextBlock Text="Flow Control (Goto on Success/Timeout):" FontWeight="SemiBold" Margin="0,0,0,8"/>
-                                            
-                                            <TextBlock Text="On Success (command received) - Goto:" Margin="0,4,0,2"/>
-                                            <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}"
-                                                     Text="{Binding ScenarioVM.SelectedWaitCommandStep.GotoLabelOnSuccess, UpdateSourceTrigger=PropertyChanged}"
-                                                     Style="{StaticResource ModernComboBox}"
-                                                     IsEditable="True"/>
-                                            
-                                            <TextBlock Text="On Timeout - Goto:" Margin="0,12,0,2"/>
-                                            <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}"
-                                                     Text="{Binding ScenarioVM.SelectedWaitCommandStep.GotoLabelOnTimeout, UpdateSourceTrigger=PropertyChanged}"
-                                                     Style="{StaticResource ModernComboBox}"
-                                                     IsEditable="True"/>
-                                        </StackPanel>
-                                    </Border>
+                                    <TextBlock Text="Description:" Margin="0,8,0,4"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedStep.Description, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}"/>
                                 </StackPanel>
-
-                                <!-- WaitResponse: Wait for a response pattern from client -->
-                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=WaitResponse}">
-                                    <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
-                                        <StackPanel>
-                                            <TextBlock Text="Wait for Response Pattern" FontWeight="SemiBold" FontSize="14" Foreground="{StaticResource PrimaryBrush}"/>
-                                            <TextBlock Text="Wait until response contains specified pattern" 
-                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" Margin="0,4,0,0"/>
-                                        </StackPanel>
-                                    </Border>
-                                    
-                                    <TextBlock Text="Select Response from Protocol:" Margin="0,4,0,2"/>
-                                    <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolResponseTemplates}"
-                                             SelectedItem="{Binding ScenarioVM.SelectedWaitResponseStep.ExpectedResponseContains, UpdateSourceTrigger=PropertyChanged}"
-                                             Style="{StaticResource ModernComboBox}"/>
-                                    
-                                    <TextBlock Text="Expected Response Pattern:" Margin="0,8,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedWaitResponseStep.ExpectedResponseContains, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}"/>
-                                    <TextBlock Text="Wait until response contains this text" 
-                                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
-                                    
-                                    <TextBlock Text="Expected Parameters:" Margin="0,12,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedWaitResponseStep.ExpectedParameters, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}" AcceptsReturn="True" Height="40"/>
-                                    <TextBlock Text="Optional: param1=value1,param2=value2" 
-                                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
-                                    
-                                    <TextBlock Text="Timeout (ms):" Margin="0,12,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedWaitResponseStep.TimeoutMs, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}"/>
-                                    
-                                    <!-- Flow Control: Goto on Success/Timeout -->
-                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,16,0,0" Padding="8" CornerRadius="4">
-                                        <StackPanel>
-                                            <TextBlock Text="Flow Control (Goto on Success/Timeout):" FontWeight="SemiBold" Margin="0,0,0,8"/>
-                                            
-                                            <TextBlock Text="On Success (pattern found) - Goto:" Margin="0,4,0,2"/>
-                                            <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}"
-                                                     Text="{Binding ScenarioVM.SelectedWaitResponseStep.GotoLabelOnSuccess, UpdateSourceTrigger=PropertyChanged}"
-                                                     Style="{StaticResource ModernComboBox}"
-                                                     IsEditable="True"/>
-                                            
-                                            <TextBlock Text="On Timeout - Goto:" Margin="0,12,0,2"/>
-                                            <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}"
-                                                     Text="{Binding ScenarioVM.SelectedWaitResponseStep.GotoLabelOnTimeout, UpdateSourceTrigger=PropertyChanged}"
-                                                     Style="{StaticResource ModernComboBox}"
-                                                     IsEditable="True"/>
-                                        </StackPanel>
-                                    </Border>
-                                </StackPanel>
-
-                                <!-- SendResponse: Send a response to client -->
-                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=SendResponse}">
-                                    <Border BorderBrush="{StaticResource AccentBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
-                                        <StackPanel>
-                                            <TextBlock Text="Select Response from Protocol:" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
-                                            <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolResponseTemplates}"
-                                                     SelectedItem="{Binding ScenarioVM.SelectedSendResponseStep.Response, UpdateSourceTrigger=PropertyChanged}"
-                                                     Style="{StaticResource ModernComboBox}"/>
-                                            <TextBlock Text="Select response template or enter custom below" 
-                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,4,0,0"/>
-                                        </StackPanel>
-                                    </Border>
-                                    
-                                    <TextBlock Text="Response Template:" Margin="0,4,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedSendResponseStep.Response, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}" AcceptsReturn="True" Height="60" TextWrapping="Wrap"/>
-                                    
-                                    <TextBlock Text="Payload Template (use ${ReceivedPayload} for last received):" Margin="0,12,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedSendResponseStep.PayloadTemplate, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}" AcceptsReturn="True" Height="60" TextWrapping="Wrap"/>
-                                    <TextBlock Text="Variables: ${VariableName}, ${ReceivedPayload}, ${Param.Name}" 
-                                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
-                                </StackPanel>
-
-                                <!-- SendCommand: Send a command to client -->
-                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=SendCommand}">
-                                    <Border BorderBrush="{StaticResource AccentBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
-                                        <StackPanel>
-                                            <TextBlock Text="Select Command from Protocol:" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
-                                            <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}"
-                                                     SelectedItem="{Binding ScenarioVM.SelectedSendCommandStep.CommandName, UpdateSourceTrigger=PropertyChanged}"
-                                                     Style="{StaticResource ModernComboBox}"/>
-                                            <TextBlock Text="Select command - Payload will auto-fill from Protocol" 
-                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,4,0,0"/>
-                                        </StackPanel>
-                                    </Border>
-                                    
-                                    <TextBlock Text="Payload:" Margin="0,4,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedSendCommandStep.Payload, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}" AcceptsReturn="True" Height="60" TextWrapping="Wrap"/>
-                                    <TextBlock Text="Variables: ${VariableName}" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
-                                </StackPanel>
-
-                                <!-- Delay -->
-                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=Delay}">
-                                    <TextBlock Text="Duration (ms):" Margin="0,12,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedDelayStep.DurationMs, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}"/>
-                                    <TextBlock Text="1000ms = 1 second" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
-                                </StackPanel>
-
-                                <!-- SetVariable -->
-                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=SetVariable}">
-                                    <TextBlock Text="Variable Name:" Margin="0,12,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedSetVariableStep.VariableName, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}"/>
-                                    
-                                    <TextBlock Text="Operation:" Margin="0,12,0,2"/>
-                                    <ComboBox SelectedValue="{Binding ScenarioVM.SelectedSetVariableStep.Operation, UpdateSourceTrigger=PropertyChanged}"
-                                             SelectedValuePath="Tag">
-                                        <ComboBoxItem Content="Set" Tag="Set"/>
-                                        <ComboBoxItem Content="Increment" Tag="Increment"/>
-                                        <ComboBoxItem Content="Decrement" Tag="Decrement"/>
-                                        <ComboBoxItem Content="Toggle" Tag="Toggle"/>
-                                    </ComboBox>
-                                    
-                                    <TextBlock Text="Value:" Margin="0,12,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedSetVariableStep.Value, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}"/>
-                                </StackPanel>
-
-                                <!-- IfElse -->
-                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=IfElse}">
-                                    <TextBlock Text="Condition:" Margin="0,12,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedIfElseStep.Condition, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}" AcceptsReturn="True" Height="40"/>
-                                    <TextBlock Text="Example: ${State} == ACTIVE or ${Count} &gt; 10" 
-                                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                </StackPanel>
-
-                                <!-- Label: Marks a position for Goto -->
-                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=Label}">
-                                    <Border BorderBrush="{StaticResource SuccessBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
-                                        <StackPanel>
-                                            <TextBlock Text="Label" FontWeight="SemiBold" FontSize="16" Foreground="{StaticResource SuccessBrush}"/>
-                                            <TextBlock Text="Marks a position in the scenario for other steps to jump to" 
-                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" Margin="0,4,0,0"/>
-                                        </StackPanel>
-                                    </Border>
-                                    
-                                    <TextBlock Text="Label Name:" Margin="0,4,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedLabelStep.LabelName, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}"/>
-                                    <TextBlock Text="Use this name in Goto, IfElse, Wait steps" 
-                                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
-                                    
-                                    <Border Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" 
-                                           BorderThickness="1" Margin="0,16,0,0" Padding="12" CornerRadius="4">
-                                        <StackPanel>
-                                            <TextBlock Text="Usage:" FontWeight="SemiBold" Margin="0,0,0,8"/>
-                                            <TextBlock Text="• Wait → On Success Goto: [this label]" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10"/>
-                                            <TextBlock Text="• Wait → On Timeout Goto: [this label]" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10"/>
-                                            <TextBlock Text="• IfElse → If True Goto: [this label]" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10"/>
-                                            <TextBlock Text="• Goto → Target: [this label]" Foreground="{StaticResource TextSecondaryBrush}" FontSize="10"/>
-                                        </StackPanel>
-                                    </Border>
-                                </StackPanel>
-
-                                <!-- Goto: Jumps to a labeled position -->
-                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=Goto}">
-                                    <Border BorderBrush="{StaticResource WarningBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
-                                        <StackPanel>
-                                            <TextBlock Text="Goto" FontWeight="SemiBold" FontSize="16" Foreground="{StaticResource WarningBrush}"/>
-                                            <TextBlock Text="Unconditionally jumps to a Label position" 
-                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" Margin="0,4,0,0"/>
-                                        </StackPanel>
-                                    </Border>
-                                    
-                                    <TextBlock Text="Target Label:" Margin="0,4,0,2"/>
-                                    <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}"
-                                             SelectedItem="{Binding ScenarioVM.SelectedGotoStep.TargetLabel, UpdateSourceTrigger=PropertyChanged}"
-                                             Style="{StaticResource ModernComboBox}"
-                                             IsEditable="True"/>
-                                    <TextBlock Text="Select or type a label name to jump to" 
-                                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
-                                </StackPanel>
-
-                                <!-- IfElse: With optional Goto -->
-                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=IfElse}">
-                                    <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
-                                        <StackPanel>
-                                            <TextBlock Text="If / Else" FontWeight="SemiBold" FontSize="14" Foreground="{StaticResource PrimaryBrush}"/>
-                                            <TextBlock Text="Conditional jump based on condition result" 
-                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" Margin="0,4,0,0"/>
-                                        </StackPanel>
-                                    </Border>
-                                    
-                                    <TextBlock Text="Condition:" Margin="0,4,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedIfElseStep.Condition, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}"/>
-                                    <TextBlock Text="Example: ${Counter} &lt; 10, ${Status} == READY" 
-                                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
-                                    
-                                    <!-- Goto Labels for If/Else -->
-                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,12,0,0" Padding="8" CornerRadius="4">
-                                        <StackPanel>
-                                            <TextBlock Text="Jump Targets:" FontWeight="SemiBold" Margin="0,0,0,8"/>
-                                            
-                                            <TextBlock Text="If True - Goto Label:" Margin="0,4,0,2"/>
-                                            <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}"
-                                                     Text="{Binding ScenarioVM.SelectedIfElseStep.GotoLabelIfTrue, UpdateSourceTrigger=PropertyChanged}"
-                                                     Style="{StaticResource ModernComboBox}"
-                                                     IsEditable="True"/>
-                                            <TextBlock Text="Leave empty to continue to next step" 
-                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="9" Margin="0,2,0,8"/>
-                                            
-                                            <TextBlock Text="If False - Goto Label:" Margin="0,4,0,2"/>
-                                            <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}"
-                                                     Text="{Binding ScenarioVM.SelectedIfElseStep.GotoLabelIfFalse, UpdateSourceTrigger=PropertyChanged}"
-                                                     Style="{StaticResource ModernComboBox}"
-                                                     IsEditable="True"/>
-                                            <TextBlock Text="Leave empty to continue to next step" 
-                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="9" Margin="0,2,0,0"/>
-                                        </StackPanel>
-                                    </Border>
-                                </StackPanel>
-
-                                <!-- AutoReply: Automatically respond to matching commands -->
-                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=AutoReply}">
-                                    <Border BorderBrush="{StaticResource InfoBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
-                                        <StackPanel>
-                                            <TextBlock Text="Auto Reply" FontWeight="SemiBold" FontSize="14" Foreground="{StaticResource InfoBrush}"/>
-                                            <TextBlock Text="Automatically respond when matching command is received" 
-                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" Margin="0,4,0,0"/>
-                                        </StackPanel>
-                                    </Border>
-                                    
-                                    <TextBlock Text="Command Pattern (from Protocol):" Margin="0,4,0,2"/>
-                                    <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}"
-                                             SelectedItem="{Binding ScenarioVM.SelectedAutoReplyStep.CommandName, UpdateSourceTrigger=PropertyChanged}"
-                                             Style="{StaticResource ModernComboBox}"/>
-                                    
-                                    <TextBlock Text="Or Custom Pattern (supports * wildcards):" Margin="0,12,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedAutoReplyStep.CommandPattern, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}"/>
-                                    <TextBlock Text="Example: *, LOGIN_*, GET_*" 
-                                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
-                                    
-                                    <TextBlock Text="Response (from Protocol or custom):" Margin="0,12,0,2"/>
-                                    <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolResponseTemplates}"
-                                             SelectedItem="{Binding ScenarioVM.SelectedAutoReplyStep.Response, UpdateSourceTrigger=PropertyChanged}"
-                                             Style="{StaticResource ModernComboBox}"/>
-                                    
-                                    <TextBlock Text="Response Template:" Margin="0,8,0,2"/>
-                                    <TextBox Text="{Binding ScenarioVM.SelectedAutoReplyStep.Response, UpdateSourceTrigger=PropertyChanged}"
-                                            Style="{StaticResource ModernTextBox}" AcceptsReturn="True" Height="60" TextWrapping="Wrap"/>
-                                    <TextBlock Text="Variables: ${VariableName}, ${Parsed.Param}" 
-                                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
-                                    
-                                    <!-- Flow Control -->
-                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,16,0,0" Padding="8" CornerRadius="4">
-                                        <StackPanel>
-                                            <TextBlock Text="After Auto-Reply:" FontWeight="SemiBold" Margin="0,0,0,8"/>
-                                            
-                                            <CheckBox Content="Continue to next step after auto-reply"
-                                                     IsChecked="{Binding ScenarioVM.SelectedAutoReplyStep.ContinueScenario}"
-                                                     Margin="0,4,0,0"/>
-                                            
-                                            <TextBlock Text="Or Goto Label:" Margin="0,12,0,2"/>
-                                            <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}"
-                                                     Text="{Binding ScenarioVM.SelectedAutoReplyStep.GotoLabel, UpdateSourceTrigger=PropertyChanged}"
-                                                     Style="{StaticResource ModernComboBox}"
-                                                     IsEditable="True"/>
-                                        </StackPanel>
-                                    </Border>
-                                </StackPanel>
-                            </StackPanel>
-                        </ScrollViewer>
-                    </DockPanel>
-                </Border>
+                            </ScrollViewer>
+                        </DockPanel>
+                    </Border>
+                </Grid>
             </Grid>
+            <!-- Right Panel - Communication Log -->
+            <Border Grid.Column="2" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Margin="8" Padding="16">
+                <DockPanel>
+                    <Grid DockPanel.Dock="Top" Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Communication Log" Style="{StaticResource PanelHeader}"/>
+                        <Button Grid.Column="1" Content="Clear" Command="{Binding LogVM.ClearCommand}" Style="{StaticResource SecondaryButton}" Padding="8,4"/>
+                    </Grid>
+                    <ListBox ItemsSource="{Binding LogVM.LogEntries}" Style="{StaticResource ModernListBox}" Background="#FAFAFA">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" Foreground="{Binding Level, Converter={StaticResource LogLevelToBrush}}" FontFamily="Consolas" FontSize="11"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
         </Grid>
     </DockPanel>
 </Window>

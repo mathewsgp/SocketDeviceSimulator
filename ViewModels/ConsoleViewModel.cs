@@ -17,6 +17,9 @@ namespace SocketSimulator.ViewModels
         private string _lastResponse = string.Empty;
 
         public ObservableCollection<ConsoleEntry> History { get; } = new();
+        
+        // ComboBox suggestions
+        public ObservableCollection<string> Suggestions { get; } = new();
 
         public string CommandText
         {
@@ -33,6 +36,7 @@ namespace SocketSimulator.ViewModels
         public ICommand SendCommandCommand { get; }
         public ICommand SendResponseCommand { get; }
         public ICommand ClearHistoryCommand { get; }
+        public ICommand RefreshSuggestionsCommand { get; }
 
         public ConsoleViewModel()
         {
@@ -41,10 +45,46 @@ namespace SocketSimulator.ViewModels
             _protocolService = ProtocolService.Instance;
 
             _socketService.DataReceived += OnDataReceived;
+            _protocolService.ProtocolChanged += OnProtocolChanged;
 
             SendCommandCommand = new AsyncRelayCommand(SendCommandAsync);
             SendResponseCommand = new AsyncRelayCommand(SendResponseAsync);
             ClearHistoryCommand = new RelayCommand(ClearHistory);
+            RefreshSuggestionsCommand = new RelayCommand(_ => RefreshSuggestions());
+
+            RefreshSuggestions();
+        }
+
+        private void OnProtocolChanged(object? sender, System.EventArgs e)
+        {
+            System.Windows.Application.Current?.Dispatcher.Invoke(RefreshSuggestions);
+        }
+
+        public void RefreshSuggestions()
+        {
+            Suggestions.Clear();
+            
+            // Add Protocol Commands
+            foreach (var cmd in _protocolService.GetCommandNames())
+            {
+                var builtCmd = _protocolService.BuildCommand(cmd);
+                if (!string.IsNullOrEmpty(builtCmd) && !Suggestions.Contains(builtCmd))
+                    Suggestions.Add(builtCmd);
+            }
+            
+            // Add Response Templates
+            foreach (var template in _protocolService.GetResponseTemplates())
+            {
+                if (!string.IsNullOrEmpty(template) && !Suggestions.Contains(template))
+                    Suggestions.Add(template);
+            }
+            
+            // Add history entries (sent commands)
+            foreach (var entry in History.Where(h => h.Type == ConsoleEntryType.Sent || h.Type == ConsoleEntryType.Response))
+            {
+                if (!string.IsNullOrEmpty(entry.Message) && !Suggestions.Contains(entry.Message))
+                    Suggestions.Add(entry.Message);
+            }
         }
 
         private void OnDataReceived(object? sender, SocketService.DataReceivedEventArgs e)
@@ -78,6 +118,7 @@ namespace SocketSimulator.ViewModels
             });
 
             CommandText = string.Empty;
+            RefreshSuggestions();
         }
 
         private async Task SendResponseAsync()
@@ -97,12 +138,14 @@ namespace SocketSimulator.ViewModels
             });
 
             CommandText = string.Empty;
+            RefreshSuggestions();
         }
 
         private void ClearHistory()
         {
             History.Clear();
             LastResponse = string.Empty;
+            RefreshSuggestions();
         }
     }
 
