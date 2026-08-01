@@ -30,6 +30,7 @@ namespace SocketSimulator.ViewModels
         public IfElseStep? SelectedIfElseStep => SelectedStep as IfElseStep;
         public LabelStep? SelectedLabelStep => SelectedStep as LabelStep;
         public GotoStep? SelectedGotoStep => SelectedStep as GotoStep;
+        public AutoReplyStep? SelectedAutoReplyStep => SelectedStep as AutoReplyStep;
 
         // All label names for goto dropdown
         public ObservableCollection<string> AvailableLabels { get; } = new();
@@ -110,6 +111,7 @@ namespace SocketSimulator.ViewModels
                     OnPropertyChanged(nameof(SelectedIfElseStep));
                     OnPropertyChanged(nameof(SelectedLabelStep));
                     OnPropertyChanged(nameof(SelectedGotoStep));
+                    OnPropertyChanged(nameof(SelectedAutoReplyStep));
                     RefreshAvailableLabels();
                 }
             }
@@ -367,6 +369,12 @@ namespace SocketSimulator.ViewModels
                     {
                         Order = _nextStepOrder++,
                         TargetLabel = ""
+                    },
+                    "AutoReply" => new AutoReplyStep
+                    {
+                        Order = _nextStepOrder++,
+                        CommandPattern = "*",
+                        Response = "OK"
                     },
                     _ => null
                 };

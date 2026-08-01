@@ -101,4 +101,19 @@ namespace SocketSimulator.Models
     {
         public string TargetLabel { get; set; } = string.Empty;
     }
+
+    // Auto Reply - automatically respond to specific commands
+    public class AutoReplyStep : ScenarioStep
+    {
+        // Command pattern to match (supports wildcards like "*")
+        public string CommandPattern { get; set; } = string.Empty;
+        // Response to send when command is received
+        public string Response { get; set; } = string.Empty;
+        // Optional: specific command name from Protocol
+        public string? CommandName { get; set; }
+        // Continue after auto-reply or wait for next step
+        public bool ContinueScenario { get; set; } = false;
+        // Label to jump to after auto-reply (optional)
+        public string? GotoLabel { get; set; }
+    }
 }

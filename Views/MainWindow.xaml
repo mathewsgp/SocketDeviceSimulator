@@ -245,6 +245,8 @@
                                 <Button Content="Label" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="Label" ToolTip="Mark a position for Goto"/>
                                 <Button Content="Goto" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="Goto" ToolTip="Jump to a Label"/>
                                 <Separator/>
+                                <Button Content="Auto Reply" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="AutoReply" ToolTip="Auto-reply to matching commands"/>
+                                <Separator/>
                                 <Button Content="Remove" Command="{Binding ScenarioVM.RemoveStepCommand}" ToolTip="Remove selected step"/>
                                 <Button Content="↑" Command="{Binding ScenarioVM.MoveUpCommand}" Width="30" ToolTip="Move up"/>
                                 <Button Content="↓" Command="{Binding ScenarioVM.MoveDownCommand}" Width="30" ToolTip="Move down"/>
@@ -623,6 +625,56 @@
                                                      IsEditable="True"/>
                                             <TextBlock Text="Leave empty to continue to next step" 
                                                       Foreground="{StaticResource TextSecondaryBrush}" FontSize="9" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+
+                                <!-- AutoReply: Automatically respond to matching commands -->
+                                <StackPanel Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}, ConverterParameter=AutoReply}">
+                                    <Border BorderBrush="{StaticResource InfoBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8" Margin="0,8,0,8">
+                                        <StackPanel>
+                                            <TextBlock Text="Auto Reply" FontWeight="SemiBold" FontSize="14" Foreground="{StaticResource InfoBrush}"/>
+                                            <TextBlock Text="Automatically respond when matching command is received" 
+                                                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="11" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                    
+                                    <TextBlock Text="Command Pattern (from Protocol):" Margin="0,4,0,2"/>
+                                    <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}"
+                                             SelectedItem="{Binding ScenarioVM.SelectedAutoReplyStep.CommandName, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource ModernComboBox}"/>
+                                    
+                                    <TextBlock Text="Or Custom Pattern (supports * wildcards):" Margin="0,12,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedAutoReplyStep.CommandPattern, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource ModernTextBox}"/>
+                                    <TextBlock Text="Example: *, LOGIN_*, GET_*" 
+                                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
+                                    
+                                    <TextBlock Text="Response (from Protocol or custom):" Margin="0,12,0,2"/>
+                                    <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolResponseTemplates}"
+                                             SelectedItem="{Binding ScenarioVM.SelectedAutoReplyStep.Response, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource ModernComboBox}"/>
+                                    
+                                    <TextBlock Text="Response Template:" Margin="0,8,0,2"/>
+                                    <TextBox Text="{Binding ScenarioVM.SelectedAutoReplyStep.Response, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{StaticResource ModernTextBox}" AcceptsReturn="True" Height="60" TextWrapping="Wrap"/>
+                                    <TextBlock Text="Variables: ${VariableName}, ${Parsed.Param}" 
+                                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="10" Margin="0,2,0,0"/>
+                                    
+                                    <!-- Flow Control -->
+                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Margin="0,16,0,0" Padding="8" CornerRadius="4">
+                                        <StackPanel>
+                                            <TextBlock Text="After Auto-Reply:" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                            
+                                            <CheckBox Content="Continue to next step after auto-reply"
+                                                     IsChecked="{Binding ScenarioVM.SelectedAutoReplyStep.ContinueScenario}"
+                                                     Margin="0,4,0,0"/>
+                                            
+                                            <TextBlock Text="Or Goto Label:" Margin="0,12,0,2"/>
+                                            <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}"
+                                                     Text="{Binding ScenarioVM.SelectedAutoReplyStep.GotoLabel, UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource ModernComboBox}"
+                                                     IsEditable="True"/>
                                         </StackPanel>
                                     </Border>
                                 </StackPanel>

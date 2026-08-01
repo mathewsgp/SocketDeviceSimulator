@@ -125,6 +125,13 @@ namespace SocketSimulator.Services
                     continue;
                 }
 
+                // Handle AutoReply with goto support
+                if (step is AutoReplyStep autoReplyStep)
+                {
+                    await ExecuteAutoReplyWithGotoAsync(autoReplyStep, labelIndexMap, ref currentIndex, cancellationToken);
+                    continue;
+                }
+
                 // Handle WaitCommand with goto labels
                 if (step is WaitCommandStep waitCmdStep)
                 {
@@ -391,6 +398,96 @@ namespace SocketSimulator.Services
             
             await _socketService.SendAsync(payload);
             _logger.Info("Scenario", $"Sent command: {payload}");
+        }
+
+        private bool MatchesPattern(string commandName, string pattern)
+        {
+            if (string.IsNullOrEmpty(pattern) || pattern == "*")
+                return true;
+            
+            // Simple wildcard matching
+            if (pattern.Contains("*"))
+            {
+                var regexPattern = "^" + System.Text.RegularExpressions.Regex.Escape(pattern).Replace("\\*", ".*") + "$";
+                return System.Text.RegularExpressions.Regex.IsMatch(commandName, regexPattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            }
+            
+            // Exact match (case insensitive)
+            return commandName.Equals(pattern, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private async Task ExecuteAutoReplyWithGotoAsync(AutoReplyStep step, Dictionary<string, int> labelMap, ref int currentIndex, CancellationToken cancellationToken)
+        {
+            // Get the command name to match
+            var commandToMatch = !string.IsNullOrEmpty(step.CommandName) ? step.CommandName : step.CommandPattern;
+            
+            _logger.Info("Scenario", $"AutoReply: Waiting for command matching '{commandToMatch}'");
+            
+            // Wait for matching command
+            var startTime = DateTime.Now;
+            var timeout = TimeSpan.FromMinutes(10); // Long timeout for auto-reply
+            
+            while (DateTime.Now - startTime < timeout)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                
+                // Check if we received a matching command
+                if (!string.IsNullOrEmpty(_lastReceivedCommand))
+                {
+                    var receivedCommand = _protocolService.ParseCommand(_lastReceivedCommand);
+                    
+                    if (MatchesPattern(receivedCommand.CommandName, commandToMatch))
+                    {
+                        _logger.Info("Scenario", $"AutoReply: Matched command '{receivedCommand.CommandName}', sending response");
+                        
+                        // Build and send response
+                        var response = step.Response;
+                        
+                        // If using Protocol response template, build it
+                        if (string.IsNullOrEmpty(response) && !string.IsNullOrEmpty(step.CommandName))
+                        {
+                            response = _protocolService.BuildResponse(step.CommandName);
+                        }
+                        
+                        // Substitute variables in response
+                        response = _protocolService.SubstituteVariables(response);
+                        
+                        if (!string.IsNullOrEmpty(response))
+                        {
+                            await _socketService.SendAsync(response);
+                            _logger.Info("Scenario", $"AutoReply: Sent response: {response}");
+                        }
+                        
+                        // Clear received command
+                        _lastReceivedCommand = string.Empty;
+                        
+                        // Check if we should goto a label
+                        if (!string.IsNullOrEmpty(step.GotoLabel) && labelMap.TryGetValue(step.GotoLabel, out var targetIndex))
+                        {
+                            _logger.Info("Scenario", $"AutoReply: Jumping to label '{step.GotoLabel}'");
+                            currentIndex = targetIndex;
+                            return;
+                        }
+                        
+                        // If not continue, we stay in auto-reply mode waiting for more commands
+                        if (!step.ContinueScenario)
+                        {
+                            // Reset start time to keep waiting
+                            startTime = DateTime.Now;
+                            continue;
+                        }
+                        
+                        // Continue to next step
+                        currentIndex++;
+                        return;
+                    }
+                }
+                
+                await Task.Delay(50, cancellationToken);
+            }
+            
+            _logger.Warning("Scenario", $"AutoReply: Timeout waiting for command matching '{commandToMatch}'");
+            currentIndex++;
         }
 
         private void ExecuteSetVariable(SetVariableStep step)
