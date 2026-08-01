@@ -39,6 +39,11 @@ namespace SocketSimulator.Services
         private void OnDataReceived(object? sender, SocketService.DataReceivedEventArgs e)
         {
             _lastReceivedCommand = e.Data;
+            // Parse and store the command using Protocol
+            if (_protocolService != null)
+            {
+                _protocolService.ParseCommand(e.Data);
+            }
         }
 
         public async Task RunScenarioAsync(Scenario scenario)
@@ -369,7 +374,21 @@ namespace SocketSimulator.Services
 
         private async Task ExecuteSendCommandAsync(SendCommandStep step, CancellationToken cancellationToken)
         {
-            var payload = _protocolService.SubstituteVariables(step.Payload);
+            string payload;
+            
+            // If command name is specified, use BuildCommand with protocol separators
+            if (!string.IsNullOrEmpty(step.CommandName))
+            {
+                payload = _protocolService.BuildCommand(step.CommandName);
+                // Substitute any remaining variables in the payload
+                payload = _protocolService.SubstituteVariables(payload);
+            }
+            else
+            {
+                // Use raw payload
+                payload = _protocolService.SubstituteVariables(step.Payload);
+            }
+            
             await _socketService.SendAsync(payload);
             _logger.Info("Scenario", $"Sent command: {payload}");
         }

@@ -1,81 +1,104 @@
 {
   "Name": "Simple Device Protocol",
   "Version": "1.0",
+  "StartPrefix": "*",
+  "EndPrefix": "#",
+  "CommandParameterSeparator": "=",
+  "ParameterSeparator": ",",
+  "ParameterValueSeparator": ":",
   "Commands": [
     {
       "Name": "LOGIN",
-      "Description": "User login command",
+      "Description": "User login - Format: *LOGIN=user:admin,pass:secret#",
       "Parameters": [
         {
-          "Name": "username",
+          "Name": "user",
           "Type": "string",
-          "PossibleValues": [],
-          "Required": true
+          "PossibleValues": ["admin", "guest"],
+          "Required": true,
+          "DefaultValueIndex": 0
         },
         {
-          "Name": "password",
+          "Name": "pass",
           "Type": "string",
-          "PossibleValues": [],
-          "Required": true
+          "PossibleValues": ["secret", "password123"],
+          "Required": true,
+          "DefaultValueIndex": 0
         }
       ],
-      "ResponseTemplate": "LOGIN_OK user=${username} session=${SessionId}"
+      "ResponseTemplate": "*LOGIN_OK,user:${user},session:${SessionId}#"
     },
     {
       "Name": "LOGIN_OK",
       "Description": "Login successful response",
       "Parameters": [],
-      "ResponseTemplate": null
+      "ResponseTemplate": "*LOGIN_OK#"
     },
     {
       "Name": "READY",
-      "Description": "Device ready notification",
-      "Parameters": [],
-      "ResponseTemplate": "READY temperature=${Temperature}"
+      "Description": "Device ready - Format: *READY,temp:25.5#",
+      "Parameters": [
+        {
+          "Name": "temp",
+          "Type": "float",
+          "PossibleValues": [],
+          "Required": false
+        }
+      ],
+      "ResponseTemplate": "*READY_ACK#"
     },
     {
       "Name": "GET_STATUS",
-      "Description": "Get device status",
+      "Description": "Get device status - Format: *GET_STATUS#",
       "Parameters": [],
-      "ResponseTemplate": "STATUS state=${State} temp=${Temperature} pressure=${Pressure}"
+      "ResponseTemplate": "*STATUS,state:${State},temp:${Temperature},pressure:${Pressure}#"
     },
     {
       "Name": "SET_STATE",
-      "Description": "Set device state",
+      "Description": "Set device state - Format: *SET_STATE=state:ACTIVE#",
       "Parameters": [
         {
           "Name": "state",
           "Type": "string",
           "PossibleValues": ["IDLE", "ACTIVE", "STANDBY", "ERROR"],
-          "Required": true
+          "Required": true,
+          "DefaultValueIndex": 0
         }
       ],
-      "ResponseTemplate": "STATE_SET new_state=${state}"
+      "ResponseTemplate": "*STATE_SET,state:${state}#"
     },
     {
       "Name": "HEARTBEAT",
-      "Description": "Heartbeat ping",
-      "Parameters": [],
-      "ResponseTemplate": "HEARTBEAT_ACK counter=${Counter}"
+      "Description": "Heartbeat ping - Format: *HEARTBEAT,count:1#",
+      "Parameters": [
+        {
+          "Name": "count",
+          "Type": "int",
+          "PossibleValues": [],
+          "Required": false
+        }
+      ],
+      "ResponseTemplate": "*HEARTBEAT_ACK,count:${Counter}#"
     },
     {
       "Name": "ERROR",
-      "Description": "Error response",
+      "Description": "Error response - Format: *ERROR,code:E001,msg:Timeout#",
       "Parameters": [
         {
           "Name": "code",
           "Type": "string",
           "PossibleValues": ["E001", "E002", "E003"],
-          "Required": true
+          "Required": true,
+          "DefaultValueIndex": 0
         },
         {
-          "Name": "message",
+          "Name": "msg",
           "Type": "string",
           "PossibleValues": [],
           "Required": true
         }
       ],
-      "ResponseTemplate": "ERROR code=${code} msg=\"${message}\""
+      "ResponseTemplate": "*ERROR_ACK,code:${code}#"
     }
   ]
 }
