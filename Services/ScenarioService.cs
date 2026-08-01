@@ -118,6 +118,9 @@ namespace SocketSimulator.Services
                 case IfElseStep ifElseStep:
                     await ExecuteIfElseAsync(ifElseStep, cancellationToken);
                     break;
+                case LoopUntilStep loopUntilStep:
+                    await ExecuteLoopUntilAsync(loopUntilStep, cancellationToken);
+                    break;
             }
         }
 
@@ -266,6 +269,78 @@ namespace SocketSimulator.Services
             }
 
             return false;
+        }
+
+        private async Task ExecuteLoopUntilAsync(LoopUntilStep step, CancellationToken cancellationToken)
+        {
+            _logger.Info("Scenario", $"Starting LoopUntil: check for '{step.ExpectedResponseContains}', max {step.MaxIterations} iterations, interval {step.IntervalMs}ms");
+
+            for (int iteration = 1; iteration <= step.MaxIterations; iteration++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                // Execute pre-actions (e.g., increment counter)
+                foreach (var preAction in step.PreActions.OrderBy(s => s.Order))
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    await ExecuteStepAsync(preAction, cancellationToken);
+                }
+
+                // Send command if specified
+                if (!string.IsNullOrEmpty(step.CommandToSend))
+                {
+                    var payload = _protocolService.SubstituteVariables(step.Payload);
+                    await _socketService.SendAsync(payload);
+                    _logger.Info("Scenario", $"Loop[{iteration}]: Sent command: {payload}");
+                }
+
+                // Wait for response
+                if (!string.IsNullOrEmpty(step.ExpectedResponseContains))
+                {
+                    var startTime = DateTime.Now;
+                    var timeout = Math.Max(step.IntervalMs, 5000); // At least 5s timeout per iteration
+
+                    bool found = false;
+                    while (DateTime.Now - startTime < TimeSpan.FromMilliseconds(timeout))
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        if (!string.IsNullOrEmpty(_lastReceivedCommand) &&
+                            _lastReceivedCommand.Contains(step.ExpectedResponseContains, StringComparison.OrdinalIgnoreCase))
+                        {
+                            _logger.Info("Scenario", $"LoopUntil: Found expected response '{step.ExpectedResponseContains}' at iteration {iteration}");
+                            found = true;
+                            _lastReceivedCommand = string.Empty;
+                            break;
+                        }
+
+                        await Task.Delay(50, cancellationToken);
+                    }
+
+                    if (found)
+                    {
+                        // Execute success actions
+                        await ExecuteStepsAsync(step.OnSuccess, cancellationToken);
+                        _logger.Info("Scenario", $"LoopUntil completed successfully after {iteration} iterations");
+                        return;
+                    }
+                }
+                else
+                {
+                    // No expected response, just wait interval
+                    await Task.Delay(step.IntervalMs, cancellationToken);
+                }
+
+                // Wait between iterations (except last)
+                if (iteration < step.MaxIterations)
+                {
+                    await Task.Delay(step.IntervalMs, cancellationToken);
+                }
+            }
+
+            _logger.Warning("Scenario", $"LoopUntil: Timeout after {step.MaxIterations} iterations");
+            // Execute timeout actions
+            await ExecuteStepsAsync(step.OnTimeout, cancellationToken);
         }
 
         public class StepExecutedEventArgs : EventArgs

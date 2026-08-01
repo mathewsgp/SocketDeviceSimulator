@@ -59,4 +59,27 @@ namespace SocketSimulator.Models
         public List<ScenarioStep> IfTrue { get; set; } = new();
         public List<ScenarioStep> IfFalse { get; set; } = new();
     }
+
+    public class LoopUntilStep : ScenarioStep
+    {
+        // What to send in each iteration
+        public string CommandToSend { get; set; } = string.Empty;
+        public string Payload { get; set; } = string.Empty;
+        
+        // What to check in the response
+        public string ExpectedResponseContains { get; set; } = string.Empty;
+        
+        // Loop control
+        public int IntervalMs { get; set; } = 1000;
+        public int MaxIterations { get; set; } = 60;
+        
+        // Actions to perform before sending command (e.g., increment counter)
+        public List<ScenarioStep> PreActions { get; set; } = new();
+        
+        // What to do after condition is met
+        public List<ScenarioStep> OnSuccess { get; set; } = new();
+        
+        // What to do on timeout
+        public List<ScenarioStep> OnTimeout { get; set; } = new();
+    }
 }

@@ -1,0 +1,52 @@
+{
+  "Name": "Loop Until Demo",
+  "Scenario": {
+    "Name": "Measurement with Status Polling",
+    "Description": "Demonstrates Loop Until step: Send GET_STATUS, poll until 'completed'",
+    "Steps": [
+      {
+        "Order": 1,
+        "Description": "Send measurement start command",
+        "CommandName": "SEND_COMMAND",
+        "Payload": "START_MEASUREMENT"
+      },
+      {
+        "Order": 2,
+        "Description": "Wait for ACK",
+        "CommandName": "ACK",
+        "TimeoutMs": 5000
+      },
+      {
+        "Order": 3,
+        "Description": "Poll status until completed (max 60 iterations, 1s interval)",
+        "CommandToSend": "GET_STATUS",
+        "Payload": "GET_STATUS",
+        "ExpectedResponseContains": "completed",
+        "IntervalMs": 1000,
+        "MaxIterations": 60,
+        "PreActions": [],
+        "OnSuccess": [
+          {
+            "Order": 1,
+            "Description": "On success: Send output collection",
+            "CommandName": "SEND_COMMAND",
+            "Payload": "COLLECT_OUTPUT"
+          }
+        ],
+        "OnTimeout": [
+          {
+            "Order": 1,
+            "Description": "On timeout: Send error",
+            "CommandName": "SEND_RESPONSE",
+            "Response": "ERROR measurement timeout"
+          }
+        ]
+      }
+    ]
+  },
+  "ConnectionSettings": {
+    "Mode": 0,
+    "IpAddress": "127.0.0.1",
+    "Port": 9000
+  }
+}

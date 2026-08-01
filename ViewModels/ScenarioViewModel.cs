@@ -137,6 +137,15 @@ namespace SocketSimulator.ViewModels
                         Order = _nextStepOrder++,
                         Condition = "${State} == ACTIVE"
                     },
+                    "LoopUntil" => new LoopUntilStep
+                    {
+                        Order = _nextStepOrder++,
+                        CommandToSend = "GET_STATUS",
+                        Payload = "GET_STATUS",
+                        ExpectedResponseContains = "completed",
+                        IntervalMs = 1000,
+                        MaxIterations = 60
+                    },
                     _ => null
                 };
 

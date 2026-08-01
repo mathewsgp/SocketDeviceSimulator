@@ -240,6 +240,7 @@
                                 <Button Content="Delay" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="Delay" ToolTip="Wait for specified time"/>
                                 <Button Content="Set Variable" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="SetVariable" ToolTip="Set a variable value"/>
                                 <Button Content="If/Else" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="IfElse" ToolTip="Conditional execution"/>
+                                <Button Content="Loop Until" Command="{Binding ScenarioVM.AddStepCommand}" CommandParameter="LoopUntil" ToolTip="Loop until condition is met"/>
                                 <Separator/>
                                 <Button Content="Remove" Command="{Binding ScenarioVM.RemoveStepCommand}" ToolTip="Remove selected step"/>
                                 <Button Content="↑" Command="{Binding ScenarioVM.MoveUpCommand}" Width="30" ToolTip="Move up"/>
