@@ -2,15 +2,17 @@
   "Name": "Client - Measurement Controller",
   "Scenario": {
     "Name": "Temperature Measurement Control",
-    "Description": "Client workflow: Check status, stop if needed, set params, start measurement, poll until complete",
+    "Description": "Client workflow: Check status, set params, start measurement, poll until complete",
     "Steps": [
       {
+        "Type": "SendCommand",
         "Order": 1,
         "Description": "Step 1: Query device status",
         "CommandName": "GET_STATUS",
         "Payload": "GET_STATUS"
       },
       {
+        "Type": "WaitResponse",
         "Order": 2,
         "Description": "Step 2: Wait for status response",
         "CommandName": "STATUS",
@@ -18,54 +20,63 @@
         "TimeoutMs": 5000
       },
       {
+        "Type": "SendCommand",
         "Order": 3,
         "Description": "Step 3: Set measurement parameters (start=20, end=100)",
         "CommandName": "SET_PARAMS",
         "Payload": "SET_PARAMS start=20 end=100"
       },
       {
+        "Type": "WaitCommand",
         "Order": 4,
         "Description": "Step 4: Wait for params acknowledgment",
         "CommandName": "PARAMS_OK",
         "TimeoutMs": 5000
       },
       {
+        "Type": "SendCommand",
         "Order": 5,
         "Description": "Step 5: Start measurement",
         "CommandName": "START",
         "Payload": "START"
       },
       {
+        "Type": "WaitCommand",
         "Order": 6,
         "Description": "Step 6: Wait for start acknowledgment",
         "CommandName": "START_OK",
         "TimeoutMs": 5000
       },
       {
+        "Type": "SendCommand",
         "Order": 7,
         "Description": "Step 7: Poll status - check 1 (temp rising)",
         "CommandName": "GET_STATUS",
         "Payload": "GET_STATUS"
       },
       {
+        "Type": "SendCommand",
         "Order": 8,
         "Description": "Step 8: Poll status - check 2 (temp rising)",
         "CommandName": "GET_STATUS",
         "Payload": "GET_STATUS"
       },
       {
+        "Type": "SendCommand",
         "Order": 9,
         "Description": "Step 9: Poll status - check 3 (temp rising)",
         "CommandName": "GET_STATUS",
         "Payload": "GET_STATUS"
       },
       {
+        "Type": "SendCommand",
         "Order": 10,
         "Description": "Step 10: Poll status - final check (should be COMPLETED)",
         "CommandName": "GET_STATUS",
         "Payload": "GET_STATUS"
       },
       {
+        "Type": "WaitResponse",
         "Order": 11,
         "Description": "Step 11: Wait for completed status",
         "CommandName": "STATUS",
@@ -73,6 +84,7 @@
         "TimeoutMs": 10000
       },
       {
+        "Type": "Delay",
         "Order": 12,
         "Description": "Step 12: Measurement complete - delay before end",
         "DurationMs": 500

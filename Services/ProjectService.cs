@@ -12,6 +12,13 @@ namespace SocketSimulator.Services
 
         private Project? _currentProject;
         private readonly LoggingService _logger = LoggingService.Instance;
+        
+        private static readonly JsonSerializerSettings _serializerSettings = new JsonSerializerSettings
+        {
+            Converters = new List<JsonConverter> { new ScenarioStepConverter() },
+            Formatting = Formatting.Indented,
+            NullValueHandling = NullValueHandling.Ignore
+        };
 
         public Project? CurrentProject => _currentProject;
 
@@ -38,7 +45,7 @@ namespace SocketSimulator.Services
             try
             {
                 var json = File.ReadAllText(filePath);
-                var projectData = JsonConvert.DeserializeObject<ProjectData>(json);
+                var projectData = JsonConvert.DeserializeObject<ProjectData>(json, _serializerSettings);
                 
                 if (projectData != null)
                 {
@@ -98,7 +105,7 @@ namespace SocketSimulator.Services
                     ConnectionSettings = _currentProject.ConnectionSettings
                 };
 
-                var json = JsonConvert.SerializeObject(projectData, Formatting.Indented);
+                var json = JsonConvert.SerializeObject(projectData, _serializerSettings);
                 File.WriteAllText(path, json);
 
                 _currentProject.FilePath = path;
