@@ -141,4 +141,19 @@ namespace SocketSimulator.Converters
             return false;
         }
     }
+
+    public class NullToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            bool invert = parameter?.ToString() == "Invert";
+            bool isNull = value == null;
+            return (isNull ^ invert) ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

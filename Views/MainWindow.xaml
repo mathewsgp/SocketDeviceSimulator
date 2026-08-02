@@ -19,6 +19,7 @@
 
     <Window.Resources>
         <conv:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+        <conv:NullToVisibilityConverter x:Key="NullToVisibility"/>
         <conv:LogLevelToBrushConverter x:Key="LogLevelToBrush"/>
         <conv:ConnectionModeToStringConverter x:Key="ConnectionModeToString"/>
         <conv:ConsoleEntryTypeToBrushConverter x:Key="ConsoleEntryTypeToBrush"/>
@@ -340,13 +341,13 @@
                     <Border Grid.Column="1" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="12">
                         <DockPanel>
                             <TextBlock DockPanel.Dock="Top" Text="Step Details" Style="{StaticResource PanelHeader}"/>
-                            <Border Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}" Background="#F5F5F5" CornerRadius="8" Padding="16">
+                            <Border Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource NullToVisibility}, ConverterParameter=Invert}" Background="#F5F5F5" CornerRadius="8" Padding="16">
                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                                     <TextBlock Text="📋" FontSize="36" HorizontalAlignment="Center" Margin="0,0,0,8"/>
                                     <TextBlock Text="Select a step to edit" Foreground="{StaticResource TextSecondaryBrush}" HorizontalAlignment="Center"/>
                                 </StackPanel>
                             </Border>
-                            <ScrollViewer Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource BoolToVisibility}}" VerticalScrollBarVisibility="Auto">
+                            <ScrollViewer Visibility="{Binding ScenarioVM.SelectedStep, Converter={StaticResource NullToVisibility}}" VerticalScrollBarVisibility="Auto">
                                 <StackPanel>
                                     <Border Background="{StaticResource PrimaryBrush}" CornerRadius="6" Padding="10,6" HorizontalAlignment="Left" Margin="0,0,0,12">
                                         <TextBlock Text="{Binding ScenarioVM.SelectedStep, Converter={StaticResource StepTypeToString}}" FontWeight="Bold" Foreground="White" FontSize="12"/>
@@ -357,7 +358,7 @@
                                     <TextBox Text="{Binding ScenarioVM.SelectedStep.Description, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"/>
                                     
                                     <!-- WaitCommandStep -->
-                                    <StackPanel Visibility="{Binding ScenarioVM.SelectedWaitCommandStep, Converter={StaticResource BoolToVisibility}}">
+                                    <StackPanel Visibility="{Binding ScenarioVM.SelectedWaitCommandStep, Converter={StaticResource NullToVisibility}}">
                                         <TextBlock Text="Command Name:" Margin="0,4,0,4" FontWeight="Medium"/>
                                         <TextBox Text="{Binding ScenarioVM.SelectedWaitCommandStep.CommandName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"/>
                                         <TextBlock Text="Timeout (ms):" Margin="0,4,0,4" FontWeight="Medium"/>
@@ -369,7 +370,7 @@
                                     </StackPanel>
                                     
                                     <!-- WaitResponseStep -->
-                                    <StackPanel Visibility="{Binding ScenarioVM.SelectedWaitResponseStep, Converter={StaticResource BoolToVisibility}}">
+                                    <StackPanel Visibility="{Binding ScenarioVM.SelectedWaitResponseStep, Converter={StaticResource NullToVisibility}}">
                                         <TextBlock Text="Command Name:" Margin="0,4,0,4" FontWeight="Medium"/>
                                         <TextBox Text="{Binding ScenarioVM.SelectedWaitResponseStep.CommandName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"/>
                                         <TextBlock Text="Expected Pattern:" Margin="0,4,0,4" FontWeight="Medium"/>
@@ -383,7 +384,7 @@
                                     </StackPanel>
                                     
                                     <!-- SendResponseStep -->
-                                    <StackPanel Visibility="{Binding ScenarioVM.SelectedSendResponseStep, Converter={StaticResource BoolToVisibility}}">
+                                    <StackPanel Visibility="{Binding ScenarioVM.SelectedSendResponseStep, Converter={StaticResource NullToVisibility}}">
                                         <TextBlock Text="Command Name:" Margin="0,4,0,4" FontWeight="Medium"/>
                                         <TextBox Text="{Binding ScenarioVM.SelectedSendResponseStep.CommandName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"/>
                                         <TextBlock Text="Response:" Margin="0,4,0,4" FontWeight="Medium"/>
@@ -393,7 +394,7 @@
                                     </StackPanel>
                                     
                                     <!-- SendCommandStep -->
-                                    <StackPanel Visibility="{Binding ScenarioVM.SelectedSendCommandStep, Converter={StaticResource BoolToVisibility}}">
+                                    <StackPanel Visibility="{Binding ScenarioVM.SelectedSendCommandStep, Converter={StaticResource NullToVisibility}}">
                                         <TextBlock Text="Command Name:" Margin="0,4,0,4" FontWeight="Medium"/>
                                         <TextBox Text="{Binding ScenarioVM.SelectedSendCommandStep.CommandName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"/>
                                         <TextBlock Text="Payload:" Margin="0,4,0,4" FontWeight="Medium"/>
@@ -401,13 +402,13 @@
                                     </StackPanel>
                                     
                                     <!-- DelayStep -->
-                                    <StackPanel Visibility="{Binding ScenarioVM.SelectedDelayStep, Converter={StaticResource BoolToVisibility}}">
+                                    <StackPanel Visibility="{Binding ScenarioVM.SelectedDelayStep, Converter={StaticResource NullToVisibility}}">
                                         <TextBlock Text="Duration (ms):" Margin="0,4,0,4" FontWeight="Medium"/>
                                         <TextBox Text="{Binding ScenarioVM.SelectedDelayStep.DurationMs, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}"/>
                                     </StackPanel>
                                     
                                     <!-- SetVariableStep -->
-                                    <StackPanel Visibility="{Binding ScenarioVM.SelectedSetVariableStep, Converter={StaticResource BoolToVisibility}}">
+                                    <StackPanel Visibility="{Binding ScenarioVM.SelectedSetVariableStep, Converter={StaticResource NullToVisibility}}">
                                         <TextBlock Text="Variable Name:" Margin="0,4,0,4" FontWeight="Medium"/>
                                         <TextBox Text="{Binding ScenarioVM.SelectedSetVariableStep.VariableName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"/>
                                         <TextBlock Text="Value:" Margin="0,4,0,4" FontWeight="Medium"/>
@@ -422,7 +423,7 @@
                                     </StackPanel>
                                     
                                     <!-- IfElseStep -->
-                                    <StackPanel Visibility="{Binding ScenarioVM.SelectedIfElseStep, Converter={StaticResource BoolToVisibility}}">
+                                    <StackPanel Visibility="{Binding ScenarioVM.SelectedIfElseStep, Converter={StaticResource NullToVisibility}}">
                                         <TextBlock Text="Condition:" Margin="0,4,0,4" FontWeight="Medium"/>
                                         <TextBox Text="{Binding ScenarioVM.SelectedIfElseStep.Condition, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" TextWrapping="Wrap" Margin="0,0,0,8"/>
                                         <TextBlock Text="Goto if True:" Margin="0,4,0,4" FontWeight="Medium"/>
@@ -432,19 +433,19 @@
                                     </StackPanel>
                                     
                                     <!-- LabelStep -->
-                                    <StackPanel Visibility="{Binding ScenarioVM.SelectedLabelStep, Converter={StaticResource BoolToVisibility}}">
+                                    <StackPanel Visibility="{Binding ScenarioVM.SelectedLabelStep, Converter={StaticResource NullToVisibility}}">
                                         <TextBlock Text="Label Name:" Margin="0,4,0,4" FontWeight="Medium"/>
                                         <TextBox Text="{Binding ScenarioVM.SelectedLabelStep.LabelName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}"/>
                                     </StackPanel>
                                     
                                     <!-- GotoStep -->
-                                    <StackPanel Visibility="{Binding ScenarioVM.SelectedGotoStep, Converter={StaticResource BoolToVisibility}}">
+                                    <StackPanel Visibility="{Binding ScenarioVM.SelectedGotoStep, Converter={StaticResource NullToVisibility}}">
                                         <TextBlock Text="Target Label:" Margin="0,4,0,4" FontWeight="Medium"/>
                                         <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}" SelectedItem="{Binding ScenarioVM.SelectedGotoStep.TargetLabel}" Style="{StaticResource ModernComboBox}"/>
                                     </StackPanel>
                                     
                                     <!-- AutoReplyStep -->
-                                    <StackPanel Visibility="{Binding ScenarioVM.SelectedAutoReplyStep, Converter={StaticResource BoolToVisibility}}">
+                                    <StackPanel Visibility="{Binding ScenarioVM.SelectedAutoReplyStep, Converter={StaticResource NullToVisibility}}">
                                         <TextBlock Text="Command Pattern:" Margin="0,4,0,4" FontWeight="Medium"/>
                                         <TextBox Text="{Binding ScenarioVM.SelectedAutoReplyStep.CommandPattern, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"/>
                                         <TextBlock Text="Response:" Margin="0,4,0,4" FontWeight="Medium"/>
