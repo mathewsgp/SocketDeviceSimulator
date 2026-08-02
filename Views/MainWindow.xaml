@@ -360,7 +360,7 @@
                                     <!-- WaitCommandStep -->
                                     <StackPanel Visibility="{Binding ScenarioVM.SelectedWaitCommandStep, Converter={StaticResource NullToVisibility}}">
                                         <TextBlock Text="Command Name:" Margin="0,4,0,4" FontWeight="Medium"/>
-                                        <TextBox Text="{Binding ScenarioVM.SelectedWaitCommandStep.CommandName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"/>
+                                        <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}" SelectedItem="{Binding ScenarioVM.SelectedWaitCommandStep.CommandName}" Style="{StaticResource ModernComboBox}" IsEditable="True" Margin="0,0,0,8"/>
                                         <TextBlock Text="Timeout (ms):" Margin="0,4,0,4" FontWeight="Medium"/>
                                         <TextBox Text="{Binding ScenarioVM.SelectedWaitCommandStep.TimeoutMs, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"/>
                                         <TextBlock Text="Goto on Success:" Margin="0,4,0,4" FontWeight="Medium"/>
@@ -372,9 +372,9 @@
                                     <!-- WaitResponseStep -->
                                     <StackPanel Visibility="{Binding ScenarioVM.SelectedWaitResponseStep, Converter={StaticResource NullToVisibility}}">
                                         <TextBlock Text="Command Name:" Margin="0,4,0,4" FontWeight="Medium"/>
-                                        <TextBox Text="{Binding ScenarioVM.SelectedWaitResponseStep.CommandName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"/>
+                                        <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}" SelectedItem="{Binding ScenarioVM.SelectedWaitResponseStep.CommandName}" Style="{StaticResource ModernComboBox}" IsEditable="True" Margin="0,0,0,8"/>
                                         <TextBlock Text="Expected Pattern:" Margin="0,4,0,4" FontWeight="Medium"/>
-                                        <TextBox Text="{Binding ScenarioVM.SelectedWaitResponseStep.ExpectedResponseContains, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"/>
+                                        <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolResponseTemplates}" SelectedItem="{Binding ScenarioVM.SelectedWaitResponseStep.ExpectedResponseContains}" Style="{StaticResource ModernComboBox}" IsEditable="True" Margin="0,0,0,8"/>
                                         <TextBlock Text="Timeout (ms):" Margin="0,4,0,4" FontWeight="Medium"/>
                                         <TextBox Text="{Binding ScenarioVM.SelectedWaitResponseStep.TimeoutMs, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"/>
                                         <TextBlock Text="Goto on Success:" Margin="0,4,0,4" FontWeight="Medium"/>
@@ -386,9 +386,9 @@
                                     <!-- SendResponseStep -->
                                     <StackPanel Visibility="{Binding ScenarioVM.SelectedSendResponseStep, Converter={StaticResource NullToVisibility}}">
                                         <TextBlock Text="Command Name:" Margin="0,4,0,4" FontWeight="Medium"/>
-                                        <TextBox Text="{Binding ScenarioVM.SelectedSendResponseStep.CommandName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"/>
+                                        <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}" SelectedItem="{Binding ScenarioVM.SelectedSendResponseStep.CommandName}" Style="{StaticResource ModernComboBox}" IsEditable="True" Margin="0,0,0,8"/>
                                         <TextBlock Text="Response:" Margin="0,4,0,4" FontWeight="Medium"/>
-                                        <TextBox Text="{Binding ScenarioVM.SelectedSendResponseStep.Response, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" TextWrapping="Wrap" AcceptsReturn="True" Height="60" Margin="0,0,0,8"/>
+                                        <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolResponseTemplates}" SelectedItem="{Binding ScenarioVM.SelectedSendResponseStep.Response}" Style="{StaticResource ModernComboBox}" IsEditable="True" Margin="0,0,0,8"/>
                                         <TextBlock Text="Payload Template:" Margin="0,4,0,4" FontWeight="Medium"/>
                                         <TextBox Text="{Binding ScenarioVM.SelectedSendResponseStep.PayloadTemplate, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" TextWrapping="Wrap" AcceptsReturn="True" Height="40"/>
                                     </StackPanel>
@@ -396,7 +396,7 @@
                                     <!-- SendCommandStep -->
                                     <StackPanel Visibility="{Binding ScenarioVM.SelectedSendCommandStep, Converter={StaticResource NullToVisibility}}">
                                         <TextBlock Text="Command Name:" Margin="0,4,0,4" FontWeight="Medium"/>
-                                        <TextBox Text="{Binding ScenarioVM.SelectedSendCommandStep.CommandName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"/>
+                                        <ComboBox ItemsSource="{Binding ScenarioVM.ProtocolCommandNames}" SelectedItem="{Binding ScenarioVM.SelectedSendCommandStep.CommandName}" Style="{StaticResource ModernComboBox}" IsEditable="True" Margin="0,0,0,8"/>
                                         <TextBlock Text="Payload:" Margin="0,4,0,4" FontWeight="Medium"/>
                                         <TextBox Text="{Binding ScenarioVM.SelectedSendCommandStep.Payload, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" TextWrapping="Wrap" AcceptsReturn="True" Height="60"/>
                                     </StackPanel>
