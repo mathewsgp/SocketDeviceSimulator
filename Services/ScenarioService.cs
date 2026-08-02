@@ -22,6 +22,9 @@ namespace SocketSimulator.Services
         private bool _isRunning;
         private string _lastReceivedCommand = string.Empty;
         private Scenario? _currentScenario;
+        
+        // Active auto-reply rules: key is command pattern, value is AutoReplyStep
+        private Dictionary<string, AutoReplyStep> _activeAutoReplyRules = new();
 
         public event EventHandler<StepExecutedEventArgs>? StepExecuted;
         public event EventHandler? ScenarioStarted;
@@ -44,6 +47,44 @@ namespace SocketSimulator.Services
             {
                 _protocolService.ParseCommand(e.Data);
             }
+            
+            // Check for matching auto-reply rules
+            CheckAndExecuteAutoReply(e.Data);
+        }
+        
+        private void CheckAndExecuteAutoReply(string receivedData)
+        {
+            if (_activeAutoReplyRules.Count == 0) return;
+            
+            var parsedCommand = _protocolService.ParseCommand(receivedData);
+            
+            foreach (var rule in _activeAutoReplyRules.Values)
+            {
+                var patternToMatch = !string.IsNullOrEmpty(rule.CommandName) ? rule.CommandName : rule.CommandPattern;
+                
+                if (MatchesPattern(parsedCommand.CommandName, patternToMatch))
+                {
+                    _logger.Info("Scenario", $"AutoReply: Matched command '{parsedCommand.CommandName}', sending auto-response");
+                    
+                    // Build and send response
+                    var response = rule.Response;
+                    
+                    // If using Protocol response template, build it
+                    if (string.IsNullOrEmpty(response) && !string.IsNullOrEmpty(rule.CommandName))
+                    {
+                        response = _protocolService.BuildResponse(rule.CommandName);
+                    }
+                    
+                    // Substitute variables in response
+                    response = _protocolService.SubstituteVariables(response);
+                    
+                    if (!string.IsNullOrEmpty(response))
+                    {
+                        _ = _socketService.SendAsync(response);
+                        _logger.Info("Scenario", $"AutoReply: Sent response: {response}");
+                    }
+                }
+            }
         }
 
         public async Task RunScenarioAsync(Scenario scenario)
@@ -57,6 +98,7 @@ namespace SocketSimulator.Services
             _currentScenario = scenario;
             _isRunning = true;
             _executionTokenSource = new CancellationTokenSource();
+            _activeAutoReplyRules.Clear(); // Clear any previous auto-reply rules
             ScenarioStarted?.Invoke(this, EventArgs.Empty);
             _logger.Info("Scenario", $"Started scenario: {scenario.Name}");
 
@@ -78,6 +120,7 @@ namespace SocketSimulator.Services
             finally
             {
                 _isRunning = false;
+                _activeAutoReplyRules.Clear(); // Clear auto-reply rules when scenario ends
                 _executionTokenSource?.Dispose();
                 _executionTokenSource = null;
             }
@@ -414,76 +457,24 @@ namespace SocketSimulator.Services
             return commandName.Equals(pattern, StringComparison.OrdinalIgnoreCase);
         }
 
-        private async Task<int> ExecuteAutoReplyWithGotoAsync(AutoReplyStep step, Dictionary<string, int> labelMap, int currentIndex, CancellationToken cancellationToken)
+        private Task<int> ExecuteAutoReplyWithGotoAsync(AutoReplyStep step, Dictionary<string, int> labelMap, int currentIndex, CancellationToken cancellationToken)
         {
-            // Get the command name to match
-            var commandToMatch = !string.IsNullOrEmpty(step.CommandName) ? step.CommandName : step.CommandPattern;
+            // Get the command pattern to match
+            var commandPattern = !string.IsNullOrEmpty(step.CommandName) ? step.CommandName : step.CommandPattern;
             
-            _logger.Info("Scenario", $"AutoReply: Waiting for command matching '{commandToMatch}'");
-            
-            // Wait for matching command
-            var startTime = DateTime.Now;
-            var timeout = TimeSpan.FromMinutes(10); // Long timeout for auto-reply
-            
-            while (DateTime.Now - startTime < timeout)
+            // If pattern is empty, don't register the rule (effectively disabling this auto-reply)
+            if (string.IsNullOrEmpty(commandPattern))
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                
-                // Check if we received a matching command
-                if (!string.IsNullOrEmpty(_lastReceivedCommand))
-                {
-                    var receivedCommand = _protocolService.ParseCommand(_lastReceivedCommand);
-                    
-                    if (MatchesPattern(receivedCommand.CommandName, commandToMatch))
-                    {
-                        _logger.Info("Scenario", $"AutoReply: Matched command '{receivedCommand.CommandName}', sending response");
-                        
-                        // Build and send response
-                        var response = step.Response;
-                        
-                        // If using Protocol response template, build it
-                        if (string.IsNullOrEmpty(response) && !string.IsNullOrEmpty(step.CommandName))
-                        {
-                            response = _protocolService.BuildResponse(step.CommandName);
-                        }
-                        
-                        // Substitute variables in response
-                        response = _protocolService.SubstituteVariables(response);
-                        
-                        if (!string.IsNullOrEmpty(response))
-                        {
-                            await _socketService.SendAsync(response);
-                            _logger.Info("Scenario", $"AutoReply: Sent response: {response}");
-                        }
-                        
-                        // Clear received command
-                        _lastReceivedCommand = string.Empty;
-                        
-                        // Check if we should goto a label
-                        if (!string.IsNullOrEmpty(step.GotoLabel) && labelMap.TryGetValue(step.GotoLabel, out var targetIndex))
-                        {
-                            _logger.Info("Scenario", $"AutoReply: Jumping to label '{step.GotoLabel}'");
-                            return targetIndex;
-                        }
-                        
-                        // If not continue, we stay in auto-reply mode waiting for more commands
-                        if (!step.ContinueScenario)
-                        {
-                            // Reset start time to keep waiting
-                            startTime = DateTime.Now;
-                            continue;
-                        }
-                        
-                        // Continue to next step
-                        return currentIndex + 1;
-                    }
-                }
-                
-                await Task.Delay(50, cancellationToken);
+                _logger.Info("Scenario", $"AutoReply: Empty pattern, skipping");
+                return Task.FromResult(currentIndex + 1);
             }
             
-            _logger.Warning("Scenario", $"AutoReply: Timeout waiting for command matching '{commandToMatch}'");
-            return currentIndex + 1;
+            // Register the auto-reply rule
+            _activeAutoReplyRules[commandPattern] = step;
+            _logger.Info("Scenario", $"AutoReply: Enabled for pattern '{commandPattern}'");
+            
+            // Continue to next step immediately (non-blocking)
+            return Task.FromResult(currentIndex + 1);
         }
 
         private void ExecuteSetVariable(SetVariableStep step)
