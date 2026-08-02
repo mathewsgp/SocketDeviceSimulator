@@ -172,7 +172,7 @@
                 <!-- Variables Panel -->
                 <Border Grid.Row="2" Style="{StaticResource PanelBorder}">
                     <DockPanel>
-                        <TextBlock DockPanel.Dock="Top" Text="Variables & Parsed" Style="{StaticResource PanelHeader}"/>
+                        <TextBlock DockPanel.Dock="Top" Text="Variables &amp; Parsed" Style="{StaticResource PanelHeader}"/>
                         
                         <!-- Add Variable Row -->
                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
