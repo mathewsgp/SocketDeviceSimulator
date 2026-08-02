@@ -1,0 +1,101 @@
+{
+  "Name": "Server - Temperature Device",
+  "Scenario": {
+    "Name": "Temperature Measurement Device",
+    "Description": "Simulates a temperature measurement device. Waits for commands and responds.",
+    "Steps": [
+      {
+        "Order": 1,
+        "Description": "Enable GET_STATUS auto-reply - returns IDLE",
+        "CommandPattern": "GET_STATUS",
+        "Response": "STATUS:IDLE"
+      },
+      {
+        "Order": 2,
+        "Description": "Wait for STOP command",
+        "CommandName": "STOP",
+        "TimeoutMs": 60000
+      },
+      {
+        "Order": 3,
+        "Description": "Send stop acknowledgment",
+        "CommandName": "STOP_OK",
+        "Response": "STOP_OK"
+      },
+      {
+        "Order": 4,
+        "Description": "Enable GET_STATUS - returns READY",
+        "CommandPattern": "GET_STATUS",
+        "Response": "STATUS:READY"
+      },
+      {
+        "Order": 5,
+        "Description": "Wait for SET_PARAMS command",
+        "CommandName": "SET_PARAMS",
+        "TimeoutMs": 30000
+      },
+      {
+        "Order": 6,
+        "Description": "Send params acknowledgment",
+        "CommandName": "PARAMS_OK",
+        "Response": "PARAMS_OK"
+      },
+      {
+        "Order": 7,
+        "Description": "Wait for START command",
+        "CommandName": "START",
+        "TimeoutMs": 30000
+      },
+      {
+        "Order": 8,
+        "Description": "Send start acknowledgment",
+        "CommandName": "START_OK",
+        "Response": "START_OK"
+      },
+      {
+        "Order": 9,
+        "Description": "Enable GET_STATUS - returns IN_PROGRESS with temp=25",
+        "CommandPattern": "GET_STATUS",
+        "Response": "STATUS:IN_PROGRESS temp=25"
+      },
+      {
+        "Order": 10,
+        "Description": "Wait 2 seconds for simulation",
+        "DurationMs": 2000
+      },
+      {
+        "Order": 11,
+        "Description": "Enable GET_STATUS - returns temp=50",
+        "CommandPattern": "GET_STATUS",
+        "Response": "STATUS:IN_PROGRESS temp=50"
+      },
+      {
+        "Order": 12,
+        "Description": "Wait 2 seconds for simulation",
+        "DurationMs": 2000
+      },
+      {
+        "Order": 13,
+        "Description": "Enable GET_STATUS - returns temp=75",
+        "CommandPattern": "GET_STATUS",
+        "Response": "STATUS:IN_PROGRESS temp=75"
+      },
+      {
+        "Order": 14,
+        "Description": "Wait 2 seconds for simulation",
+        "DurationMs": 2000
+      },
+      {
+        "Order": 15,
+        "Description": "Enable GET_STATUS - returns COMPLETED",
+        "CommandPattern": "GET_STATUS",
+        "Response": "STATUS:COMPLETED temp=100"
+      }
+    ]
+  },
+  "ConnectionSettings": {
+    "Mode": 0,
+    "IpAddress": "127.0.0.1",
+    "Port": 9000
+  }
+}
