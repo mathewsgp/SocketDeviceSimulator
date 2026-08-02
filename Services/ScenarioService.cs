@@ -135,10 +135,10 @@ namespace SocketSimulator.Services
                 // Handle WaitCommand with goto labels
                 if (step is WaitCommandStep waitCmdStep)
                 {
-                    var success = await ExecuteWaitCommandWithGotoAsync(waitCmdStep, labelIndexMap, ref currentIndex, cancellationToken);
-                    if (success.HasValue)
+                    var (gotoExecuted, newIndex) = await ExecuteWaitCommandWithGotoAsync(waitCmdStep, labelIndexMap, cancellationToken);
+                    if (gotoExecuted)
                     {
-                        // Goto was executed, don't increment index
+                        currentIndex = newIndex;
                         continue;
                     }
                     currentIndex++;
@@ -148,10 +148,10 @@ namespace SocketSimulator.Services
                 // Handle WaitResponse with goto labels
                 if (step is WaitResponseStep waitRespStep)
                 {
-                    var success = await ExecuteWaitResponseWithGotoAsync(waitRespStep, labelIndexMap, ref currentIndex, cancellationToken);
-                    if (success.HasValue)
+                    var (gotoExecuted, newIndex) = await ExecuteWaitResponseWithGotoAsync(waitRespStep, labelIndexMap, cancellationToken);
+                    if (gotoExecuted)
                     {
-                        // Goto was executed, don't increment index
+                        currentIndex = newIndex;
                         continue;
                     }
                     currentIndex++;
@@ -205,7 +205,7 @@ namespace SocketSimulator.Services
             }
         }
 
-        private async Task<bool?> ExecuteWaitCommandWithGotoAsync(WaitCommandStep step, Dictionary<string, int> labelMap, ref int currentIndex, CancellationToken cancellationToken)
+        private async Task<(bool gotoExecuted, int newIndex)> ExecuteWaitCommandWithGotoAsync(WaitCommandStep step, Dictionary<string, int> labelMap, CancellationToken cancellationToken)
         {
             var startTime = DateTime.Now;
             var timeout = TimeSpan.FromMilliseconds(step.TimeoutMs);
@@ -241,14 +241,13 @@ namespace SocketSimulator.Services
             if (!string.IsNullOrEmpty(targetLabel) && labelMap.TryGetValue(targetLabel, out var targetIndex))
             {
                 _logger.Debug("Scenario", $"WaitCommand: {(success == true ? "Success" : "Timeout")}, goto '{targetLabel}'");
-                currentIndex = targetIndex;
-                return true; // Indicate goto was executed
+                return (true, targetIndex);
             }
 
-            return false; // No goto, continue to next step
+            return (false, 0);
         }
 
-        private async Task<bool?> ExecuteWaitResponseWithGotoAsync(WaitResponseStep step, Dictionary<string, int> labelMap, ref int currentIndex, CancellationToken cancellationToken)
+        private async Task<(bool gotoExecuted, int newIndex)> ExecuteWaitResponseWithGotoAsync(WaitResponseStep step, Dictionary<string, int> labelMap, CancellationToken cancellationToken)
         {
             var startTime = DateTime.Now;
             var timeout = TimeSpan.FromMilliseconds(step.TimeoutMs);
@@ -281,11 +280,10 @@ namespace SocketSimulator.Services
             if (!string.IsNullOrEmpty(targetLabel) && labelMap.TryGetValue(targetLabel, out var targetIndex))
             {
                 _logger.Debug("Scenario", $"WaitResponse: {(success == true ? "Success" : "Timeout")}, goto '{targetLabel}'");
-                currentIndex = targetIndex;
-                return true; // Indicate goto was executed
+                return (true, targetIndex);
             }
 
-            return false; // No goto, continue to next step
+            return (false, 0);
         }
 
         private Dictionary<string, int> BuildLabelIndexMap(List<ScenarioStep> steps)
