@@ -128,7 +128,7 @@ namespace SocketSimulator.Services
                 // Handle AutoReply with goto support
                 if (step is AutoReplyStep autoReplyStep)
                 {
-                    await ExecuteAutoReplyWithGotoAsync(autoReplyStep, labelIndexMap, ref currentIndex, cancellationToken);
+                    currentIndex = await ExecuteAutoReplyWithGotoAsync(autoReplyStep, labelIndexMap, currentIndex, cancellationToken);
                     continue;
                 }
 
@@ -414,7 +414,7 @@ namespace SocketSimulator.Services
             return commandName.Equals(pattern, StringComparison.OrdinalIgnoreCase);
         }
 
-        private async Task ExecuteAutoReplyWithGotoAsync(AutoReplyStep step, Dictionary<string, int> labelMap, ref int currentIndex, CancellationToken cancellationToken)
+        private async Task<int> ExecuteAutoReplyWithGotoAsync(AutoReplyStep step, Dictionary<string, int> labelMap, int currentIndex, CancellationToken cancellationToken)
         {
             // Get the command name to match
             var commandToMatch = !string.IsNullOrEmpty(step.CommandName) ? step.CommandName : step.CommandPattern;
@@ -463,8 +463,7 @@ namespace SocketSimulator.Services
                         if (!string.IsNullOrEmpty(step.GotoLabel) && labelMap.TryGetValue(step.GotoLabel, out var targetIndex))
                         {
                             _logger.Info("Scenario", $"AutoReply: Jumping to label '{step.GotoLabel}'");
-                            currentIndex = targetIndex;
-                            return;
+                            return targetIndex;
                         }
                         
                         // If not continue, we stay in auto-reply mode waiting for more commands
@@ -476,8 +475,7 @@ namespace SocketSimulator.Services
                         }
                         
                         // Continue to next step
-                        currentIndex++;
-                        return;
+                        return currentIndex + 1;
                     }
                 }
                 
@@ -485,7 +483,7 @@ namespace SocketSimulator.Services
             }
             
             _logger.Warning("Scenario", $"AutoReply: Timeout waiting for command matching '{commandToMatch}'");
-            currentIndex++;
+            return currentIndex + 1;
         }
 
         private void ExecuteSetVariable(SetVariableStep step)
