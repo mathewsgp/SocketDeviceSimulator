@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
 using SocketSimulator.Commands;
@@ -90,7 +91,7 @@ namespace SocketSimulator.ViewModels
             Variables.Clear();
             foreach (var (name, value) in _variableService.Variables)
             {
-                Variables.Add(new VariableItem 
+                Variables.Add(new VariableItem((n, v) => _variableService.SetVariable(n, v))
                 { 
                     Name = name, 
                     Value = value?.ToString() ?? string.Empty,
@@ -150,7 +151,7 @@ namespace SocketSimulator.ViewModels
                 return;
 
             _variableService.SetVariable(NewVariableName, NewVariableValue);
-            Variables.Add(new VariableItem 
+            Variables.Add(new VariableItem((n, v) => _variableService.SetVariable(n, v))
             { 
                 Name = NewVariableName, 
                 Value = NewVariableValue,
@@ -186,12 +187,64 @@ namespace SocketSimulator.ViewModels
             RefreshVariables();
             _logger.Info("Variable", "Variables reset to defaults");
         }
+
+        public void UpdateVariableValue(VariableItem item, string newValue)
+        {
+            if (item.Category == "Variable")
+            {
+                _variableService.SetVariable(item.Name, newValue);
+                item.Value = newValue;
+            }
+        }
     }
 
-    public class VariableItem
+    public class VariableItem : INotifyPropertyChanged
     {
-        public string Name { get; set; } = string.Empty;
-        public string Value { get; set; } = string.Empty;
+        private string _name = string.Empty;
+        private string _value = string.Empty;
+        private readonly Action<string, string>? _onValueChanged;
+        
+        public VariableItem() { }
+        
+        public VariableItem(Action<string, string>? onValueChanged = null)
+        {
+            _onValueChanged = onValueChanged;
+        }
+        
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if (_name != value)
+                {
+                    _name = value;
+                    OnPropertyChanged(nameof(Name));
+                }
+            }
+        }
+
+        public string Value
+        {
+            get => _value;
+            set
+            {
+                if (_value != value)
+                {
+                    _value = value;
+                    OnPropertyChanged(nameof(Value));
+                    _onValueChanged?.Invoke(_name, _value);
+                }
+            }
+        }
+
         public string Category { get; set; } = "Variable";
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

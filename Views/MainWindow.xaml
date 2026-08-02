@@ -201,12 +201,13 @@
                                       Foreground="{StaticResource PrimaryBrush}" Margin="0,4,0,4"/>
                             <DataGrid Grid.Row="1" ItemsSource="{Binding VariableVM.Variables}"
                                      SelectedItem="{Binding VariableVM.SelectedVariable}"
-                                     AutoGenerateColumns="False" IsReadOnly="True"
+                                     AutoGenerateColumns="False"
                                      HeadersVisibility="Column" Background="White"
-                                     BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                                     BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                                     CanUserAddRows="False" CanUserDeleteRows="False">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
-                                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Value" Binding="{Binding Value, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                             
