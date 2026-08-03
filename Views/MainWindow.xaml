@@ -168,9 +168,9 @@
                                     Width="80" Style="{StaticResource ModernTextBox}" Margin="0,0,4,0"
                                     ToolTip="Variable value"/>
                             <Button Content="Add" Command="{Binding VariableVM.AddVariableCommand}" 
-                                   Style="{StaticResource SecondaryButton}" Padding="8,4" Margin="0,0,4,0"/>
+                                   Style="{StaticResource SecondaryButton}" Margin="0,0,4,0"/>
                             <Button Content="Reset" Command="{Binding VariableVM.ResetVariablesCommand}" 
-                                   Style="{StaticResource SecondaryButton}" Padding="8,4"/>
+                                   Style="{StaticResource SecondaryButton}"/>
                         </StackPanel>
                         
                         <Grid>
@@ -200,7 +200,7 @@
                             <DockPanel Grid.Row="2" Margin="0,8,0,4">
                                 <Button DockPanel.Dock="Right" Content="Clear" 
                                        Command="{Binding VariableVM.ClearParsedCommand}"
-                                       Style="{StaticResource SecondaryButton}" Padding="6,2" FontSize="10"/>
+                                       Style="{StaticResource SecondaryButton}"/>
                                 <TextBlock Text="Parsed from Commands" FontWeight="SemiBold" FontSize="11" 
                                           Foreground="{StaticResource InfoBrush}" VerticalAlignment="Center"/>
                             </DockPanel>
@@ -232,7 +232,7 @@
                         <!-- Header with title and Run/Stop buttons -->
                         <DockPanel Margin="0,0,0,10">
                             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                                <Button Command="{Binding ScenarioVM.RunScenarioCommand}" Padding="16,6">
+                                <Button Command="{Binding ScenarioVM.RunScenarioCommand}" Height="26">
                                     <TextBlock Text="Run" FontWeight="SemiBold" Foreground="White"/>
                                     <Button.Style>
                                         <Style TargetType="Button">
@@ -247,7 +247,7 @@
                                         </Style>
                                     </Button.Style>
                                 </Button>
-                                <Button Command="{Binding ScenarioVM.StopScenarioCommand}" Padding="16,6" Margin="8,0,0,0" Visibility="{Binding ScenarioVM.IsRunning, Converter={StaticResource BoolToVisibility}}">
+                                <Button Command="{Binding ScenarioVM.StopScenarioCommand}" Height="26" Margin="8,0,0,0" Visibility="{Binding ScenarioVM.IsRunning, Converter={StaticResource BoolToVisibility}}">
                                     <TextBlock Text="Stop" FontWeight="SemiBold" Foreground="#2196F3"/>
                                     <Button.Style>
                                         <Style TargetType="Button">
@@ -298,7 +298,7 @@
                         <Border Height="1" Background="{StaticResource BorderBrush}" Margin="0,8"/>
                         <DockPanel>
                             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                                <Button Content="Remove" Command="{Binding ScenarioVM.RemoveStepCommand}" Style="{StaticResource ActionButton}" Padding="10,6"/>
+                                <Button Content="Remove" Command="{Binding ScenarioVM.RemoveStepCommand}" Style="{StaticResource ActionButton}"/>
                                 <Button Content="↑" Command="{Binding ScenarioVM.MoveUpCommand}" Style="{StaticResource ActionButton}" Width="32" Margin="4,0,0,0"/>
                                 <Button Content="↓" Command="{Binding ScenarioVM.MoveDownCommand}" Style="{StaticResource ActionButton}" Width="32" Margin="4,0,0,0"/>
                             </StackPanel>
@@ -486,8 +486,8 @@
                                 </Grid.ColumnDefinitions>
                                 <ComboBox Grid.Column="0" ItemsSource="{Binding ConsoleVM.Suggestions}" Text="{Binding ConsoleVM.CommandText, UpdateSourceTrigger=PropertyChanged}" IsEditable="True" Style="{StaticResource ModernComboBox}"/>
                                 <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8,0,0,0">
-                                    <Button Content="Send" Command="{Binding ConsoleVM.SendCommandCommand}" Style="{StaticResource PrimaryButton}" Padding="12,6"/>
-                                    <Button Content="Clear" Command="{Binding ConsoleVM.ClearHistoryCommand}" Style="{StaticResource SecondaryButton}" Padding="8,6" Margin="4,0,0,0"/>
+                                    <Button Content="Send" Command="{Binding ConsoleVM.SendCommandCommand}" Style="{StaticResource PrimaryButton}"/>
+                                    <Button Content="Clear" Command="{Binding ConsoleVM.ClearHistoryCommand}" Style="{StaticResource SecondaryButton}" Margin="4,0,0,0"/>
                                 </StackPanel>
                             </Grid>
                         </Grid>
@@ -508,8 +508,8 @@
                                              Visibility="{Binding LogVM.IsLogFileEnabled, Converter={StaticResource BoolToVisibility}}"
                                              ToolTip="Log file enabled"/>
                                 </StackPanel>
-                                <Button Grid.Column="1" Content="Save" Command="{Binding LogVM.SaveLogCommand}" Style="{StaticResource SecondaryButton}" Padding="8,4" Margin="0,0,4,0"/>
-                                <Button Grid.Column="2" Content="Clear" Command="{Binding LogVM.ClearCommand}" Style="{StaticResource SecondaryButton}" Padding="8,4"/>
+                                <Button Grid.Column="1" Content="Save" Command="{Binding LogVM.SaveLogCommand}" Style="{StaticResource SecondaryButton}" Margin="0,0,4,0"/>
+                                <Button Grid.Column="2" Content="Clear" Command="{Binding LogVM.ClearCommand}" Style="{StaticResource SecondaryButton}"/>
                             </Grid>
                             <TextBox x:Name="LogTextBox"
                                      Text="{Binding LogVM.LogText, Mode=OneWay}" 
