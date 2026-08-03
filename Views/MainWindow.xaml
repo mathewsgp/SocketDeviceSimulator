@@ -249,8 +249,8 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="Scenario Editor" Style="{StaticResource PanelHeader}" VerticalAlignment="Center"/>
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
-                        <Button Content="Run" Command="{Binding ScenarioVM.RunScenarioCommand}" Style="{StaticResource PrimaryButton}" Margin="0,0,8,0" Padding="16,8" Visibility="{Binding ScenarioVM.IsRunning, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}"/>
-                        <Button Content="Stop" Command="{Binding ScenarioVM.StopScenarioCommand}" Style="{StaticResource SecondaryButton}" Padding="16,8" Visibility="{Binding ScenarioVM.IsRunning, Converter={StaticResource BoolToVisibility}}"/>
+                        <Button Content="Run" FontWeight="Bold" Foreground="White" Background="#2196F3" Command="{Binding ScenarioVM.RunScenarioCommand}" Padding="16,8" Margin="0,0,8,0" BorderThickness="0"/>
+                        <Button Content="Stop" FontWeight="Bold" Foreground="#2196F3" Background="Transparent" BorderBrush="#2196F3" BorderThickness="1" Command="{Binding ScenarioVM.StopScenarioCommand}" Padding="16,8" Visibility="{Binding ScenarioVM.IsRunning, Converter={StaticResource BoolToVisibility}}"/>
                     </StackPanel>
                 </Grid>
 
@@ -459,15 +459,15 @@
                     </Border>
                 </Grid>
 
-                <!-- Bottom: Manual Send + Communication Log -->
+                <!-- Bottom: Manual Send + Communication Log (stacked) -->
                 <Grid Grid.Row="2" Margin="0,8,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
                     <!-- Manual Send -->
-                    <Border Grid.Column="0" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,4,0">
+                    <Border Grid.Row="0" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,8">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -488,8 +488,8 @@
                         </Grid>
                     </Border>
 
-                    <!-- Communication Log -->
-                    <Border Grid.Column="1" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="4,0,0,0">
+                    <!-- Communication Log (full width, below Manual Send) -->
+                    <Border Grid.Row="1" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="12">
                         <DockPanel>
                             <Grid DockPanel.Dock="Top" Margin="0,0,0,8">
                                 <Grid.ColumnDefinitions>
@@ -499,7 +499,7 @@
                                 <TextBlock Text="Communication Log" FontWeight="SemiBold" FontSize="12"/>
                                 <Button Grid.Column="1" Content="Clear" Command="{Binding LogVM.ClearCommand}" Style="{StaticResource SecondaryButton}" Padding="8,4"/>
                             </Grid>
-                            <ListBox ItemsSource="{Binding LogVM.LogEntries}" Style="{StaticResource ModernListBox}" Background="#FAFAFA" MaxHeight="150">
+                            <ListBox ItemsSource="{Binding LogVM.LogEntries}" Style="{StaticResource ModernListBox}" Background="#FAFAFA" MaxHeight="200">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding}" Foreground="{Binding Level, Converter={StaticResource LogLevelToBrush}}" FontFamily="Consolas" FontSize="11"/>
