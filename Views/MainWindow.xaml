@@ -241,55 +241,47 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <!-- Header with Run/Stop -->
-                <Grid Grid.Row="0" Margin="0,0,0,8">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="Scenario Editor" Style="{StaticResource PanelHeader}" VerticalAlignment="Center"/>
-                    <StackPanel Grid.Column="1" Orientation="Horizontal">
-                        <Button Command="{Binding ScenarioVM.RunScenarioCommand}" Padding="16,6" Margin="0,0,8,0">
-                            <Button.Content>
-                                <TextBlock Text="Run" FontWeight="SemiBold" Foreground="White"/>
-                            </Button.Content>
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Background" Value="#2196F3"/>
-                                    <Setter Property="BorderThickness" Value="0"/>
-                                    <Setter Property="Cursor" Value="Hand"/>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="#1976D2"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <Button Command="{Binding ScenarioVM.StopScenarioCommand}" Padding="16,6" Visibility="{Binding ScenarioVM.IsRunning, Converter={StaticResource BoolToVisibility}}">
-                            <Button.Content>
-                                <TextBlock Text="Stop" FontWeight="SemiBold" Foreground="#2196F3"/>
-                            </Button.Content>
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Background" Value="Transparent"/>
-                                    <Setter Property="BorderBrush" Value="#2196F3"/>
-                                    <Setter Property="BorderThickness" Value="1"/>
-                                    <Setter Property="Cursor" Value="Hand"/>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="#E3F2FD"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                    </StackPanel>
-                </Grid>
-
                 <!-- Step Toolbar -->
-                <Border Grid.Row="0" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Margin="0,40,0,8" Padding="12">
+                <Border Grid.Row="0" Background="{StaticResource SurfaceBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Margin="0,0,0,8" Padding="12">
                     <StackPanel>
+                        <!-- Header with title and Run/Stop buttons -->
+                        <DockPanel Margin="0,0,0,10">
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                <Button Command="{Binding ScenarioVM.RunScenarioCommand}" Padding="16,6">
+                                    <TextBlock Text="Run" FontWeight="SemiBold" Foreground="White"/>
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="#2196F3"/>
+                                            <Setter Property="BorderThickness" Value="0"/>
+                                            <Setter Property="Cursor" Value="Hand"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#1976D2"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Command="{Binding ScenarioVM.StopScenarioCommand}" Padding="16,6" Margin="8,0,0,0" Visibility="{Binding ScenarioVM.IsRunning, Converter={StaticResource BoolToVisibility}}">
+                                    <TextBlock Text="Stop" FontWeight="SemiBold" Foreground="#2196F3"/>
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Setter Property="BorderBrush" Value="#2196F3"/>
+                                            <Setter Property="BorderThickness" Value="1"/>
+                                            <Setter Property="Cursor" Value="Hand"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#E3F2FD"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </StackPanel>
+                            <TextBlock Text="Scenario Editor" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        </DockPanel>
+                        
                         <TextBlock Text="Add Steps" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,10"/>
                         <WrapPanel>
                             <StackPanel Orientation="Horizontal" Margin="0,0,20,4">
