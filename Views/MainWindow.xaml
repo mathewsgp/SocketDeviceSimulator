@@ -249,8 +249,41 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="Scenario Editor" Style="{StaticResource PanelHeader}" VerticalAlignment="Center"/>
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
-                        <Button Content="Run" FontWeight="Bold" Foreground="White" Background="#2196F3" Command="{Binding ScenarioVM.RunScenarioCommand}" Padding="16,8" Margin="0,0,8,0" BorderThickness="0"/>
-                        <Button Content="Stop" FontWeight="Bold" Foreground="#2196F3" Background="Transparent" BorderBrush="#2196F3" BorderThickness="1" Command="{Binding ScenarioVM.StopScenarioCommand}" Padding="16,8" Visibility="{Binding ScenarioVM.IsRunning, Converter={StaticResource BoolToVisibility}}"/>
+                        <Button Command="{Binding ScenarioVM.RunScenarioCommand}" Padding="16,6" Margin="0,0,8,0">
+                            <Button.Content>
+                                <TextBlock Text="Run" FontWeight="SemiBold" Foreground="White"/>
+                            </Button.Content>
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="#2196F3"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#1976D2"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button Command="{Binding ScenarioVM.StopScenarioCommand}" Padding="16,6" Visibility="{Binding ScenarioVM.IsRunning, Converter={StaticResource BoolToVisibility}}">
+                            <Button.Content>
+                                <TextBlock Text="Stop" FontWeight="SemiBold" Foreground="#2196F3"/>
+                            </Button.Content>
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="BorderBrush" Value="#2196F3"/>
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#E3F2FD"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                     </StackPanel>
                 </Grid>
 
