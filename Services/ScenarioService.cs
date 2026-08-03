@@ -521,7 +521,31 @@ namespace SocketSimulator.Services
                 return false;
 
             var varName = varMatch.Groups[1].Value;
+            
+            // Get variable value - first from VariableService, then check parsed data
             var varValueStr = variableService.GetVariableString(varName);
+            
+            // Also check parsed data (from received STATUS responses) - use this if variable has default/empty value
+            var parsedValue = _protocolService.GetParsedValue("LastCommand");
+            if (!string.IsNullOrEmpty(parsedValue))
+            {
+                // Try to get the specific parameter from the last command
+                var paramValue = _protocolService.GetParsedValue(parsedValue, varName);
+                if (!string.IsNullOrEmpty(paramValue))
+                {
+                    varValueStr = paramValue;
+                }
+            }
+            
+            // Also check direct parsed data key (e.g., STATUS.state)
+            if (varValueStr == variableService.GetVariableString(varName)) // Only if not already found
+            {
+                var directParsed = _protocolService.GetParsedValue(varName);
+                if (!string.IsNullOrEmpty(directParsed))
+                {
+                    varValueStr = directParsed;
+                }
+            }
 
             // Find operator and comparison value - check multi-char operators first
             string op = null;
