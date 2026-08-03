@@ -20,9 +20,9 @@ namespace SocketSimulator.Models
         public string CommandName { get; set; } = string.Empty;
         public int TimeoutMs { get; set; } = 5000;
         // Goto on success (command received)
-        public string? GotoLabelOnSuccess { get; set; }
+        public string GotoLabelOnSuccess { get; set; } = string.Empty;
         // Goto on timeout
-        public string? GotoLabelOnTimeout { get; set; }
+        public string GotoLabelOnTimeout { get; set; } = string.Empty;
     }
 
     // Wait for a response pattern from client
@@ -36,9 +36,9 @@ namespace SocketSimulator.Models
         public string ExpectedParameters { get; set; } = string.Empty;
         public int TimeoutMs { get; set; } = 5000;
         // Goto on success (pattern found)
-        public string? GotoLabelOnSuccess { get; set; }
+        public string GotoLabelOnSuccess { get; set; } = string.Empty;
         // Goto on timeout
-        public string? GotoLabelOnTimeout { get; set; }
+        public string GotoLabelOnTimeout { get; set; } = string.Empty;
     }
 
     public class SendResponseStep : ScenarioStep
@@ -86,8 +86,8 @@ namespace SocketSimulator.Models
         // Actions to execute if condition is false
         public List<ScenarioStep> IfFalse { get; set; } = new();
         // OR: Goto a label instead of executing actions
-        public string? GotoLabelIfTrue { get; set; }
-        public string? GotoLabelIfFalse { get; set; }
+        public string GotoLabelIfTrue { get; set; } = string.Empty;
+        public string GotoLabelIfFalse { get; set; } = string.Empty;
     }
 
     // Label - marks a position in the scenario for Goto
