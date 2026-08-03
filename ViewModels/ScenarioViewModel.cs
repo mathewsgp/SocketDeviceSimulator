@@ -181,6 +181,28 @@ namespace SocketSimulator.ViewModels
 
         private void RefreshAvailableLabels()
         {
+            // Save current goto label values before clearing
+            string? savedGotoLabelOnSuccess = null;
+            string? savedGotoLabelOnTimeout = null;
+            string? savedGotoLabelIfTrue = null;
+            string? savedGotoLabelIfFalse = null;
+            
+            if (SelectedWaitCommandStep != null)
+            {
+                savedGotoLabelOnSuccess = SelectedWaitCommandStep.GotoLabelOnSuccess;
+                savedGotoLabelOnTimeout = SelectedWaitCommandStep.GotoLabelOnTimeout;
+            }
+            else if (SelectedWaitResponseStep != null)
+            {
+                savedGotoLabelOnSuccess = SelectedWaitResponseStep.GotoLabelOnSuccess;
+                savedGotoLabelOnTimeout = SelectedWaitResponseStep.GotoLabelOnTimeout;
+            }
+            else if (SelectedIfElseStep != null)
+            {
+                savedGotoLabelIfTrue = SelectedIfElseStep.GotoLabelIfTrue;
+                savedGotoLabelIfFalse = SelectedIfElseStep.GotoLabelIfFalse;
+            }
+            
             AvailableLabels.Clear();
             foreach (var step in Steps)
             {
@@ -188,6 +210,23 @@ namespace SocketSimulator.ViewModels
                 {
                     AvailableLabels.Add(label.LabelName);
                 }
+            }
+            
+            // Restore values after labels are refreshed
+            if (SelectedWaitCommandStep != null)
+            {
+                SelectedWaitCommandStep.GotoLabelOnSuccess = savedGotoLabelOnSuccess ?? string.Empty;
+                SelectedWaitCommandStep.GotoLabelOnTimeout = savedGotoLabelOnTimeout ?? string.Empty;
+            }
+            else if (SelectedWaitResponseStep != null)
+            {
+                SelectedWaitResponseStep.GotoLabelOnSuccess = savedGotoLabelOnSuccess ?? string.Empty;
+                SelectedWaitResponseStep.GotoLabelOnTimeout = savedGotoLabelOnTimeout ?? string.Empty;
+            }
+            else if (SelectedIfElseStep != null)
+            {
+                SelectedIfElseStep.GotoLabelIfTrue = savedGotoLabelIfTrue ?? string.Empty;
+                SelectedIfElseStep.GotoLabelIfFalse = savedGotoLabelIfFalse ?? string.Empty;
             }
         }
 
