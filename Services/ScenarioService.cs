@@ -44,6 +44,7 @@ namespace SocketSimulator.Services
 
         private void OnDataReceived(object? sender, SocketService.DataReceivedEventArgs e)
         {
+            _logger.Debug("Scenario", $"OnDataReceived: data='{e.Data}'");
             lock (_dataLock)
             {
                 _lastReceivedCommand = e.Data;
@@ -51,6 +52,8 @@ namespace SocketSimulator.Services
                 if (_protocolService != null)
                 {
                     _protocolService.ParseCommand(e.Data);
+                    var allKeys = string.Join(", ", _protocolService.ParsedData.Select(kvp => $"{kvp.Key}={kvp.Value}"));
+                    _logger.Debug("Scenario", $"OnDataReceived: parsed data after ParseCommand: [{allKeys}]");
                 }
             }
             
