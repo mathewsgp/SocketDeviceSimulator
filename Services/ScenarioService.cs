@@ -540,32 +540,26 @@ namespace SocketSimulator.Services
             lock (_dataLock)
             {
                 var lastCmd = _protocolService.GetParsedValue("LastCommand");
-                _logger.Debug("Scenario", $"EvaluateCondition: varName='{varName}', lastCmd='{lastCmd}', variableService has '{varValueStr}'");
                 
                 if (!string.IsNullOrEmpty(lastCmd))
                 {
-                    // Try to get the specific parameter from the last command
-                    var paramKey = $"{lastCmd}.{varName}";
-                    var paramValue = _protocolService.GetParsedValue(paramKey);
-                    _logger.Debug("Scenario", $"EvaluateCondition: checking key '{paramKey}' = '{paramValue}'");
+                    // Try to get the specific parameter from the last command (case-insensitive)
+                    var paramValue = _protocolService.GetParsedValue(lastCmd, varName);
                     if (!string.IsNullOrEmpty(paramValue))
                     {
                         varValueStr = paramValue;
                     }
                 }
                 
-                // Also check direct parsed data key (e.g., state)
+                // Also check direct parsed data key (e.g., state) - case-insensitive
                 if (varValueStr == variableService.GetVariableString(varName))
                 {
                     var directParsed = _protocolService.GetParsedValue(varName);
-                    _logger.Debug("Scenario", $"EvaluateCondition: checking direct key '{varName}' = '{directParsed}'");
                     if (!string.IsNullOrEmpty(directParsed))
                     {
                         varValueStr = directParsed;
                     }
                 }
-                
-                _logger.Debug("Scenario", $"EvaluateCondition: final varValueStr='{varValueStr}'");
             }
 
             // Find operator and comparison value - check multi-char operators first

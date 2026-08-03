@@ -256,27 +256,41 @@ namespace SocketSimulator.Services
 
         /// <summary>
         /// Get a stored value by key (supports ${Parsed.Key} syntax)
+        /// Uses case-insensitive comparison
         /// </summary>
         public string GetParsedValue(string key)
         {
-            if (_parsedData.TryGetValue(key, out var value))
-                return value;
+            // Case-insensitive lookup
+            foreach (var kvp in _parsedData)
+            {
+                if (kvp.Key.Equals(key, StringComparison.OrdinalIgnoreCase))
+                    return kvp.Value;
+            }
             
             // Try without prefix
-            if (_parsedData.TryGetValue(key.Replace("Parsed.", ""), out value))
-                return value;
+            var keyWithoutPrefix = key.Replace("Parsed.", "");
+            foreach (var kvp in _parsedData)
+            {
+                if (kvp.Key.Equals(keyWithoutPrefix, StringComparison.OrdinalIgnoreCase))
+                    return kvp.Value;
+            }
                 
             return string.Empty;
         }
 
         /// <summary>
         /// Get a stored value using dot notation: CommandName.ParameterName
+        /// Uses case-insensitive comparison
         /// </summary>
         public string GetParsedValue(string commandName, string parameterName)
         {
+            // Try exact match first
             var key = $"{commandName}.{parameterName}";
-            if (_parsedData.TryGetValue(key, out var value))
-                return value;
+            foreach (var kvp in _parsedData)
+            {
+                if (kvp.Key.Equals(key, StringComparison.OrdinalIgnoreCase))
+                    return kvp.Value;
+            }
             return string.Empty;
         }
 
