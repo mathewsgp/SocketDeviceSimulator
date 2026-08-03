@@ -81,6 +81,7 @@
         "Order": 11,
         "Description": "Wait for status response",
         "CommandName": "STATUS",
+        "ExpectedResponseContains": "STATUS",
         "TimeoutMs": 5000
       },
       {

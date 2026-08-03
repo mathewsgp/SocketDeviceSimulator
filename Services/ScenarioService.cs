@@ -54,7 +54,11 @@ namespace SocketSimulator.Services
         
         private void CheckAndExecuteAutoReply(string receivedData)
         {
-            if (_activeAutoReplyRules.Count == 0) return;
+            if (_activeAutoReplyRules.Count == 0)
+            {
+                _logger.Debug("Scenario", $"AutoReply: No rules registered (count=0), ignoring '{receivedData}'");
+                return;
+            }
             
             var parsedCommand = _protocolService.ParseCommand(receivedData);
             
