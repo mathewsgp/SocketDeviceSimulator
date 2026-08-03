@@ -24,6 +24,7 @@ namespace SocketSimulator.Services
         public Dictionary<string, string> ParsedData => _parsedData;
 
         public event EventHandler? ProtocolChanged;
+        public event EventHandler? ParsedDataChanged;
 
         private ProtocolService() { }
 
@@ -232,6 +233,9 @@ namespace SocketSimulator.Services
             
             _logger.Debug("Protocol", $"Parsed command: {result.CommandName}, Params: {string.Join(", ", result.Parameters.Select(p => $"{p.Key}={p.Value}"))}");
             
+            // Notify UI that parsed data changed
+            ParsedDataChanged?.Invoke(this, EventArgs.Empty);
+            
             return result;
         }
 
@@ -246,6 +250,8 @@ namespace SocketSimulator.Services
                 _parsedData["LastResponse"] = rawResponse;
                 _logger.Debug("Protocol", $"Stored response: {parsed.CommandName}");
             }
+            // Notify UI that parsed data changed
+            ParsedDataChanged?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>

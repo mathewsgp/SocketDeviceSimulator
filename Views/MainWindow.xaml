@@ -390,9 +390,9 @@
                                         <TextBlock Text="Timeout (ms):" Margin="0,4,0,4" FontWeight="Medium"/>
                                         <TextBox Text="{Binding ScenarioVM.SelectedWaitCommandStep.TimeoutMs, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"/>
                                         <TextBlock Text="Goto on Success:" Margin="0,4,0,4" FontWeight="Medium"/>
-                                        <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}" SelectedItem="{Binding ScenarioVM.SelectedWaitCommandStep.GotoLabelOnSuccess}" Style="{StaticResource ModernComboBox}" Margin="0,0,0,8"/>
+                                        <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}" Text="{Binding ScenarioVM.SelectedWaitCommandStep.GotoLabelOnSuccess, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernComboBox}" IsEditable="True" Margin="0,0,0,8"/>
                                         <TextBlock Text="Goto on Timeout:" Margin="0,4,0,4" FontWeight="Medium"/>
-                                        <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}" SelectedItem="{Binding ScenarioVM.SelectedWaitCommandStep.GotoLabelOnTimeout}" Style="{StaticResource ModernComboBox}"/>
+                                        <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}" Text="{Binding ScenarioVM.SelectedWaitCommandStep.GotoLabelOnTimeout, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernComboBox}" IsEditable="True"/>
                                     </StackPanel>
                                     
                                     <!-- WaitResponseStep -->
@@ -404,9 +404,9 @@
                                         <TextBlock Text="Timeout (ms):" Margin="0,4,0,4" FontWeight="Medium"/>
                                         <TextBox Text="{Binding ScenarioVM.SelectedWaitResponseStep.TimeoutMs, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"/>
                                         <TextBlock Text="Goto on Success:" Margin="0,4,0,4" FontWeight="Medium"/>
-                                        <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}" SelectedItem="{Binding ScenarioVM.SelectedWaitResponseStep.GotoLabelOnSuccess}" Style="{StaticResource ModernComboBox}" Margin="0,0,0,8"/>
+                                        <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}" Text="{Binding ScenarioVM.SelectedWaitResponseStep.GotoLabelOnSuccess, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernComboBox}" IsEditable="True" Margin="0,0,0,8"/>
                                         <TextBlock Text="Goto on Timeout:" Margin="0,4,0,4" FontWeight="Medium"/>
-                                        <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}" SelectedItem="{Binding ScenarioVM.SelectedWaitResponseStep.GotoLabelOnTimeout}" Style="{StaticResource ModernComboBox}"/>
+                                        <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}" Text="{Binding ScenarioVM.SelectedWaitResponseStep.GotoLabelOnTimeout, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernComboBox}" IsEditable="True"/>
                                     </StackPanel>
                                     
                                     <!-- SendResponseStep -->
@@ -448,9 +448,9 @@
                                         <TextBlock Text="Condition:" Margin="0,4,0,4" FontWeight="Medium"/>
                                         <TextBox Text="{Binding ScenarioVM.SelectedIfElseStep.Condition, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" TextWrapping="Wrap" Margin="0,0,0,8"/>
                                         <TextBlock Text="Goto if True:" Margin="0,4,0,4" FontWeight="Medium"/>
-                                        <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}" SelectedItem="{Binding ScenarioVM.SelectedIfElseStep.GotoLabelIfTrue}" Style="{StaticResource ModernComboBox}" Margin="0,0,0,8"/>
+                                        <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}" Text="{Binding ScenarioVM.SelectedIfElseStep.GotoLabelIfTrue, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernComboBox}" IsEditable="True" Margin="0,0,0,8"/>
                                         <TextBlock Text="Goto if False:" Margin="0,4,0,4" FontWeight="Medium"/>
-                                        <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}" SelectedItem="{Binding ScenarioVM.SelectedIfElseStep.GotoLabelIfFalse}" Style="{StaticResource ModernComboBox}"/>
+                                        <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}" Text="{Binding ScenarioVM.SelectedIfElseStep.GotoLabelIfFalse, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernComboBox}" IsEditable="True"/>
                                     </StackPanel>
                                     
                                     <!-- LabelStep -->
@@ -462,7 +462,7 @@
                                     <!-- GotoStep -->
                                     <StackPanel Visibility="{Binding ScenarioVM.SelectedGotoStep, Converter={StaticResource NullToVisibility}}">
                                         <TextBlock Text="Target Label:" Margin="0,4,0,4" FontWeight="Medium"/>
-                                        <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}" SelectedItem="{Binding ScenarioVM.SelectedGotoStep.TargetLabel}" Style="{StaticResource ModernComboBox}"/>
+                                        <ComboBox ItemsSource="{Binding ScenarioVM.AvailableLabels}" Text="{Binding ScenarioVM.SelectedGotoStep.TargetLabel, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernComboBox}" IsEditable="True"/>
                                     </StackPanel>
                                     
                                     <!-- AutoReplyStep -->
@@ -519,13 +519,12 @@
                                 <TextBlock Text="Communication Log" FontWeight="SemiBold" FontSize="12"/>
                                 <Button Grid.Column="1" Content="Clear" Command="{Binding LogVM.ClearCommand}" Style="{StaticResource SecondaryButton}" Padding="8,4"/>
                             </Grid>
-                            <ListBox ItemsSource="{Binding LogVM.LogEntries}" Style="{StaticResource ModernListBox}" Background="#FAFAFA" MaxHeight="200">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding}" Foreground="{Binding Level, Converter={StaticResource LogLevelToBrush}}" FontFamily="Consolas" FontSize="11"/>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
+                            <TextBox Text="{Binding LogVM.LogText, Mode=OneWay}" 
+                                     Background="#FAFAFA" FontFamily="Consolas" FontSize="11" 
+                                     IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" 
+                                     VerticalScrollBarVisibility="Auto" MaxHeight="200"
+                                     BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+                                     Padding="8"/>
                         </DockPanel>
                     </Border>
                 </Grid>

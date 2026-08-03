@@ -53,6 +53,7 @@ namespace SocketSimulator.ViewModels
 
             _variableService.VariableChanged += OnVariableChanged;
             _protocolService.ProtocolChanged += OnProtocolChanged;
+            _protocolService.ParsedDataChanged += OnParsedDataChanged;
 
             AddVariableCommand = new RelayCommand(AddVariable, () => !string.IsNullOrWhiteSpace(NewVariableName));
             RemoveVariableCommand = new RelayCommand(RemoveVariable, () => SelectedVariable != null);
@@ -66,6 +67,11 @@ namespace SocketSimulator.ViewModels
         private void OnProtocolChanged(object? sender, EventArgs e)
         {
             System.Windows.Application.Current?.Dispatcher.Invoke(RefreshAll);
+        }
+
+        private void OnParsedDataChanged(object? sender, EventArgs e)
+        {
+            System.Windows.Application.Current?.Dispatcher.Invoke(RefreshParsedItems);
         }
 
         private void OnVariableChanged(object? sender, VariableService.VariableChangedEventArgs e)
