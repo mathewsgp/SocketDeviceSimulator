@@ -25,6 +25,9 @@ namespace SocketSimulator.Services
         
         // Active auto-reply rules: key is command pattern, value is AutoReplyStep
         private Dictionary<string, AutoReplyStep> _activeAutoReplyRules = new();
+        
+        // Lock for thread safety when accessing shared data
+        private readonly object _dataLock = new();
 
         public event EventHandler<StepExecutedEventArgs>? StepExecuted;
         public event EventHandler? ScenarioStarted;
@@ -41,14 +44,17 @@ namespace SocketSimulator.Services
 
         private void OnDataReceived(object? sender, SocketService.DataReceivedEventArgs e)
         {
-            _lastReceivedCommand = e.Data;
-            // Parse and store the command using Protocol
-            if (_protocolService != null)
+            lock (_dataLock)
             {
-                _protocolService.ParseCommand(e.Data);
+                _lastReceivedCommand = e.Data;
+                // Parse and store the command using Protocol
+                if (_protocolService != null)
+                {
+                    _protocolService.ParseCommand(e.Data);
+                }
             }
             
-            // Check for matching auto-reply rules
+            // Check for matching auto-reply rules (outside lock to avoid deadlock)
             CheckAndExecuteAutoReply(e.Data);
         }
         
@@ -299,18 +305,23 @@ namespace SocketSimulator.Services
             var startTime = DateTime.Now;
             var timeout = TimeSpan.FromMilliseconds(step.TimeoutMs);
             bool? success = null;
+            string receivedData = string.Empty;
 
             while (DateTime.Now - startTime < timeout)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                if (!string.IsNullOrEmpty(_lastReceivedCommand) &&
-                    _lastReceivedCommand.Contains(step.ExpectedResponseContains, StringComparison.OrdinalIgnoreCase))
+                lock (_dataLock)
                 {
-                    _logger.Info("Scenario", $"WaitResponse: Found '{step.ExpectedResponseContains}'");
-                    success = true;
-                    _lastReceivedCommand = string.Empty;
-                    break;
+                    if (!string.IsNullOrEmpty(_lastReceivedCommand) &&
+                        _lastReceivedCommand.Contains(step.ExpectedResponseContains, StringComparison.OrdinalIgnoreCase))
+                    {
+                        receivedData = _lastReceivedCommand;
+                        _logger.Info("Scenario", $"WaitResponse: Found '{step.ExpectedResponseContains}'");
+                        success = true;
+                        _lastReceivedCommand = string.Empty;
+                        break;
+                    }
                 }
 
                 await Task.Delay(50, cancellationToken);
@@ -525,25 +536,28 @@ namespace SocketSimulator.Services
             // Get variable value - first from VariableService, then check parsed data
             var varValueStr = variableService.GetVariableString(varName);
             
-            // Also check parsed data (from received STATUS responses) - use this if variable has default/empty value
-            var parsedValue = _protocolService.GetParsedValue("LastCommand");
-            if (!string.IsNullOrEmpty(parsedValue))
+            // Also check parsed data (from received STATUS responses) - use lock for thread safety
+            lock (_dataLock)
             {
-                // Try to get the specific parameter from the last command
-                var paramValue = _protocolService.GetParsedValue(parsedValue, varName);
-                if (!string.IsNullOrEmpty(paramValue))
+                var parsedValue = _protocolService.GetParsedValue("LastCommand");
+                if (!string.IsNullOrEmpty(parsedValue))
                 {
-                    varValueStr = paramValue;
+                    // Try to get the specific parameter from the last command
+                    var paramValue = _protocolService.GetParsedValue(parsedValue, varName);
+                    if (!string.IsNullOrEmpty(paramValue))
+                    {
+                        varValueStr = paramValue;
+                    }
                 }
-            }
-            
-            // Also check direct parsed data key (e.g., STATUS.state)
-            if (varValueStr == variableService.GetVariableString(varName)) // Only if not already found
-            {
-                var directParsed = _protocolService.GetParsedValue(varName);
-                if (!string.IsNullOrEmpty(directParsed))
+                
+                // Also check direct parsed data key (e.g., state)
+                if (varValueStr == variableService.GetVariableString(varName))
                 {
-                    varValueStr = directParsed;
+                    var directParsed = _protocolService.GetParsedValue(varName);
+                    if (!string.IsNullOrEmpty(directParsed))
+                    {
+                        varValueStr = directParsed;
+                    }
                 }
             }
 
