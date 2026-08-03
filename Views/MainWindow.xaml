@@ -53,6 +53,13 @@
             <MenuItem Header="_Help">
                 <MenuItem Header="_About" Command="{Binding AboutCommand}"/>
             </MenuItem>
+            <MenuItem Header="_Log">
+                <MenuItem Header="_Save Log As..." Command="{Binding LogVM.SaveLogCommand}"/>
+                <Separator/>
+                <MenuItem Header="Enable Log _File..." Command="{Binding LogVM.EnableLogFileCommand}"/>
+                <MenuItem Header="_Disable Log File" Command="{Binding LogVM.DisableLogFileCommand}" 
+                         IsEnabled="{Binding LogVM.IsLogFileEnabled}"/>
+            </MenuItem>
         </Menu>
 
         <!-- Status Bar -->
@@ -515,16 +522,27 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="Communication Log" FontWeight="SemiBold" FontSize="12"/>
-                                <Button Grid.Column="1" Content="Clear" Command="{Binding LogVM.ClearCommand}" Style="{StaticResource SecondaryButton}" Padding="8,4"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Communication Log" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center"/>
+                                    <Ellipse Width="8" Height="8" Margin="8,0,0,0" Fill="Orange" 
+                                             Visibility="{Binding LogVM.IsLogFileEnabled, Converter={StaticResource BoolToVisibility}}"
+                                             ToolTip="Log file enabled"/>
+                                </StackPanel>
+                                <Button Grid.Column="1" Content="Save" Command="{Binding LogVM.SaveLogCommand}" Style="{StaticResource SecondaryButton}" Padding="8,4" Margin="0,0,4,0"/>
+                                <Button Grid.Column="2" Content="Clear" Command="{Binding LogVM.ClearCommand}" Style="{StaticResource SecondaryButton}" Padding="8,4"/>
                             </Grid>
-                            <TextBox Text="{Binding LogVM.LogText, Mode=OneWay}" 
+                            <TextBox x:Name="LogTextBox"
+                                     Text="{Binding LogVM.LogText, Mode=OneWay}" 
                                      Background="#FAFAFA" FontFamily="Consolas" FontSize="11" 
                                      IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" 
                                      VerticalScrollBarVisibility="Auto" MaxHeight="200"
                                      BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
-                                     Padding="8"/>
+                                     Padding="8"
+                                     ScrollViewer.ScrollChanged="LogTextBox_ScrollChanged"
+                                     PreviewMouseDown="LogTextBox_PreviewMouseDown"
+                                     PreviewMouseUp="LogTextBox_PreviewMouseUp"/>
                         </DockPanel>
                     </Border>
                 </Grid>
