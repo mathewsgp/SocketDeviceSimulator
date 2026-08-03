@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace SocketSimulator.Models
 {
@@ -19,9 +20,9 @@ namespace SocketSimulator.Models
     {
         public string CommandName { get; set; } = string.Empty;
         public int TimeoutMs { get; set; } = 5000;
-        // Goto on success (command received)
+        [JsonProperty(PropertyName = "GotoLabelOnSuccess")]
         public string GotoLabelOnSuccess { get; set; } = string.Empty;
-        // Goto on timeout
+        [JsonProperty(PropertyName = "GotoLabelOnTimeout")]
         public string GotoLabelOnTimeout { get; set; } = string.Empty;
     }
 
@@ -35,9 +36,9 @@ namespace SocketSimulator.Models
         // Optional parameter values to match in response
         public string ExpectedParameters { get; set; } = string.Empty;
         public int TimeoutMs { get; set; } = 5000;
-        // Goto on success (pattern found)
+        [JsonProperty(PropertyName = "GotoLabelOnSuccess")]
         public string GotoLabelOnSuccess { get; set; } = string.Empty;
-        // Goto on timeout
+        [JsonProperty(PropertyName = "GotoLabelOnTimeout")]
         public string GotoLabelOnTimeout { get; set; } = string.Empty;
     }
 
@@ -86,7 +87,9 @@ namespace SocketSimulator.Models
         // Actions to execute if condition is false
         public List<ScenarioStep> IfFalse { get; set; } = new();
         // OR: Goto a label instead of executing actions
+        [JsonProperty(PropertyName = "GotoLabelIfTrue")]
         public string GotoLabelIfTrue { get; set; } = string.Empty;
+        [JsonProperty(PropertyName = "GotoLabelIfFalse")]
         public string GotoLabelIfFalse { get; set; } = string.Empty;
     }
 
