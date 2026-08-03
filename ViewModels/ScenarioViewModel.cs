@@ -186,6 +186,7 @@ namespace SocketSimulator.ViewModels
             string? savedGotoLabelOnTimeout = null;
             string? savedGotoLabelIfTrue = null;
             string? savedGotoLabelIfFalse = null;
+            string? savedTargetLabel = null;
             
             if (SelectedWaitCommandStep != null)
             {
@@ -201,6 +202,10 @@ namespace SocketSimulator.ViewModels
             {
                 savedGotoLabelIfTrue = SelectedIfElseStep.GotoLabelIfTrue;
                 savedGotoLabelIfFalse = SelectedIfElseStep.GotoLabelIfFalse;
+            }
+            else if (SelectedGotoStep != null)
+            {
+                savedTargetLabel = SelectedGotoStep.TargetLabel;
             }
             
             AvailableLabels.Clear();
@@ -230,6 +235,11 @@ namespace SocketSimulator.ViewModels
                 SelectedIfElseStep.GotoLabelIfTrue = savedGotoLabelIfTrue ?? string.Empty;
                 SelectedIfElseStep.GotoLabelIfFalse = savedGotoLabelIfFalse ?? string.Empty;
                 OnPropertyChanged(nameof(SelectedIfElseStep));
+            }
+            else if (SelectedGotoStep != null)
+            {
+                SelectedGotoStep.TargetLabel = savedTargetLabel ?? string.Empty;
+                OnPropertyChanged(nameof(SelectedGotoStep));
             }
         }
 
