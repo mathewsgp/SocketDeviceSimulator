@@ -513,81 +513,67 @@ namespace SocketSimulator.Services
             if (string.IsNullOrWhiteSpace(condition))
                 return false;
 
-            // Simple condition evaluation
-            // Supports: VariableName == value, VariableName != value, VariableName > value, 
-            //           VariableName >= value, VariableName < value, VariableName <= value
-            
             var variableService = VariableService.Instance;
-            
-            // Equality check
-            var eqMatch = Regex.Match(condition, @"\$\{([^}]+)\}\s*==\s*(.+)");
-            if (eqMatch.Success)
-            {
-                var varName = eqMatch.Groups[1].Value;
-                var expectedValue = eqMatch.Groups[2].Value.Trim();
-                var actualValue = variableService.GetVariableString(varName);
-                return actualValue.Equals(expectedValue, StringComparison.OrdinalIgnoreCase);
-            }
 
-            // Not equal check
-            var neMatch = Regex.Match(condition, @"\$\{([^}]+)\}\s*!=\s*(.+)");
-            if (neMatch.Success)
-            {
-                var varName = neMatch.Groups[1].Value;
-                var expectedValue = neMatch.Groups[2].Value.Trim();
-                var actualValue = variableService.GetVariableString(varName);
-                return !actualValue.Equals(expectedValue, StringComparison.OrdinalIgnoreCase);
-            }
+            // Extract variable name from ${varName}
+            var varMatch = Regex.Match(condition, @"\$\{([^}]+)\}");
+            if (!varMatch.Success)
+                return false;
 
-            // Greater than or equal (>== is escaped version)
-            var gteMatch = Regex.Match(condition, @"\$\{([^}]+)\}\s*>=\s*(.+)");
-            if (gteMatch.Success)
+            var varName = varMatch.Groups[1].Value;
+            var varValueStr = variableService.GetVariableString(varName);
+
+            // Find operator and comparison value - check multi-char operators first
+            string op = null;
+            int opIndex = -1;
+
+            // Check for >= first (before > to avoid partial match)
+            if ((opIndex = condition.IndexOf(">=")) >= 0)
+                op = ">=";
+            // Check for <= (before <)
+            else if ((opIndex = condition.IndexOf("<=")) >= 0)
+                op = "<=";
+            // Check for != (before ==)
+            else if ((opIndex = condition.IndexOf("!=")) >= 0)
+                op = "!=";
+            // Check for == (after != to avoid matching !=)
+            else if ((opIndex = condition.IndexOf("==")) >= 0)
+                op = "==";
+            // Check for >
+            else if ((opIndex = condition.IndexOf(">")) >= 0)
+                op = ">";
+            // Check for <
+            else if ((opIndex = condition.IndexOf("<")) >= 0)
+                op = "<";
+
+            if (op == null)
+                return false;
+
+            // Extract comparison value after operator
+            var compareValueStr = condition.Substring(opIndex + op.Length).Trim();
+
+            // Try numeric comparison first
+            if (double.TryParse(varValueStr, out var varNum) && double.TryParse(compareValueStr, out var compareNum))
             {
-                var varName = gteMatch.Groups[1].Value;
-                if (double.TryParse(variableService.GetVariableString(varName), out var actual) &&
-                    double.TryParse(gteMatch.Groups[2].Value.Trim(), out var expected))
+                return op switch
                 {
-                    return actual >= expected;
-                }
+                    ">=" => varNum >= compareNum,
+                    ">" => varNum > compareNum,
+                    "<=" => varNum <= compareNum,
+                    "<" => varNum < compareNum,
+                    "==" => Math.Abs(varNum - compareNum) < 0.0001, // Use tolerance for float comparison
+                    "!=" => Math.Abs(varNum - compareNum) >= 0.0001,
+                    _ => false
+                };
             }
 
-            // Greater than
-            var gtMatch = Regex.Match(condition, @"\$\{([^}]+)\}\s*>\s*(.+)");
-            if (gtMatch.Success)
+            // Fall back to string comparison for non-numeric values
+            return op switch
             {
-                var varName = gtMatch.Groups[1].Value;
-                if (double.TryParse(variableService.GetVariableString(varName), out var actual) &&
-                    double.TryParse(gtMatch.Groups[2].Value.Trim(), out var expected))
-                {
-                    return actual > expected;
-                }
-            }
-
-            // Less than or equal
-            var lteMatch = Regex.Match(condition, @"\$\{([^}]+)\}\s*<=\s*(.+)");
-            if (lteMatch.Success)
-            {
-                var varName = lteMatch.Groups[1].Value;
-                if (double.TryParse(variableService.GetVariableString(varName), out var actual) &&
-                    double.TryParse(lteMatch.Groups[2].Value.Trim(), out var expected))
-                {
-                    return actual <= expected;
-                }
-            }
-
-            // Less than
-            var ltMatch = Regex.Match(condition, @"\$\{([^}]+)\}\s*<\s*(.+)");
-            if (ltMatch.Success)
-            {
-                var varName = ltMatch.Groups[1].Value;
-                if (double.TryParse(variableService.GetVariableString(varName), out var actual) &&
-                    double.TryParse(ltMatch.Groups[2].Value.Trim(), out var expected))
-                {
-                    return actual < expected;
-                }
-            }
-
-            return false;
+                "==" => varValueStr.Equals(compareValueStr, StringComparison.OrdinalIgnoreCase),
+                "!=" => !varValueStr.Equals(compareValueStr, StringComparison.OrdinalIgnoreCase),
+                _ => false // String comparison not supported for >, <, >=, <=
+            };
         }
 
         public class StepExecutedEventArgs : EventArgs
