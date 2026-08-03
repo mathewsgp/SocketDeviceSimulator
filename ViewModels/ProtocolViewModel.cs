@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Windows.Input;
 using Microsoft.Win32;
@@ -55,6 +56,38 @@ namespace SocketSimulator.ViewModels
             NewProtocolCommand = new RelayCommand(NewProtocol);
             AddCommandCommand = new RelayCommand(AddCommand, () => CurrentProtocol != null);
             RemoveCommandCommand = new RelayCommand(RemoveCommand, () => SelectedCommand != null);
+
+            // Try to auto-load DefaultProtocol.json from application directory
+            TryLoadDefaultProtocol();
+        }
+
+        private void TryLoadDefaultProtocol()
+        {
+            try
+            {
+                var appDir = AppDomain.CurrentDomain.BaseDirectory;
+                // Try DefaultProtocol.json first, then SampleTempProtocol.json
+                var possibleNames = new[] { "DefaultProtocol.json", "SampleTempProtocol.json" };
+                
+                foreach (var fileName in possibleNames)
+                {
+                    var protocolPath = Path.Combine(appDir, fileName);
+                    if (File.Exists(protocolPath))
+                    {
+                        var protocol = _protocolService.LoadProtocol(protocolPath);
+                        if (protocol != null)
+                        {
+                            CurrentProtocol = protocol;
+                            _logger.Info("Protocol", $"Loaded default protocol from {protocolPath}");
+                            break;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Warning("Protocol", $"Failed to load default protocol: {ex.Message}");
+            }
         }
 
         private void OnProtocolChanged(object? sender, EventArgs e)

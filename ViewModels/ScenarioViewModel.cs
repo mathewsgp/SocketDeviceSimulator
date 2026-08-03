@@ -409,6 +409,12 @@ namespace SocketSimulator.ViewModels
                 Steps.Add(step);
             }
             _nextStepOrder = Steps.Count > 0 ? Steps.Max(s => s.Order) + 1 : 1;
+            RefreshAvailableLabels();
+            // Select first step if available
+            if (Steps.Count > 0)
+            {
+                SelectedStep = Steps.First();
+            }
         }
 
         public Scenario GetScenario()
