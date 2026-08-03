@@ -9,9 +9,9 @@
   "Commands": [
     {
       "Name": "GET_STATUS",
-      "Description": "Get device status",
+      "Description": "Get device status - returns current State and Temperature variables",
       "Parameters": [],
-      "ResponseTemplate": "STATUS state=IDLE temp=25"
+      "ResponseTemplate": "STATUS state=${State} temp=${Temperature}"
     },
     {
       "Name": "SET_PARAMS",
@@ -39,19 +39,8 @@
     {
       "Name": "STATUS",
       "Description": "Status response with state and temperature",
-      "Parameters": [
-        {
-          "Name": "state",
-          "Type": "string",
-          "Required": true
-        },
-        {
-          "Name": "temp",
-          "Type": "int",
-          "Required": false
-        }
-      ],
-      "ResponseTemplate": "STATUS state=${state} temp=${temp}"
+      "Parameters": [],
+      "ResponseTemplate": "STATUS state=${State} temp=${Temperature}"
     },
     {
       "Name": "SET_PARAMS_OK",

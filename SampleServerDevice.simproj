@@ -2,75 +2,124 @@
   "Name": "Server - Temperature Device",
   "Scenario": {
     "Name": "Temperature Measurement Device",
-    "Description": "Simulates a temperature measurement device. Device is READY initially.",
+    "Description": "Simulates a temperature measurement device. Device is READY initially. Uses State and Temperature variables for dynamic status responses.",
     "Steps": [
       {
-        "Type": "AutoReply",
+        "Type": "SetVariable",
         "Order": 1,
-        "Description": "Device is READY - auto-reply to GET_STATUS",
+        "Description": "Initialize State variable to READY",
+        "VariableName": "State",
+        "Value": "READY"
+      },
+      {
+        "Type": "SetVariable",
+        "Order": 2,
+        "Description": "Initialize Temperature variable",
+        "VariableName": "Temperature",
+        "Value": "25"
+      },
+      {
+        "Type": "AutoReply",
+        "Order": 3,
+        "Description": "Auto-reply to GET_STATUS with State and Temperature variables",
         "CommandPattern": "GET_STATUS",
-        "Response": "STATUS state=READY temp=25"
+        "Response": "STATUS state=${State} temp=${Temperature}"
       },
       {
         "Type": "WaitCommand",
-        "Order": 2,
+        "Order": 4,
         "Description": "Wait for SET_PARAMS command from client",
         "CommandName": "SET_PARAMS",
         "TimeoutMs": 60000
       },
       {
         "Type": "SendResponse",
-        "Order": 3,
+        "Order": 5,
         "Description": "Send params acknowledgment",
         "CommandName": "SET_PARAMS_OK",
         "Response": "SET_PARAMS_OK"
       },
       {
         "Type": "WaitCommand",
-        "Order": 4,
+        "Order": 6,
         "Description": "Wait for START command from client",
         "CommandName": "START",
         "TimeoutMs": 60000
       },
       {
         "Type": "SendResponse",
-        "Order": 5,
+        "Order": 7,
         "Description": "Send start acknowledgment",
         "CommandName": "START_OK",
         "Response": "START_OK"
       },
       {
-        "Type": "AutoReply",
-        "Order": 6,
-        "Description": "Auto-reply: status IN_PROGRESS temp=50",
-        "CommandPattern": "GET_STATUS",
-        "Response": "STATUS state=IN_PROGRESS temp=50"
-      },
-      {
-        "Type": "Delay",
-        "Order": 7,
-        "Description": "Simulate measurement time",
-        "DurationMs": 2000
-      },
-      {
-        "Type": "AutoReply",
+        "Type": "SetVariable",
         "Order": 8,
-        "Description": "Auto-reply: status IN_PROGRESS temp=75",
-        "CommandPattern": "GET_STATUS",
-        "Response": "STATUS state=IN_PROGRESS temp=75"
+        "Description": "Update State to IN_PROGRESS",
+        "VariableName": "State",
+        "Value": "IN_PROGRESS"
       },
       {
-        "Type": "Delay",
+        "Type": "SetVariable",
         "Order": 9,
-        "Description": "Simulate measurement time",
-        "DurationMs": 2000
+        "Description": "Update Temperature to 50",
+        "VariableName": "Temperature",
+        "Value": "50"
       },
       {
         "Type": "AutoReply",
         "Order": 10,
-        "Description": "Auto-reply: status COMPLETED",
+        "Description": "Auto-reply with updated State and Temperature",
         "CommandPattern": "GET_STATUS",
-        "Response": "STATUS state=COMPLETED temp=100"
+        "Response": "STATUS state=${State} temp=${Temperature}"
+      },
+      {
+        "Type": "Delay",
+        "Order": 11,
+        "Description": "Simulate measurement time",
+        "DurationMs": 2000
+      },
+      {
+        "Type": "SetVariable",
+        "Order": 12,
+        "Description": "Update Temperature to 75",
+        "VariableName": "Temperature",
+        "Value": "75"
+      },
+      {
+        "Type": "AutoReply",
+        "Order": 13,
+        "Description": "Auto-reply with updated State and Temperature",
+        "CommandPattern": "GET_STATUS",
+        "Response": "STATUS state=${State} temp=${Temperature}"
+      },
+      {
+        "Type": "Delay",
+        "Order": 14,
+        "Description": "Simulate measurement time",
+        "DurationMs": 2000
+      },
+      {
+        "Type": "SetVariable",
+        "Order": 15,
+        "Description": "Update State to COMPLETED and Temperature to 100",
+        "VariableName": "State",
+        "Value": "COMPLETED"
+      },
+      {
+        "Type": "SetVariable",
+        "Order": 16,
+        "Description": "Update Temperature to 100",
+        "VariableName": "Temperature",
+        "Value": "100"
+      },
+      {
+        "Type": "AutoReply",
+        "Order": 17,
+        "Description": "Auto-reply with COMPLETED state",
+        "CommandPattern": "GET_STATUS",
+        "Response": "STATUS state=${State} temp=${Temperature}"
       }
     ]
   },
