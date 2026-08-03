@@ -539,11 +539,15 @@ namespace SocketSimulator.Services
             // Also check parsed data (from received STATUS responses) - use lock for thread safety
             lock (_dataLock)
             {
-                var parsedValue = _protocolService.GetParsedValue("LastCommand");
-                if (!string.IsNullOrEmpty(parsedValue))
+                var lastCmd = _protocolService.GetParsedValue("LastCommand");
+                _logger.Debug("Scenario", $"EvaluateCondition: varName='{varName}', lastCmd='{lastCmd}', variableService has '{varValueStr}'");
+                
+                if (!string.IsNullOrEmpty(lastCmd))
                 {
                     // Try to get the specific parameter from the last command
-                    var paramValue = _protocolService.GetParsedValue(parsedValue, varName);
+                    var paramKey = $"{lastCmd}.{varName}";
+                    var paramValue = _protocolService.GetParsedValue(paramKey);
+                    _logger.Debug("Scenario", $"EvaluateCondition: checking key '{paramKey}' = '{paramValue}'");
                     if (!string.IsNullOrEmpty(paramValue))
                     {
                         varValueStr = paramValue;
@@ -554,11 +558,14 @@ namespace SocketSimulator.Services
                 if (varValueStr == variableService.GetVariableString(varName))
                 {
                     var directParsed = _protocolService.GetParsedValue(varName);
+                    _logger.Debug("Scenario", $"EvaluateCondition: checking direct key '{varName}' = '{directParsed}'");
                     if (!string.IsNullOrEmpty(directParsed))
                     {
                         varValueStr = directParsed;
                     }
                 }
+                
+                _logger.Debug("Scenario", $"EvaluateCondition: final varValueStr='{varValueStr}'");
             }
 
             // Find operator and comparison value - check multi-char operators first
