@@ -1,27 +1,21 @@
 {
   "Name": "Temperature Measurement Protocol",
   "Version": "1.0",
-  "StartPrefix": "*",
-  "EndPrefix": "#",
-  "CommandParameterSeparator": "=",
+  "StartPrefix": "",
+  "EndPrefix": "",
+  "CommandParameterSeparator": " ",
   "ParameterSeparator": ",",
-  "ParameterValueSeparator": ":",
+  "ParameterValueSeparator": "=",
   "Commands": [
     {
       "Name": "GET_STATUS",
-      "Description": "Get device status - Format: *GET_STATUS#",
+      "Description": "Get device status",
       "Parameters": [],
-      "ResponseTemplate": "*STATUS,state:${State},temp:${Temperature}#"
-    },
-    {
-      "Name": "STOP",
-      "Description": "Stop any ongoing measurement - Format: *STOP#",
-      "Parameters": [],
-      "ResponseTemplate": "*STOP_OK#"
+      "ResponseTemplate": "STATUS state=IDLE temp=25"
     },
     {
       "Name": "SET_PARAMS",
-      "Description": "Set measurement parameters - Format: *SET_PARAMS=start:20,end:100#",
+      "Description": "Set measurement parameters (start and end temperature)",
       "Parameters": [
         {
           "Name": "start",
@@ -34,37 +28,42 @@
           "Required": true
         }
       ],
-      "ResponseTemplate": "*PARAMS_OK,start:${start},end:${end}#"
+      "ResponseTemplate": "SET_PARAMS_OK start=${start} end=${end}"
     },
     {
       "Name": "START",
-      "Description": "Start measurement - Format: *START#",
+      "Description": "Start measurement",
       "Parameters": [],
-      "ResponseTemplate": "*START_OK#"
+      "ResponseTemplate": "START_OK"
     },
     {
       "Name": "STATUS",
-      "Description": "Status response",
-      "Parameters": [],
-      "ResponseTemplate": "*STATUS,state:READY,temp:25#"
+      "Description": "Status response with state and temperature",
+      "Parameters": [
+        {
+          "Name": "state",
+          "Type": "string",
+          "Required": true
+        },
+        {
+          "Name": "temp",
+          "Type": "int",
+          "Required": false
+        }
+      ],
+      "ResponseTemplate": "STATUS state=${state} temp=${temp}"
     },
     {
-      "Name": "STOP_OK",
-      "Description": "Stop acknowledgment",
+      "Name": "SET_PARAMS_OK",
+      "Description": "Set params acknowledgment",
       "Parameters": [],
-      "ResponseTemplate": "*STOP_OK#"
-    },
-    {
-      "Name": "PARAMS_OK",
-      "Description": "Params acknowledgment",
-      "Parameters": [],
-      "ResponseTemplate": "*PARAMS_OK#"
+      "ResponseTemplate": "SET_PARAMS_OK"
     },
     {
       "Name": "START_OK",
       "Description": "Start acknowledgment",
       "Parameters": [],
-      "ResponseTemplate": "*START_OK#"
+      "ResponseTemplate": "START_OK"
     }
   ]
 }

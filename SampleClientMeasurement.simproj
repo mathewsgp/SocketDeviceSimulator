@@ -14,9 +14,9 @@
       {
         "Type": "WaitResponse",
         "Order": 2,
-        "Description": "Step 2: Wait for status response",
+        "Description": "Step 2: Wait for status response (expects READY)",
         "CommandName": "STATUS",
-        "ExpectedResponseContains": "STATUS",
+        "ExpectedResponseContains": "READY",
         "TimeoutMs": 5000
       },
       {
@@ -29,8 +29,8 @@
       {
         "Type": "WaitCommand",
         "Order": 4,
-        "Description": "Step 4: Wait for params acknowledgment",
-        "CommandName": "PARAMS_OK",
+        "Description": "Step 4: Wait for SET_PARAMS_OK",
+        "CommandName": "SET_PARAMS_OK",
         "TimeoutMs": 5000
       },
       {
@@ -43,50 +43,42 @@
       {
         "Type": "WaitCommand",
         "Order": 6,
-        "Description": "Step 6: Wait for start acknowledgment",
+        "Description": "Step 6: Wait for START_OK",
         "CommandName": "START_OK",
         "TimeoutMs": 5000
       },
       {
         "Type": "SendCommand",
         "Order": 7,
-        "Description": "Step 7: Poll status - check 1 (temp rising)",
+        "Description": "Step 7: Poll status - check 1",
         "CommandName": "GET_STATUS",
         "Payload": "GET_STATUS"
       },
       {
         "Type": "SendCommand",
         "Order": 8,
-        "Description": "Step 8: Poll status - check 2 (temp rising)",
+        "Description": "Step 8: Poll status - check 2",
         "CommandName": "GET_STATUS",
         "Payload": "GET_STATUS"
       },
       {
         "Type": "SendCommand",
         "Order": 9,
-        "Description": "Step 9: Poll status - check 3 (temp rising)",
+        "Description": "Step 9: Poll status - check 3",
         "CommandName": "GET_STATUS",
         "Payload": "GET_STATUS"
       },
       {
         "Type": "SendCommand",
         "Order": 10,
-        "Description": "Step 10: Poll status - final check (should be COMPLETED)",
+        "Description": "Step 10: Poll status - check 4 (should be COMPLETED)",
         "CommandName": "GET_STATUS",
         "Payload": "GET_STATUS"
       },
       {
-        "Type": "WaitResponse",
-        "Order": 11,
-        "Description": "Step 11: Wait for completed status",
-        "CommandName": "STATUS",
-        "ExpectedResponseContains": "COMPLETED",
-        "TimeoutMs": 10000
-      },
-      {
         "Type": "Delay",
-        "Order": 12,
-        "Description": "Step 12: Measurement complete - delay before end",
+        "Order": 11,
+        "Description": "Step 11: Measurement complete - delay",
         "DurationMs": 500
       }
     ]

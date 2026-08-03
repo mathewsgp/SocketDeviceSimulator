@@ -2,109 +2,75 @@
   "Name": "Server - Temperature Device",
   "Scenario": {
     "Name": "Temperature Measurement Device",
-    "Description": "Simulates a temperature measurement device. Waits for commands and responds.",
+    "Description": "Simulates a temperature measurement device. Device is READY initially.",
     "Steps": [
       {
         "Type": "AutoReply",
         "Order": 1,
-        "Description": "Enable GET_STATUS auto-reply - returns IDLE",
+        "Description": "Device is READY - auto-reply to GET_STATUS",
         "CommandPattern": "GET_STATUS",
-        "Response": "STATUS:IDLE"
+        "Response": "STATUS state=READY temp=25"
       },
       {
         "Type": "WaitCommand",
         "Order": 2,
-        "Description": "Wait for STOP command",
-        "CommandName": "STOP",
+        "Description": "Wait for SET_PARAMS command from client",
+        "CommandName": "SET_PARAMS",
         "TimeoutMs": 60000
       },
       {
         "Type": "SendResponse",
         "Order": 3,
-        "Description": "Send stop acknowledgment",
-        "CommandName": "STOP_OK",
-        "Response": "STOP_OK"
-      },
-      {
-        "Type": "AutoReply",
-        "Order": 4,
-        "Description": "Enable GET_STATUS - returns READY",
-        "CommandPattern": "GET_STATUS",
-        "Response": "STATUS:READY"
-      },
-      {
-        "Type": "WaitCommand",
-        "Order": 5,
-        "Description": "Wait for SET_PARAMS command",
-        "CommandName": "SET_PARAMS",
-        "TimeoutMs": 30000
-      },
-      {
-        "Type": "SendResponse",
-        "Order": 6,
         "Description": "Send params acknowledgment",
-        "CommandName": "PARAMS_OK",
-        "Response": "PARAMS_OK"
+        "CommandName": "SET_PARAMS_OK",
+        "Response": "SET_PARAMS_OK"
       },
       {
         "Type": "WaitCommand",
-        "Order": 7,
-        "Description": "Wait for START command",
+        "Order": 4,
+        "Description": "Wait for START command from client",
         "CommandName": "START",
-        "TimeoutMs": 30000
+        "TimeoutMs": 60000
       },
       {
         "Type": "SendResponse",
-        "Order": 8,
+        "Order": 5,
         "Description": "Send start acknowledgment",
         "CommandName": "START_OK",
         "Response": "START_OK"
       },
       {
         "Type": "AutoReply",
+        "Order": 6,
+        "Description": "Auto-reply: status IN_PROGRESS temp=50",
+        "CommandPattern": "GET_STATUS",
+        "Response": "STATUS state=IN_PROGRESS temp=50"
+      },
+      {
+        "Type": "Delay",
+        "Order": 7,
+        "Description": "Simulate measurement time",
+        "DurationMs": 2000
+      },
+      {
+        "Type": "AutoReply",
+        "Order": 8,
+        "Description": "Auto-reply: status IN_PROGRESS temp=75",
+        "CommandPattern": "GET_STATUS",
+        "Response": "STATUS state=IN_PROGRESS temp=75"
+      },
+      {
+        "Type": "Delay",
         "Order": 9,
-        "Description": "Enable GET_STATUS - returns IN_PROGRESS with temp=25",
-        "CommandPattern": "GET_STATUS",
-        "Response": "STATUS:IN_PROGRESS temp=25"
+        "Description": "Simulate measurement time",
+        "DurationMs": 2000
       },
       {
-        "Type": "Delay",
+        "Type": "AutoReply",
         "Order": 10,
-        "Description": "Wait 2 seconds for simulation",
-        "DurationMs": 2000
-      },
-      {
-        "Type": "AutoReply",
-        "Order": 11,
-        "Description": "Enable GET_STATUS - returns temp=50",
+        "Description": "Auto-reply: status COMPLETED",
         "CommandPattern": "GET_STATUS",
-        "Response": "STATUS:IN_PROGRESS temp=50"
-      },
-      {
-        "Type": "Delay",
-        "Order": 12,
-        "Description": "Wait 2 seconds for simulation",
-        "DurationMs": 2000
-      },
-      {
-        "Type": "AutoReply",
-        "Order": 13,
-        "Description": "Enable GET_STATUS - returns temp=75",
-        "CommandPattern": "GET_STATUS",
-        "Response": "STATUS:IN_PROGRESS temp=75"
-      },
-      {
-        "Type": "Delay",
-        "Order": 14,
-        "Description": "Wait 2 seconds for simulation",
-        "DurationMs": 2000
-      },
-      {
-        "Type": "AutoReply",
-        "Order": 15,
-        "Description": "Enable GET_STATUS - returns COMPLETED",
-        "CommandPattern": "GET_STATUS",
-        "Response": "STATUS:COMPLETED temp=100"
+        "Response": "STATUS state=COMPLETED temp=100"
       }
     ]
   },
