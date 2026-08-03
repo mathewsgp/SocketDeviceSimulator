@@ -212,21 +212,24 @@ namespace SocketSimulator.ViewModels
                 }
             }
             
-            // Restore values after labels are refreshed
+            // Restore values after labels are refreshed and notify UI
             if (SelectedWaitCommandStep != null)
             {
                 SelectedWaitCommandStep.GotoLabelOnSuccess = savedGotoLabelOnSuccess ?? string.Empty;
                 SelectedWaitCommandStep.GotoLabelOnTimeout = savedGotoLabelOnTimeout ?? string.Empty;
+                OnPropertyChanged(nameof(SelectedWaitCommandStep));
             }
             else if (SelectedWaitResponseStep != null)
             {
                 SelectedWaitResponseStep.GotoLabelOnSuccess = savedGotoLabelOnSuccess ?? string.Empty;
                 SelectedWaitResponseStep.GotoLabelOnTimeout = savedGotoLabelOnTimeout ?? string.Empty;
+                OnPropertyChanged(nameof(SelectedWaitResponseStep));
             }
             else if (SelectedIfElseStep != null)
             {
                 SelectedIfElseStep.GotoLabelIfTrue = savedGotoLabelIfTrue ?? string.Empty;
                 SelectedIfElseStep.GotoLabelIfFalse = savedGotoLabelIfFalse ?? string.Empty;
+                OnPropertyChanged(nameof(SelectedIfElseStep));
             }
         }
 
