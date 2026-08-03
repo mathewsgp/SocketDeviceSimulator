@@ -514,7 +514,8 @@ namespace SocketSimulator.Services
                 return false;
 
             // Simple condition evaluation
-            // Supports: VariableName == value, VariableName != value, VariableName > value, etc.
+            // Supports: VariableName == value, VariableName != value, VariableName > value, 
+            //           VariableName >= value, VariableName < value, VariableName <= value
             
             var variableService = VariableService.Instance;
             
@@ -538,6 +539,18 @@ namespace SocketSimulator.Services
                 return !actualValue.Equals(expectedValue, StringComparison.OrdinalIgnoreCase);
             }
 
+            // Greater than or equal (>== is escaped version)
+            var gteMatch = Regex.Match(condition, @"\$\{([^}]+)\}\s*>=\s*(.+)");
+            if (gteMatch.Success)
+            {
+                var varName = gteMatch.Groups[1].Value;
+                if (double.TryParse(variableService.GetVariableString(varName), out var actual) &&
+                    double.TryParse(gteMatch.Groups[2].Value.Trim(), out var expected))
+                {
+                    return actual >= expected;
+                }
+            }
+
             // Greater than
             var gtMatch = Regex.Match(condition, @"\$\{([^}]+)\}\s*>\s*(.+)");
             if (gtMatch.Success)
@@ -547,6 +560,18 @@ namespace SocketSimulator.Services
                     double.TryParse(gtMatch.Groups[2].Value.Trim(), out var expected))
                 {
                     return actual > expected;
+                }
+            }
+
+            // Less than or equal
+            var lteMatch = Regex.Match(condition, @"\$\{([^}]+)\}\s*<=\s*(.+)");
+            if (lteMatch.Success)
+            {
+                var varName = lteMatch.Groups[1].Value;
+                if (double.TryParse(variableService.GetVariableString(varName), out var actual) &&
+                    double.TryParse(lteMatch.Groups[2].Value.Trim(), out var expected))
+                {
+                    return actual <= expected;
                 }
             }
 
