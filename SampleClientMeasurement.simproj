@@ -14,7 +14,7 @@
       {
         "Type": "WaitResponse",
         "Order": 2,
-        "Description": "Wait for status response (expects READY)",
+        "Description": "Wait for READY status",
         "CommandName": "STATUS",
         "ExpectedResponseContains": "READY",
         "TimeoutMs": 5000
@@ -22,7 +22,7 @@
       {
         "Type": "SendCommand",
         "Order": 3,
-        "Description": "Set measurement parameters (start=20, end=100)",
+        "Description": "Set measurement params",
         "CommandName": "SET_PARAMS",
         "Payload": "SET_PARAMS start=20 end=100"
       },
@@ -48,69 +48,83 @@
         "TimeoutMs": 5000
       },
       {
-        "Type": "SendCommand",
+        "Type": "SetVariable",
         "Order": 7,
-        "Description": "Poll status - check 1",
-        "CommandName": "GET_STATUS",
-        "Payload": "GET_STATUS"
+        "Description": "Initialize PollCount=0",
+        "VariableName": "PollCount",
+        "Value": "0",
+        "Operation": "Set"
       },
       {
-        "Type": "WaitResponse",
+        "Type": "Label",
         "Order": 8,
-        "Description": "Wait for status response",
-        "CommandName": "STATUS",
-        "ExpectedResponseContains": "IN_PROGRESS",
-        "TimeoutMs": 5000
+        "Description": "Poll loop start",
+        "LabelName": "PollLoop"
       },
       {
-        "Type": "SendCommand",
+        "Type": "SetVariable",
         "Order": 9,
-        "Description": "Poll status - check 2",
-        "CommandName": "GET_STATUS",
-        "Payload": "GET_STATUS"
+        "Description": "Increment PollCount",
+        "VariableName": "PollCount",
+        "Value": "1",
+        "Operation": "Increment"
       },
       {
-        "Type": "WaitResponse",
+        "Type": "SendCommand",
         "Order": 10,
-        "Description": "Wait for status response",
-        "CommandName": "STATUS",
-        "ExpectedResponseContains": "IN_PROGRESS",
-        "TimeoutMs": 5000
+        "Description": "Poll device status",
+        "CommandName": "GET_STATUS",
+        "Payload": "GET_STATUS"
       },
       {
-        "Type": "SendCommand",
+        "Type": "WaitResponse",
         "Order": 11,
-        "Description": "Poll status - check 3",
-        "CommandName": "GET_STATUS",
-        "Payload": "GET_STATUS"
-      },
-      {
-        "Type": "WaitResponse",
-        "Order": 12,
         "Description": "Wait for status response",
         "CommandName": "STATUS",
-        "ExpectedResponseContains": "IN_PROGRESS",
         "TimeoutMs": 5000
       },
       {
-        "Type": "SendCommand",
-        "Order": 13,
-        "Description": "Poll status - check 4",
-        "CommandName": "GET_STATUS",
-        "Payload": "GET_STATUS"
+        "Type": "IfElse",
+        "Order": 12,
+        "Description": "Check if State=COMPLETED",
+        "Condition": "${State} == COMPLETED",
+        "GotoLabelIfTrue": "Done"
       },
       {
-        "Type": "WaitResponse",
+        "Type": "IfElse",
+        "Order": 13,
+        "Description": "Check if PollCount<10",
+        "Condition": "${PollCount} < 10",
+        "GotoLabelIfTrue": "WaitAndRepoll"
+      },
+      {
+        "Type": "Label",
         "Order": 14,
-        "Description": "Wait for status response",
-        "CommandName": "STATUS",
-        "ExpectedResponseContains": "COMPLETED",
-        "TimeoutMs": 10000
+        "Description": "Wait before re-polling",
+        "LabelName": "WaitAndRepoll"
       },
       {
         "Type": "Delay",
         "Order": 15,
-        "Description": "Measurement complete - delay",
+        "Description": "Wait 2 seconds",
+        "DurationMs": 2000
+      },
+      {
+        "Type": "Goto",
+        "Order": 16,
+        "Description": "Poll again",
+        "TargetLabel": "PollLoop"
+      },
+      {
+        "Type": "Label",
+        "Order": 17,
+        "Description": "Measurement complete",
+        "LabelName": "Done"
+      },
+      {
+        "Type": "Delay",
+        "Order": 18,
+        "Description": "Final delay",
         "DurationMs": 500
       }
     ]
