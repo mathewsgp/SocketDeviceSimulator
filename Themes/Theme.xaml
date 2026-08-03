@@ -32,7 +32,7 @@
     <!-- Step Button Base Style -->
     <Style x:Key="StepButtonBase" TargetType="Button">
         <Setter Property="Height" Value="26"/>
-        <Setter Property="Padding" Value="4,0"/>
+        <Setter Property="Padding" Value="8,0"/>
         <Setter Property="Margin" Value="2"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Cursor" Value="Hand"/>
@@ -101,7 +101,7 @@
         <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="Height" Value="26"/>
-        <Setter Property="Padding" Value="4,0"/>
+        <Setter Property="Padding" Value="8,0"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Template">
@@ -129,7 +129,7 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
         <Setter Property="Height" Value="26"/>
-        <Setter Property="Padding" Value="4,0"/>
+        <Setter Property="Padding" Value="8,0"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
         <Setter Property="Cursor" Value="Hand"/>
