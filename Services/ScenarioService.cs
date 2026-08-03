@@ -269,15 +269,21 @@ namespace SocketSimulator.Services
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                if (!string.IsNullOrEmpty(_lastReceivedCommand))
+                // Use Interlocked for thread-safe read/write
+                var receivedCommandRaw = System.Threading.Interlocked.Exchange(ref _lastReceivedCommandRaw, string.Empty);
+                if (!string.IsNullOrEmpty(receivedCommandRaw))
                 {
-                    var receivedCommand = ParseCommandName(_lastReceivedCommand);
+                    var receivedCommand = ParseCommandName(receivedCommandRaw);
                     if (receivedCommand.Equals(step.CommandName, StringComparison.OrdinalIgnoreCase))
                     {
                         _logger.Info("Scenario", $"WaitCommand: Received '{step.CommandName}'");
                         success = true;
-                        _lastReceivedCommand = string.Empty;
                         break;
+                    }
+                    // If not the command we wanted, re-queue it for others
+                    if (!string.IsNullOrEmpty(receivedCommandRaw))
+                    {
+                        System.Threading.Interlocked.Exchange(ref _lastReceivedCommandRaw, receivedCommandRaw);
                     }
                 }
 
