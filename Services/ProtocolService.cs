@@ -195,21 +195,35 @@ namespace SocketSimulator.Services
             // Parse parameters
             if (!string.IsNullOrEmpty(paramString))
             {
-                var paramParts = paramString.Split(new[] { paramSep }, StringSplitOptions.None);
+                // Try to split by protocol's parameter separator, but also try space as fallback
+                string[] paramParts;
+                if (!string.IsNullOrEmpty(paramSep) && paramString.Contains(paramSep))
+                {
+                    paramParts = paramString.Split(new[] { paramSep }, StringSplitOptions.None);
+                }
+                else
+                {
+                    // Fallback: split by space (common in STATUS messages like "state=READY temp=100")
+                    paramParts = paramString.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                }
                 
                 for (int i = 0; i < paramParts.Length; i++)
                 {
-                    var paramPart = paramParts[i];
+                    var paramPart = paramParts[i].Trim();
+                    if (string.IsNullOrEmpty(paramPart))
+                        continue;
                     
                     if (!string.IsNullOrEmpty(valueSep) && paramPart.Contains(valueSep))
                     {
                         // Has parameter name and value
                         var valueParts = paramPart.Split(new[] { valueSep }, 2, StringSplitOptions.None);
-                        var paramName = valueParts[0];
-                        var paramValue = valueParts.Length > 1 ? valueParts[1] : string.Empty;
+                        var paramName = valueParts[0].Trim();
+                        var paramValue = valueParts.Length > 1 ? valueParts[1].Trim() : string.Empty;
                         
                         result.Parameters[paramName] = paramValue;
                         _parsedData[$"{result.CommandName}.{paramName}"] = paramValue;
+                        // Also store without command prefix for easier access
+                        _parsedData[paramName] = paramValue;
                     }
                     else if (commandDef != null && i < commandDef.Parameters.Count)
                     {
@@ -220,9 +234,22 @@ namespace SocketSimulator.Services
                     }
                     else
                     {
-                        // Unknown parameter, use index
-                        result.Parameters[$"param{i}"] = paramPart;
-                        _parsedData[$"{result.CommandName}.param{i}"] = paramPart;
+                        // Unknown parameter, try to parse as key=value anyway
+                        if (paramPart.Contains(valueSep))
+                        {
+                            var valueParts = paramPart.Split(new[] { valueSep }, 2, StringSplitOptions.None);
+                            var paramName = valueParts[0].Trim();
+                            var paramValue = valueParts.Length > 1 ? valueParts[1].Trim() : string.Empty;
+                            result.Parameters[paramName] = paramValue;
+                            _parsedData[$"{result.CommandName}.{paramName}"] = paramValue;
+                            _parsedData[paramName] = paramValue;
+                        }
+                        else
+                        {
+                            // Unknown parameter, use index
+                            result.Parameters[$"param{i}"] = paramPart;
+                            _parsedData[$"{result.CommandName}.param{i}"] = paramPart;
+                        }
                     }
                 }
             }
