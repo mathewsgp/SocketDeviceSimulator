@@ -41,6 +41,10 @@ namespace SocketSimulator.ViewModels
         // Protocol response templates for dropdowns
         public ObservableCollection<string> ProtocolResponseTemplates { get; } = new();
 
+        // Variable operations for SetVariable step
+        public ObservableCollection<VariableOperation> VariableOperations { get; } = new(
+            Enum.GetValues<VariableOperation>());
+
         public string? SelectedProtocolCommandName
         {
             get => _selectedProtocolCommandName;

@@ -440,12 +440,7 @@
                                         <TextBlock Text="Value:" Margin="0,4,0,4" FontWeight="Medium"/>
                                         <TextBox Text="{Binding ScenarioVM.SelectedSetVariableStep.Value, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBox}" Margin="0,0,0,8"/>
                                         <TextBlock Text="Operation:" Margin="0,4,0,4" FontWeight="Medium"/>
-                                        <ComboBox SelectedItem="{Binding ScenarioVM.SelectedSetVariableStep.Operation}" Style="{StaticResource ModernComboBox}">
-                                            <ComboBoxItem Content="Set" Tag="Set"/>
-                                            <ComboBoxItem Content="Increment" Tag="Increment"/>
-                                            <ComboBoxItem Content="Decrement" Tag="Decrement"/>
-                                            <ComboBoxItem Content="Toggle" Tag="Toggle"/>
-                                        </ComboBox>
+                                        <ComboBox ItemsSource="{Binding ScenarioVM.VariableOperations}" SelectedItem="{Binding ScenarioVM.SelectedSetVariableStep.Operation}" Style="{StaticResource ModernComboBox}"/>
                                     </StackPanel>
                                     
                                     <!-- IfElseStep -->
