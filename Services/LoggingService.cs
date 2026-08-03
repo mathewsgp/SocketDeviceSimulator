@@ -15,25 +15,82 @@ namespace SocketSimulator.Services
         private readonly object _lock = new();
         private StreamWriter? _logFileWriter;
         private string _logFilePath = string.Empty;
+        private bool _autoSaveEnabled;
 
         public ObservableCollection<LogEntry> LogEntries => _logEntries;
+        
+        public bool AutoSaveEnabled
+        {
+            get => _autoSaveEnabled;
+            set
+            {
+                if (_autoSaveEnabled != value)
+                {
+                    _autoSaveEnabled = value;
+                    if (value)
+                        EnableAutoSave();
+                    else
+                        CloseLogFile();
+                    OnPropertyChanged(nameof(AutoSaveEnabled));
+                }
+            }
+        }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private LoggingService() { }
+        private LoggingService()
+        {
+            // Enable auto-save by default to AppData folder
+            EnableAutoSave();
+        }
+
+        public void EnableAutoSave()
+        {
+            try
+            {
+                var appDataPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "SocketDeviceSimulator");
+                
+                Directory.CreateDirectory(appDataPath);
+                
+                var logFileName = $"socket_log_{DateTime.Now:yyyyMMdd_HHmmss}.log";
+                var logPath = Path.Combine(appDataPath, logFileName);
+                
+                CloseLogFile();
+                _logFilePath = logPath;
+                _logFileWriter = new StreamWriter(logPath, append: true) { AutoFlush = true };
+                _autoSaveEnabled = true;
+                
+                Info("Logging", $"Auto-save enabled: {logPath}");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to enable auto-save: {ex.Message}");
+            }
+        }
 
         public void SetLogFile(string path)
         {
             CloseLogFile();
             _logFilePath = path;
             _logFileWriter = new StreamWriter(path, append: true) { AutoFlush = true };
+            _autoSaveEnabled = true;
         }
 
         public void CloseLogFile()
         {
-            _logFileWriter?.Close();
-            _logFileWriter?.Dispose();
-            _logFileWriter = null;
+            try
+            {
+                _logFileWriter?.Close();
+                _logFileWriter?.Dispose();
+            }
+            catch { }
+            finally
+            {
+                _logFileWriter = null;
+                _autoSaveEnabled = false;
+            }
         }
 
         public void Log(LogLevel level, string category, string message, string? data = null)
@@ -85,6 +142,11 @@ namespace SocketSimulator.Services
             {
                 System.Windows.Application.Current?.Dispatcher.Invoke(() => _logEntries.Clear());
             }
+        }
+        
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

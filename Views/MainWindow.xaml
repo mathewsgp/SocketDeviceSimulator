@@ -56,6 +56,9 @@
             <MenuItem Header="_Log">
                 <MenuItem Header="_Save Log As..." Command="{Binding LogVM.SaveLogCommand}"/>
                 <Separator/>
+                <MenuItem Header="Open _Log Folder" Command="{Binding LogVM.OpenLogFolderCommand}"/>
+                <MenuItem Header="Open _Latest Log" Command="{Binding LogVM.OpenLatestLogCommand}"/>
+                <Separator/>
                 <MenuItem Header="Enable Log _File..." Command="{Binding LogVM.EnableLogFileCommand}"/>
                 <MenuItem Header="_Disable Log File" Command="{Binding LogVM.DisableLogFileCommand}" 
                          IsEnabled="{Binding LogVM.IsLogFileEnabled}"/>
