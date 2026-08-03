@@ -104,9 +104,17 @@ namespace SocketSimulator.Services
                 Data = data
             };
 
+            // Write to file first (outside lock to avoid blocking)
+            try
+            {
+                _logFileWriter?.WriteLine(entry.ToString());
+            }
+            catch { }
+
+            // Add to UI collection asynchronously (BeginInvoke doesn't block)
             lock (_lock)
             {
-                System.Windows.Application.Current?.Dispatcher.Invoke(() =>
+                System.Windows.Application.Current?.Dispatcher.BeginInvoke(() =>
                 {
                     _logEntries.Add(entry);
                     // Keep only last 10000 entries
@@ -115,12 +123,6 @@ namespace SocketSimulator.Services
                         _logEntries.RemoveAt(0);
                     }
                 });
-
-                try
-                {
-                    _logFileWriter?.WriteLine(entry.ToString());
-                }
-                catch { }
             }
         }
 
