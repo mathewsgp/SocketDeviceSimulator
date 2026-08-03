@@ -535,16 +535,19 @@ namespace SocketSimulator.Services
             
             // Get variable value - first from VariableService, then check parsed data
             var varValueStr = variableService.GetVariableString(varName);
+            _logger.Debug("Scenario", $"EvaluateCondition START: condition='{condition}', varName='{varName}', variableService='{varValueStr}'");
             
             // Also check parsed data (from received STATUS responses) - use lock for thread safety
             lock (_dataLock)
             {
                 var lastCmd = _protocolService.GetParsedValue("LastCommand");
+                _logger.Debug("Scenario", $"EvaluateCondition: lastCmd='{lastCmd}'");
                 
                 if (!string.IsNullOrEmpty(lastCmd))
                 {
                     // Try to get the specific parameter from the last command (case-insensitive)
                     var paramValue = _protocolService.GetParsedValue(lastCmd, varName);
+                    _logger.Debug("Scenario", $"EvaluateCondition: checking '{lastCmd}.{varName}' = '{paramValue}'");
                     if (!string.IsNullOrEmpty(paramValue))
                     {
                         varValueStr = paramValue;
@@ -555,12 +558,19 @@ namespace SocketSimulator.Services
                 if (varValueStr == variableService.GetVariableString(varName))
                 {
                     var directParsed = _protocolService.GetParsedValue(varName);
+                    _logger.Debug("Scenario", $"EvaluateCondition: checking direct '{varName}' = '{directParsed}'");
                     if (!string.IsNullOrEmpty(directParsed))
                     {
                         varValueStr = directParsed;
                     }
                 }
+                
+                // Debug: dump all parsed data
+                var allKeys = string.Join(", ", _protocolService.ParsedData.Select(kvp => $"{kvp.Key}={kvp.Value}"));
+                _logger.Debug("Scenario", $"EvaluateCondition: all parsed data: [{allKeys}]");
             }
+            
+            _logger.Debug("Scenario", $"EvaluateCondition: final varValueStr='{varValueStr}'");
 
             // Find operator and comparison value - check multi-char operators first
             string op = null;
@@ -590,10 +600,12 @@ namespace SocketSimulator.Services
 
             // Extract comparison value after operator
             var compareValueStr = condition.Substring(opIndex + op.Length).Trim();
+            _logger.Debug("Scenario", $"EvaluateCondition: compareValueStr='{compareValueStr}'");
 
             // Try numeric comparison first
             if (double.TryParse(varValueStr, out var varNum) && double.TryParse(compareValueStr, out var compareNum))
             {
+                _logger.Debug("Scenario", $"EvaluateCondition: numeric comparison: {varNum} {op} {compareNum}");
                 return op switch
                 {
                     ">=" => varNum >= compareNum,
@@ -607,12 +619,14 @@ namespace SocketSimulator.Services
             }
 
             // Fall back to string comparison for non-numeric values
-            return op switch
+            var result = op switch
             {
                 "==" => varValueStr.Equals(compareValueStr, StringComparison.OrdinalIgnoreCase),
                 "!=" => !varValueStr.Equals(compareValueStr, StringComparison.OrdinalIgnoreCase),
                 _ => false // String comparison not supported for >, <, >=, <=
             };
+            _logger.Debug("Scenario", $"EvaluateCondition: string result: '{varValueStr}' {op} '{compareValueStr}' = {result}");
+            return result;
         }
 
         public class StepExecutedEventArgs : EventArgs
