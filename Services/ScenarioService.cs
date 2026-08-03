@@ -21,13 +21,11 @@ namespace SocketSimulator.Services
         private CancellationTokenSource? _executionTokenSource;
         private bool _isRunning;
         private string _lastReceivedCommand = string.Empty;
+        private string _lastReceivedCommandRaw = string.Empty;
         private Scenario? _currentScenario;
         
         // Active auto-reply rules: key is command pattern, value is AutoReplyStep
         private Dictionary<string, AutoReplyStep> _activeAutoReplyRules = new();
-        
-        // Lock for thread safety when accessing shared data
-        private readonly object _dataLock = new();
 
         public event EventHandler<StepExecutedEventArgs>? StepExecuted;
         public event EventHandler? ScenarioStarted;
@@ -45,19 +43,19 @@ namespace SocketSimulator.Services
         private void OnDataReceived(object? sender, SocketService.DataReceivedEventArgs e)
         {
             _logger.Debug("Scenario", $"OnDataReceived: data='{e.Data}'");
-            lock (_dataLock)
+            
+            // Use Interlocked for thread-safe assignment (no lock needed)
+            System.Threading.Interlocked.Exchange(ref _lastReceivedCommandRaw, e.Data);
+            
+            // Parse and store the command using Protocol (not thread-safe but acceptable for this use case)
+            if (_protocolService != null)
             {
-                _lastReceivedCommand = e.Data;
-                // Parse and store the command using Protocol
-                if (_protocolService != null)
-                {
-                    _protocolService.ParseCommand(e.Data);
-                    var allKeys = string.Join(", ", _protocolService.ParsedData.Select(kvp => $"{kvp.Key}={kvp.Value}"));
-                    _logger.Debug("Scenario", $"OnDataReceived: parsed data after ParseCommand: [{allKeys}]");
-                }
+                _protocolService.ParseCommand(e.Data);
+                var allKeys = string.Join(", ", _protocolService.ParsedData.Select(kvp => $"{kvp.Key}={kvp.Value}"));
+                _logger.Debug("Scenario", $"OnDataReceived: parsed data after ParseCommand: [{allKeys}]");
             }
             
-            // Check for matching auto-reply rules (outside lock to avoid deadlock)
+            // Check for matching auto-reply rules
             CheckAndExecuteAutoReply(e.Data);
         }
         
@@ -314,17 +312,15 @@ namespace SocketSimulator.Services
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                lock (_dataLock)
+                // Use Interlocked for thread-safe read/write
+                var currentCmd = System.Threading.Interlocked.Exchange(ref _lastReceivedCommandRaw, string.Empty);
+                if (!string.IsNullOrEmpty(currentCmd) &&
+                    currentCmd.Contains(step.ExpectedResponseContains, StringComparison.OrdinalIgnoreCase))
                 {
-                    if (!string.IsNullOrEmpty(_lastReceivedCommand) &&
-                        _lastReceivedCommand.Contains(step.ExpectedResponseContains, StringComparison.OrdinalIgnoreCase))
-                    {
-                        receivedData = _lastReceivedCommand;
-                        _logger.Info("Scenario", $"WaitResponse: Found '{step.ExpectedResponseContains}'");
-                        success = true;
-                        _lastReceivedCommand = string.Empty;
-                        break;
-                    }
+                    receivedData = currentCmd;
+                    _logger.Info("Scenario", $"WaitResponse: Found '{step.ExpectedResponseContains}'");
+                    success = true;
+                    break;
                 }
 
                 await Task.Delay(50, cancellationToken);
@@ -540,38 +536,35 @@ namespace SocketSimulator.Services
             var varValueStr = variableService.GetVariableString(varName);
             _logger.Debug("Scenario", $"EvaluateCondition START: condition='{condition}', varName='{varName}', variableService='{varValueStr}'");
             
-            // Also check parsed data (from received STATUS responses) - use lock for thread safety
-            lock (_dataLock)
+            // Also check parsed data (from received STATUS responses) - no lock needed
+            var lastCmd = _protocolService.GetParsedValue("LastCommand");
+            _logger.Debug("Scenario", $"EvaluateCondition: lastCmd='{lastCmd}'");
+            
+            if (!string.IsNullOrEmpty(lastCmd))
             {
-                var lastCmd = _protocolService.GetParsedValue("LastCommand");
-                _logger.Debug("Scenario", $"EvaluateCondition: lastCmd='{lastCmd}'");
-                
-                if (!string.IsNullOrEmpty(lastCmd))
+                // Try to get the specific parameter from the last command (case-insensitive)
+                var paramValue = _protocolService.GetParsedValue(lastCmd, varName);
+                _logger.Debug("Scenario", $"EvaluateCondition: checking '{lastCmd}.{varName}' = '{paramValue}'");
+                if (!string.IsNullOrEmpty(paramValue))
                 {
-                    // Try to get the specific parameter from the last command (case-insensitive)
-                    var paramValue = _protocolService.GetParsedValue(lastCmd, varName);
-                    _logger.Debug("Scenario", $"EvaluateCondition: checking '{lastCmd}.{varName}' = '{paramValue}'");
-                    if (!string.IsNullOrEmpty(paramValue))
-                    {
-                        varValueStr = paramValue;
-                    }
+                    varValueStr = paramValue;
                 }
-                
-                // Also check direct parsed data key (e.g., state) - case-insensitive
-                if (varValueStr == variableService.GetVariableString(varName))
-                {
-                    var directParsed = _protocolService.GetParsedValue(varName);
-                    _logger.Debug("Scenario", $"EvaluateCondition: checking direct '{varName}' = '{directParsed}'");
-                    if (!string.IsNullOrEmpty(directParsed))
-                    {
-                        varValueStr = directParsed;
-                    }
-                }
-                
-                // Debug: dump all parsed data
-                var allKeys = string.Join(", ", _protocolService.ParsedData.Select(kvp => $"{kvp.Key}={kvp.Value}"));
-                _logger.Debug("Scenario", $"EvaluateCondition: all parsed data: [{allKeys}]");
             }
+            
+            // Also check direct parsed data key (e.g., state) - case-insensitive
+            if (varValueStr == variableService.GetVariableString(varName))
+            {
+                var directParsed = _protocolService.GetParsedValue(varName);
+                _logger.Debug("Scenario", $"EvaluateCondition: checking direct '{varName}' = '{directParsed}'");
+                if (!string.IsNullOrEmpty(directParsed))
+                {
+                    varValueStr = directParsed;
+                }
+            }
+            
+            // Debug: dump all parsed data
+            var allKeys = string.Join(", ", _protocolService.ParsedData.Select(kvp => $"{kvp.Key}={kvp.Value}"));
+            _logger.Debug("Scenario", $"EvaluateCondition: all parsed data: [{allKeys}]");
             
             _logger.Debug("Scenario", $"EvaluateCondition: final varValueStr='{varValueStr}'");
 
